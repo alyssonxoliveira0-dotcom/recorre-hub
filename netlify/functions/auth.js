@@ -161,8 +161,7 @@ exports.handler = async (event) => {
   }
 
   if (action === 'login') {
-    
-    
+    const { email, password } = body;
     if (!email || !password) return fail(400, 'E-mail e senha são obrigatórios.');
 
     const user = await kvGet('crm_user:' + email.toLowerCase().trim()).catch(() => null);
