@@ -20,9 +20,17 @@ exports.handler = async (event) => {
     ? event.path.slice(funcBase.length) || '/'
     : '/';
 
-  const qs = event.rawQuery ? '?' + event.rawQuery : '';
+  const qsParams = event.queryStringParameters || {};
+  const qs = Object.keys(qsParams).length
+    ? '?' + new URLSearchParams(qsParams).toString()
+    : '';
+
   const host = env === 'production' ? 'api.asaas.com' : 'sandbox.asaas.com';
   const targetPath = '/api/v3' + asaasPath + qs;
+
+  console.log('[asaas] path:', event.path, '| asaasPath:', asaasPath);
+  console.log('[asaas] host:', host, '| target:', targetPath);
+  console.log('[asaas] apiKey length:', apiKey.length);
 
   let bodyStr = '';
   if (event.body) {
@@ -46,11 +54,13 @@ exports.handler = async (event) => {
       let data = '';
       res.on('data', chunk => data += chunk);
       res.on('end', () => {
+        console.log('[asaas] status:', res.statusCode, '| body:', data.slice(0, 200));
         resolve({ statusCode: res.statusCode, headers, body: data || '{}' });
       });
     });
 
     req.on('error', (e) => {
+      console.error('[asaas] error:', e.message);
       resolve({
         statusCode: 500, headers,
         body: JSON.stringify({ errors: [{ code: 'proxy_error', description: e.message }] })
