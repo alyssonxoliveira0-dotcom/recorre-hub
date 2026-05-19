@@ -3,46 +3,61 @@ const https = require('https');
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Headers': 'Content-Type, access_token, asaas_env',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, access_token',
     'Content-Type': 'application/json'
   };
 
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 204, headers, body: '' };
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers, body: '' };
+  }
 
-  const path = event.path.replace('/.netlify/functions/asaas', '').replace('/api/asaas', '');
-  const apiKey = event.headers['access_token'];
+  const apiKey = event.headers['access_token'] || '';
   const env = event.headers['asaas_env'] || 'sandbox';
 
-  if (!apiKey) return { statusCode: 401, headers, body: JSON.stringify({ error: 'access_token ausente' }) };
+  const funcBase = '/.netlify/functions/asaas';
+  const asaasPath = event.path.startsWith(funcBase)
+    ? event.path.slice(funcBase.length) || '/'
+    : '/';
 
-  const hostname = env === 'production' ? 'api.asaas.com' : 'sandbox.asaas.com';
-  const qs = event.queryStringParameters
-    ? '?' + new URLSearchParams(event.queryStringParameters).toString()
-    : '';
+  const qs = event.rawQuery ? '?' + event.rawQuery : '';
+  const host = env === 'production' ? 'api.asaas.com' : 'sandbox.asaas.com';
+  const targetPath = '/api/v3' + asaasPath + qs;
+
+  let bodyStr = '';
+  if (event.body) {
+    bodyStr = event.isBase64Encoded
+      ? Buffer.from(event.body, 'base64').toString('utf8')
+      : event.body;
+  }
 
   return new Promise((resolve) => {
-    const opts = {
-      hostname, port: 443,
-      path: `/api/v3${path}${qs}`,
-      method: event.httpMethod,
-      headers: { 'access_token': apiKey, 'Content-Type': 'application/json' }
+    const reqHeaders = {
+      'Content-Type': 'application/json',
+      'access_token': apiKey,
+      'User-Agent': 'RecorreHub/1.0'
     };
-    const req = https.request(opts, res => {
+    if (bodyStr) reqHeaders['Content-Length'] = Buffer.byteLength(bodyStr);
+
+    const req = https.request({
+      hostname: host, port: 443, path: targetPath,
+      method: event.httpMethod, headers: reqHeaders
+    }, (res) => {
       let data = '';
-      res.on('data', c => data += c);
-      res.on('end', () => resolve({
-        statusCode: res.statusCode,
-        headers,
-        body: data
-      }));
+      res.on('data', chunk => data += chunk);
+      res.on('end', () => {
+        resolve({ statusCode: res.statusCode, headers, body: data || '{}' });
+      });
     });
-    req.on('error', e => resolve({
-      statusCode: 502,
-      headers,
-      body: JSON.stringify({ error: e.message })
-    }));
-    if (event.body) req.write(event.body);
+
+    req.on('error', (e) => {
+      resolve({
+        statusCode: 500, headers,
+        body: JSON.stringify({ errors: [{ code: 'proxy_error', description: e.message }] })
+      });
+    });
+
+    if (bodyStr) req.write(bodyStr);
     req.end();
   });
 };
