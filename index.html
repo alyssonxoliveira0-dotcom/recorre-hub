@@ -677,6 +677,12 @@ function fmtData(d) {
   const [y, m, day] = d.split('-');
   return `${day}/${m}/${y}`;
 }
+function nomeCliente(customerId) {
+  if (!customerId) return '—';
+  const id = typeof customerId === 'object' ? customerId.id : customerId;
+  const c = dadosCache.clientes.find(x => x.id === id);
+  return c?.name || '—';
+}
 
 function toast(msg, tipo = 'success') {
   const c = document.getElementById('toast-container');
@@ -1018,14 +1024,17 @@ function renderizarTudo() {
 
 // ── NAVEGAÇÃO ──────────────────────────────────────────────────────────────
 
-function navegarPara(pagina) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-  document.getElementById('page-' + pagina)?.classList.add('active');
-  document.getElementById('nav-' + pagina)?.classList.add('active');
-  const titulos = { dashboard:'Dashboard', clientes:'Clientes', assinaturas:'Assinaturas',
-    tarefas:'Tarefas', comissoes:'Comissões', configuracoes:'Configurações' };
-  document.getElementById('topbar-title').textContent = titulos[pagina] || pagina;
+function fmtData(d) {
+  if (!d) return '—';
+  const [y, m, day] = d.split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function nomeCliente(customerId) {
+  if (!customerId) return '—';
+  const id = typeof customerId === 'object' ? customerId.id : customerId;
+  const c = dadosCache.clientes.find(x => x.id === id);
+  return c?.name || '—';
 }
 
 function toggleSidebar() {
@@ -1065,7 +1074,7 @@ function renderDashboard() {
   const recentes = [...cobs].sort((a,b) => new Date(b.dateCreated||b.dueDate) - new Date(a.dateCreated||a.dueDate)).slice(0, 8);
   document.getElementById('dash-cobrancas').innerHTML = recentes.length
     ? recentes.map(c => `<tr>
-        <td><strong>${c.customer?.name || '—'}</strong></td>
+        <td><strong>${nomeCliente(c.customer)}</strong></td>
         <td>${fmt(c.value)}</td>
         <td>${fmtData(c.dueDate)}</td>
         <td>${badgeStatus(c.status, c.dueDate)}</td>
@@ -1333,7 +1342,7 @@ function renderComissoes() {
         const comissao = (c.netValue || 0) * pct / 100;
         return `<tr>
           <td>${fmtData(c.confirmedDate || c.dueDate)}</td>
-          <td>${c.customer?.name || '—'}</td>
+          <td>${nomeCliente(c.customer)}</td>
           <td>${fmt(c.value)}</td>
           <td><strong>${fmt(comissao)}</strong> <span style="font-size:11px;color:var(--gray-400)">(${pct}%)</span></td>
           <td>${c.splits[0]?.walletId?.slice(-8) || '—'}</td>
