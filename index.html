@@ -3,307 +3,292 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Recorre Hub — CRM de Assinaturas</title>
+<title>Recorre Hub</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #0F1117;
-  --surface: #1A1D27;
-  --surface2: #22263A;
-  --border: #2E3250;
-  --accent: #6C63FF;
-  --accent2: #8B85FF;
-  --success: #22C55E;
-  --warning: #F59E0B;
-  --danger: #EF4444;
-  --text: #E8EAFF;
-  --muted: #8890B5;
-  --white: #FFFFFF;
-  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+  --bg: #0F1117; --surface: #1A1D27; --surface2: #22263A; --border: #2E3250;
+  --accent: #6C63FF; --accent2: #8B85FF; --accent-dim: rgba(108,99,255,.12);
+  --success: #22C55E; --warning: #F59E0B; --danger: #EF4444;
+  --text: #E8EAFF; --muted: #8890B5; --white: #FFFFFF;
+  --shadow: 0 4px 24px rgba(0,0,0,.4);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
-/* ── Login ── */
-#login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
-.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: var(--shadow); }
-.brand { text-align: center; margin-bottom: 32px; }
-.brand-icon { width: 48px; height: 48px; background: var(--accent); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 20px; }
-.brand h1 { font-size: 22px; font-weight: 700; color: var(--white); }
-.brand p { font-size: 13px; color: var(--muted); margin-top: 4px; }
-.login-tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
-.login-tab { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all .2s; }
-.login-tab.active { background: var(--accent); color: var(--white); }
-.form-group { margin-bottom: 14px; }
-.form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
-.form-group input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); transition: border-color .2s; outline: none; }
-.form-group input:focus { border-color: var(--accent); }
-.btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
-.btn-primary { background: var(--accent); color: var(--white); }
-.btn-primary:hover { background: var(--accent2); }
-.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
-.auth-link { text-align: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
-.auth-link a { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
-.auth-link a:hover { text-decoration: underline; }
-.msg-error { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #FCA5A5; margin-bottom: 14px; display: none; }
-.msg-success { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #86EFAC; margin-bottom: 14px; display: none; }
+/* ── AUTH ── */
+#auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px}
+.auth-card{background:var(--surface);border:1px solid var(--border);border-radius:20px;padding:40px 36px;width:100%;max-width:400px;box-shadow:var(--shadow)}
+.brand{text-align:center;margin-bottom:28px}
+.brand-icon{width:46px;height:46px;background:var(--accent);border-radius:13px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:20px}
+.brand h1{font-size:21px;font-weight:700;color:var(--white)}
+.brand p{font-size:12px;color:var(--muted);margin-top:3px}
+.auth-tabs{display:flex;background:var(--bg);border-radius:9px;padding:3px;margin-bottom:22px}
+.auth-tab{flex:1;text-align:center;padding:7px;border-radius:7px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;transition:all .2s}
+.auth-tab.active{background:var(--accent);color:var(--white)}
+.fg{margin-bottom:13px}
+.fg label{display:block;font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.fg input,.fg select,.fg textarea{width:100%;padding:10px 13px;border:1.5px solid var(--border);border-radius:9px;font-family:'Inter',sans-serif;font-size:14px;color:var(--text);background:var(--bg);outline:none;transition:border-color .2s;resize:vertical}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--accent)}
+.fg select option{background:var(--surface2)}
+.btn{width:100%;padding:11px;border:none;border-radius:9px;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;cursor:pointer;transition:all .2s}
+.btn-primary{background:var(--accent);color:var(--white)}
+.btn-primary:hover{background:var(--accent2)}
+.btn-primary:disabled{opacity:.5;cursor:not-allowed}
+.auth-sub{text-align:center;margin-top:12px;font-size:13px;color:var(--muted)}
+.auth-sub a{color:var(--accent);cursor:pointer;font-weight:600;text-decoration:none}
+.msg-err{background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:8px;padding:9px 13px;font-size:13px;color:#FCA5A5;margin-bottom:12px;display:none}
+.msg-ok{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.3);border-radius:8px;padding:9px 13px;font-size:13px;color:#86EFAC;margin-bottom:12px;display:none}
 
-/* ── App layout ── */
-#app-screen { display: none; min-height: 100vh; }
+/* ── APP LAYOUT ── */
+#app{display:none;min-height:100vh}
+#sidebar{width:232px;background:var(--surface);border-right:1px solid var(--border);position:fixed;top:0;left:0;height:100vh;z-index:100;display:flex;flex-direction:column;transition:transform .25s}
+.sb-brand{padding:18px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:11px}
+.sb-brand-icon{width:34px;height:34px;background:var(--accent);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.sb-brand-name{font-size:15px;font-weight:700;color:var(--white)}
+.sb-nav{flex:1;padding:10px 8px;overflow-y:auto}
+.nav-section{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:8px 10px 4px;margin-top:4px}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;cursor:pointer;color:var(--muted);font-size:13px;font-weight:500;margin-bottom:1px;transition:all .2s}
+.nav-item:hover{background:var(--surface2);color:var(--text)}
+.nav-item.active{background:var(--accent-dim);color:var(--accent2)}
+.nav-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-footer{padding:12px 8px;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:9px;padding:7px 10px}
+.sb-avatar{width:30px;height:30px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--white);flex-shrink:0}
+.sb-email{font-size:11px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.btn-sair{width:100%;margin-top:6px;padding:7px;background:transparent;border:1px solid var(--border);border-radius:8px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.btn-sair:hover{border-color:var(--danger);color:var(--danger)}
+.main{margin-left:232px;display:flex;flex-direction:column;min-height:100vh}
+.topbar{background:var(--surface);border-bottom:1px solid var(--border);padding:13px 22px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:50}
+#menu-btn{display:none;background:transparent;border:none;color:var(--text);font-size:21px;cursor:pointer;padding:3px;line-height:1}
+.topbar-title{font-size:15px;font-weight:600;color:var(--white);flex:1}
+.content{padding:22px;flex:1}
+#sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99}
 
-/* ── Sidebar ── */
-#sidebar {
-  width: 240px; min-width: 240px; background: var(--surface); border-right: 1px solid var(--border);
-  display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh;
-  z-index: 100; transition: transform .25s ease;
+/* ── PAGES ── */
+.page{display:none}.page.active{display:block}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.page-header h2{font-size:19px;font-weight:700;color:var(--white)}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px 18px}
+.stat-card.c-accent{border-color:rgba(108,99,255,.4);background:rgba(108,99,255,.07)}
+.stat-card.c-success{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05)}
+.stat-card.c-warn{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)}
+.stat-card.c-danger{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
+.stat-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.stat-val{font-size:24px;font-weight:700;color:var(--white);line-height:1}
+.stat-sub{font-size:11px;color:var(--muted);margin-top:5px}
+
+/* ── TABLE CARD ── */
+.table-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden}
+.tc-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.tc-header h3{font-size:13px;font-weight:600;color:var(--white)}
+.tc-tools{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.search-box{padding:6px 11px;background:var(--bg);border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);font-family:'Inter',sans-serif;outline:none;width:180px;transition:border-color .2s}
+.search-box:focus{border-color:var(--accent)}
+.filter-sel{padding:6px 10px;background:var(--bg);border:1px solid var(--border);border-radius:7px;font-size:12px;color:var(--text);font-family:'Inter',sans-serif;outline:none;cursor:pointer}
+.filter-sel option{background:var(--surface2)}
+.tw{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{padding:10px 14px;text-align:left;font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid var(--border);background:var(--bg);white-space:nowrap}
+td{padding:12px 14px;font-size:13px;color:var(--text);border-bottom:1px solid rgba(46,50,80,.4);max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+tr:last-child td{border-bottom:none}
+tbody tr{cursor:pointer;transition:background .12s}
+tbody tr:hover{background:var(--surface2)}
+.no-data{padding:44px 16px;text-align:center;color:var(--muted);font-size:13px}
+.pagination{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);font-size:12px;color:var(--muted)}
+.pagination-btns{display:flex;gap:6px}
+.pg-btn{padding:5px 12px;background:var(--bg);border:1px solid var(--border);border-radius:6px;color:var(--muted);font-size:12px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.pg-btn:hover{border-color:var(--accent);color:var(--accent2)}
+.pg-btn:disabled{opacity:.4;cursor:not-allowed}
+
+/* ── MOBILE CARDS ── */
+.card-list{display:none}
+.m-card{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:13px 14px;margin-bottom:8px;cursor:pointer;transition:background .12s}
+.m-card:hover{background:var(--surface2)}
+.m-card-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px}
+.m-card-name{font-size:13px;font-weight:600;color:var(--white)}
+.m-card-sub{font-size:11px;color:var(--muted)}
+
+/* ── BADGES ── */
+.badge{display:inline-block;padding:2px 9px;border-radius:20px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;white-space:nowrap}
+.bg-success{background:rgba(34,197,94,.15);color:#86EFAC}
+.bg-warn{background:rgba(245,158,11,.15);color:#FCD34D}
+.bg-danger{background:rgba(239,68,68,.15);color:#FCA5A5}
+.bg-muted{background:rgba(136,144,181,.15);color:var(--muted)}
+.bg-accent{background:rgba(108,99,255,.15);color:var(--accent2)}
+
+/* ── BUTTONS ── */
+.btn-sm{padding:6px 13px;border:none;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s;white-space:nowrap}
+.btn-accent{background:var(--accent);color:var(--white)}
+.btn-accent:hover{background:var(--accent2)}
+.btn-outline{background:transparent;border:1px solid var(--border);color:var(--muted)}
+.btn-outline:hover{border-color:var(--accent);color:var(--accent2)}
+.btn-danger{background:transparent;border:1px solid rgba(239,68,68,.4);color:#FCA5A5}
+.btn-danger:hover{background:rgba(239,68,68,.1)}
+.btn-success{background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);color:#86EFAC}
+.btn-success:hover{background:rgba(34,197,94,.25)}
+
+/* ── MODAL / DRAWER ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;display:none;align-items:flex-end;justify-content:center}
+.overlay.open{display:flex}
+@media(min-width:640px){.overlay{align-items:center}}
+.drawer{background:var(--surface);border-radius:16px 16px 0 0;width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:24px;position:relative}
+@media(min-width:640px){.drawer{border-radius:16px;max-height:85vh}}
+.drawer-title{font-size:17px;font-weight:700;color:var(--white);margin-bottom:20px;padding-right:32px}
+.drawer-close{position:absolute;top:18px;right:18px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
+.drawer-footer{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap}
+.drawer-footer .btn-sm{flex:1;padding:10px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* ── DETAIL PANEL ── */
+.panel-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none}
+.panel-overlay.open{display:block}
+.detail-panel{position:fixed;right:0;top:0;height:100vh;width:100%;max-width:400px;background:var(--surface);border-left:1px solid var(--border);z-index:201;padding:22px;overflow-y:auto;transform:translateX(100%);transition:transform .25s}
+.panel-overlay.open .detail-panel{transform:translateX(0)}
+.panel-close{position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1}
+.panel-title{font-size:17px;font-weight:700;color:var(--white);margin-bottom:18px;padding-right:36px}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);font-size:13px}
+.detail-row:last-child{border-bottom:none}
+.detail-label{color:var(--muted);font-weight:500}
+.detail-val{color:var(--text);font-weight:600;text-align:right;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.panel-actions{display:flex;flex-direction:column;gap:8px;margin-top:16px}
+.panel-actions .btn-sm{width:100%;padding:10px;text-align:center}
+
+/* ── CONFIG ── */
+.cfg-section{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:20px 22px;margin-bottom:18px}
+.cfg-section h3{font-size:13px;font-weight:600;color:var(--white);margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--border)}
+.radio-group{display:flex;gap:10px;flex-wrap:wrap}
+.radio-opt{display:flex;align-items:center;gap:7px;padding:9px 14px;background:var(--bg);border:1.5px solid var(--border);border-radius:9px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s}
+.radio-opt input[type=radio]{accent-color:var(--accent);width:14px;height:14px}
+.radio-opt.selected{border-color:var(--accent);color:var(--accent2)}
+.conn-tag{display:inline-flex;align-items:center;gap:5px;font-size:11px;padding:3px 10px;border-radius:20px;font-weight:600}
+.conn-ok{background:rgba(34,197,94,.15);color:#86EFAC}
+.conn-err{background:rgba(239,68,68,.15);color:#FCA5A5}
+.conn-wait{background:rgba(245,158,11,.15);color:#FCD34D}
+
+/* ── SPINNER ── */
+.spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(108,99,255,.3);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-row td{text-align:center;padding:36px}
+
+/* ── TOAST ── */
+.toast-wrap{position:fixed;bottom:18px;right:18px;z-index:9999;display:flex;flex-direction:column;gap:7px}
+.toast{background:var(--surface2);border:1px solid var(--border);border-radius:9px;padding:11px 16px;font-size:13px;color:var(--text);box-shadow:var(--shadow);animation:toastIn .25s ease;max-width:300px}
+.toast.ok{border-color:rgba(34,197,94,.4);color:#86EFAC}
+.toast.err{border-color:rgba(239,68,68,.4);color:#FCA5A5}
+@keyframes toastIn{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+
+/* ── ALERT ── */
+.alert{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:11px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:#FCD34D;display:none}
+.alert a{color:#FCD34D;font-weight:600;cursor:pointer;text-decoration:underline}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:768px){
+  #sidebar{transform:translateX(-100%);width:250px}
+  #sidebar.open{transform:translateX(0)}
+  .main{margin-left:0}
+  #menu-btn{display:block}
+  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
+  .stat-card{padding:13px 14px}
+  .stat-val{font-size:20px}
+  .content{padding:14px}
+  .tw table{display:none}
+  .card-list{display:block}
+  .col-hide{display:none}
+  .detail-panel{max-width:100%}
+  .form-row{grid-template-columns:1fr}
 }
-.sidebar-brand { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
-.sidebar-brand-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
-.sidebar-brand-name { font-size: 16px; font-weight: 700; color: var(--white); }
-.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
-.nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all .2s; color: var(--muted); font-size: 14px; font-weight: 500; margin-bottom: 2px; }
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: rgba(108,99,255,.18); color: var(--accent2); }
-.nav-item .nav-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
-.sidebar-footer { padding: 14px 10px; border-top: 1px solid var(--border); }
-.sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; }
-.user-avatar { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--white); flex-shrink: 0; }
-.user-email { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.btn-logout { width: 100%; margin-top: 8px; padding: 8px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 13px; cursor: pointer; transition: all .2s; font-family: 'Inter', sans-serif; }
-.btn-logout:hover { border-color: var(--danger); color: var(--danger); }
-
-/* ── Main area ── */
-.main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
-.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; }
-#menu-btn { display: none; background: transparent; border: none; color: var(--text); font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; }
-.topbar-title { font-size: 16px; font-weight: 600; color: var(--white); }
-.content { padding: 24px; flex: 1; }
-
-/* ── Pages ── */
-.page { display: none; }
-.page.active { display: block; }
-.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
-.page-header h2 { font-size: 20px; font-weight: 700; color: var(--white); }
-
-/* ── Stats ── */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
-.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
-.stat-label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
-.stat-value { font-size: 26px; font-weight: 700; color: var(--white); line-height: 1; }
-.stat-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
-.stat-card.accent { border-color: rgba(108,99,255,.4); background: rgba(108,99,255,.08); }
-.stat-card.success { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.06); }
-.stat-card.warning { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.06); }
-.stat-card.danger { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.06); }
-
-/* ── Badges ── */
-.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
-.badge-success { background: rgba(34,197,94,.15); color: #86EFAC; }
-.badge-warning { background: rgba(245,158,11,.15); color: #FCD34D; }
-.badge-danger  { background: rgba(239,68,68,.15); color: #FCA5A5; }
-.badge-muted   { background: rgba(136,144,181,.15); color: var(--muted); }
-.badge-accent  { background: rgba(108,99,255,.15); color: var(--accent2); }
-
-/* ── Table ── */
-.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
-.table-card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
-.table-card-header h3 { font-size: 14px; font-weight: 600; color: var(--white); }
-.table-wrap { overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; }
-th { padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); background: var(--bg); white-space: nowrap; }
-td { padding: 13px 16px; font-size: 13px; color: var(--text); border-bottom: 1px solid rgba(46,50,80,.5); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-tr:last-child td { border-bottom: none; }
-tbody tr { cursor: pointer; transition: background .15s; }
-tbody tr:hover { background: var(--surface2); }
-.no-data { padding: 48px 20px; text-align: center; color: var(--muted); font-size: 14px; }
-
-/* ── Cards list (mobile) ── */
-.card-list { display: none; }
-.list-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: background .15s; }
-.list-card:hover { background: var(--surface2); }
-.list-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
-.list-card-name { font-size: 14px; font-weight: 600; color: var(--white); }
-.list-card-sub { font-size: 12px; color: var(--muted); }
-
-/* ── Buttons ── */
-.btn-sm { padding: 7px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; }
-.btn-accent { background: var(--accent); color: var(--white); }
-.btn-accent:hover { background: var(--accent2); }
-.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
-.btn-outline:hover { border-color: var(--accent); color: var(--accent2); }
-
-/* ── Config ── */
-.config-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
-.config-section h3 { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-.radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
-.radio-opt { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all .2s; }
-.radio-opt input[type=radio] { accent-color: var(--accent); width: 15px; height: 15px; }
-.radio-opt.selected { border-color: var(--accent); color: var(--accent2); }
-.conn-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
-.conn-ok { background: rgba(34,197,94,.15); color: #86EFAC; }
-.conn-err { background: rgba(239,68,68,.15); color: #FCA5A5; }
-.conn-testing { background: rgba(245,158,11,.15); color: #FCD34D; }
-
-/* ── Spinner ── */
-.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(108,99,255,.3); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
-@keyframes spin { to { transform: rotate(360deg); } }
-.loading-row td { text-align: center; padding: 40px; }
-
-/* ── Toast ── */
-.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
-.toast { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-size: 13px; color: var(--text); box-shadow: var(--shadow); animation: slideIn .25s ease; max-width: 320px; }
-.toast.success { border-color: rgba(34,197,94,.4); color: #86EFAC; }
-.toast.error { border-color: rgba(239,68,68,.4); color: #FCA5A5; }
-@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
-
-/* ── Alert banner ── */
-.alert-banner { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: #FCD34D; display: none; }
-.alert-banner a { color: #FCD34D; font-weight: 600; cursor: pointer; text-decoration: underline; }
-
-/* ── Detail panel ── */
-.panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 200; display: none; }
-.panel-overlay.open { display: block; }
-.detail-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 420px; background: var(--surface); border-left: 1px solid var(--border); z-index: 201; padding: 24px; overflow-y: auto; transform: translateX(100%); transition: transform .25s ease; }
-.panel-overlay.open .detail-panel { transform: translateX(0); }
-.panel-close { position: absolute; top: 18px; right: 18px; background: transparent; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; }
-.panel-title { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 20px; padding-right: 40px; }
-.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
-.detail-row:last-child { border-bottom: none; }
-.detail-label { color: var(--muted); font-weight: 500; }
-.detail-value { color: var(--text); font-weight: 600; text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.btn-full { width: 100%; margin-top: 16px; padding: 11px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; }
-.btn-accent-full { background: var(--accent); color: var(--white); }
-.btn-accent-full:hover { background: var(--accent2); }
-
-/* ── Responsive ── */
-@media (max-width: 900px) {
-  .stats-grid { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 768px) {
-  #sidebar { transform: translateX(-100%); width: 260px; min-width: 260px; }
-  #sidebar.open { transform: translateX(0); }
-  .main { margin-left: 0; }
-  #menu-btn { display: block; }
-  .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-  .stat-card { padding: 14px 16px; }
-  .stat-value { font-size: 20px; }
-  .content { padding: 16px; }
-  .page-header h2 { font-size: 17px; }
-  .table-wrap table { display: none; }
-  .card-list { display: block; }
-  .col-hide { display: none; }
-  .detail-panel { max-width: 100%; }
-}
-@media (max-width: 480px) {
-  .stats-grid { grid-template-columns: 1fr; }
-  .login-card { padding: 28px 20px; }
+@media(max-width:480px){
+  .stats-grid{grid-template-columns:1fr}
+  .auth-card{padding:26px 18px}
 }
 </style>
 </head>
 <body>
 
-<div id="login-screen">
-  <div class="login-card">
+<!-- ── AUTH ── -->
+<div id="auth-screen">
+  <div class="auth-card">
     <div class="brand">
       <div class="brand-icon">🔄</div>
       <h1>Recorre Hub</h1>
-      <p>CRM de Assinaturas Asaas</p>
+      <p>Gestão de assinaturas recorrentes</p>
     </div>
-    <div class="login-tabs">
-      <div class="login-tab active" id="tab-login" onclick="trocarTab('login')">Entrar</div>
-      <div class="login-tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Cadastrar</div>
+    <div class="auth-tabs">
+      <div class="auth-tab active" id="tab-login" onclick="trocarTab('login')">Entrar</div>
+      <div class="auth-tab" id="tab-cad" onclick="trocarTab('cad')">Cadastrar</div>
     </div>
+
+    <!-- LOGIN -->
     <div id="form-login">
-      <div class="msg-error" id="login-err"></div>
-      <div class="msg-success" id="login-ok"></div>
-      <div class="form-group">
-        <label>E-mail</label>
-        <input type="email" id="login-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerLogin()">
-      </div>
-      <div class="form-group">
-        <label>Senha</label>
-        <input type="password" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
-      </div>
+      <div class="msg-err" id="login-err"></div>
+      <div class="fg"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerLogin()"></div>
+      <div class="fg"><label>Senha</label><input type="password" id="l-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()"></div>
       <button class="btn btn-primary" id="btn-login" onclick="fazerLogin()">Entrar</button>
-      <div class="auth-link" style="margin-top:12px">
-        <a onclick="trocarTab('forgot')">Esqueci minha senha</a>
-      </div>
+      <div class="auth-sub" style="margin-top:10px"><a onclick="trocarTab('forgot')">Esqueci minha senha</a></div>
     </div>
-    <div id="form-cadastro" style="display:none">
-      <div class="msg-error" id="cad-err"></div>
-      <div class="msg-success" id="cad-ok"></div>
-      <div class="form-group">
-        <label>E-mail</label>
-        <input type="email" id="cad-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerCadastro()">
-      </div>
-      <div class="form-group">
-        <label>Senha</label>
-        <input type="password" id="cad-senha" placeholder="mín. 6 caracteres" onkeydown="if(event.key==='Enter')fazerCadastro()">
-      </div>
-      <div class="form-group">
-        <label>Código de acesso</label>
-        <input type="text" id="cad-invite" placeholder="Código fornecido pela equipe" onkeydown="if(event.key==='Enter')fazerCadastro()">
-      </div>
+
+    <!-- CADASTRO -->
+    <div id="form-cad" style="display:none">
+      <div class="msg-err" id="cad-err"></div>
+      <div class="msg-ok" id="cad-ok"></div>
+      <div class="fg"><label>E-mail</label><input type="email" id="c-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerCadastro()"></div>
+      <div class="fg"><label>Senha</label><input type="password" id="c-senha" placeholder="mín. 6 caracteres" onkeydown="if(event.key==='Enter')fazerCadastro()"></div>
+      <div class="fg"><label>Código de acesso</label><input type="text" id="c-invite" placeholder="Código da equipe" onkeydown="if(event.key==='Enter')fazerCadastro()"></div>
       <button class="btn btn-primary" id="btn-cad" onclick="fazerCadastro()">Criar conta</button>
     </div>
+
+    <!-- FORGOT -->
     <div id="form-forgot" style="display:none">
-      <div class="msg-error" id="forgot-err"></div>
-      <div class="msg-success" id="forgot-ok"></div>
-      <div class="form-group">
-        <label>E-mail</label>
-        <input type="email" id="forgot-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')enviarReset()">
-      </div>
+      <div class="msg-err" id="forgot-err"></div>
+      <div class="msg-ok" id="forgot-ok"></div>
+      <div class="fg"><label>E-mail</label><input type="email" id="f-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')enviarReset()"></div>
       <button class="btn btn-primary" id="btn-forgot" onclick="enviarReset()">Enviar link de recuperação</button>
-      <div class="auth-link" style="margin-top:12px">
-        <a onclick="trocarTab('login')">← Voltar para login</a>
-      </div>
+      <div class="auth-sub" style="margin-top:10px"><a onclick="trocarTab('login')">← Voltar</a></div>
     </div>
+
+    <!-- RESET -->
     <div id="form-reset" style="display:none">
-      <div class="msg-error" id="reset-err"></div>
-      <div class="msg-success" id="reset-ok"></div>
-      <div class="form-group">
-        <label>Nova senha</label>
-        <input type="password" id="reset-senha" placeholder="mín. 6 caracteres" onkeydown="if(event.key==='Enter')resetarSenha()">
-      </div>
+      <div class="msg-err" id="reset-err"></div>
+      <div class="msg-ok" id="reset-ok"></div>
+      <div class="fg"><label>Nova senha</label><input type="password" id="r-senha" placeholder="mín. 6 caracteres" onkeydown="if(event.key==='Enter')resetarSenha()"></div>
       <button class="btn btn-primary" id="btn-reset" onclick="resetarSenha()">Redefinir senha</button>
     </div>
   </div>
 </div>
 
-<div id="app-screen">
+<!-- ── APP ── -->
+<div id="app">
   <div id="sidebar">
-    <div class="sidebar-brand">
-      <div class="sidebar-brand-icon">🔄</div>
-      <span class="sidebar-brand-name">Recorre Hub</span>
+    <div class="sb-brand">
+      <div class="sb-brand-icon">🔄</div>
+      <span class="sb-brand-name">Recorre Hub</span>
     </div>
-    <nav class="sidebar-nav">
-      <div class="nav-item active" data-page="dashboard" onclick="navegarPara('dashboard')">
-        <span class="nav-icon">📊</span> Dashboard
-      </div>
-      <div class="nav-item" data-page="clientes" onclick="navegarPara('clientes')">
-        <span class="nav-icon">👥</span> Clientes
-      </div>
-      <div class="nav-item" data-page="assinaturas" onclick="navegarPara('assinaturas')">
-        <span class="nav-icon">🔁</span> Assinaturas
-      </div>
-      <div class="nav-item" data-page="cobrancas" onclick="navegarPara('cobrancas')">
-        <span class="nav-icon">💳</span> Cobranças
-      </div>
-      <div class="nav-item" data-page="config" onclick="navegarPara('config')">
-        <span class="nav-icon">⚙️</span> Configurações
-      </div>
+    <nav class="sb-nav">
+      <div class="nav-section">Principal</div>
+      <div class="nav-item active" data-page="dashboard" onclick="ir('dashboard')"><span class="nav-icon">📊</span> Dashboard</div>
+      <div class="nav-section">CRM</div>
+      <div class="nav-item" data-page="clientes" onclick="ir('clientes')"><span class="nav-icon">👥</span> Clientes</div>
+      <div class="nav-item" data-page="assinaturas" onclick="ir('assinaturas')"><span class="nav-icon">🔁</span> Assinaturas</div>
+      <div class="nav-item" data-page="cobrancas" onclick="ir('cobrancas')"><span class="nav-icon">💳</span> Cobranças</div>
+      <div class="nav-section">Sistema</div>
+      <div class="nav-item" data-page="config" onclick="ir('config')"><span class="nav-icon">⚙️</span> Configurações</div>
     </nav>
-    <div class="sidebar-footer">
-      <div class="sidebar-user">
-        <div class="user-avatar" id="user-avatar">?</div>
-        <div class="user-email" id="user-email-label">—</div>
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar" id="sb-avatar">?</div>
+        <div class="sb-email" id="sb-email">—</div>
       </div>
-      <button class="btn-logout" onclick="fazerLogout()">Sair da conta</button>
+      <button class="btn-sair" onclick="fazerLogout()">Sair da conta</button>
     </div>
   </div>
 
-  <div id="sidebar-overlay" onclick="fecharSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;"></div>
+  <div id="sidebar-overlay" onclick="fecharSidebar()"></div>
 
   <div class="main">
     <div class="topbar">
@@ -311,743 +296,954 @@ tbody tr:hover { background: var(--surface2); }
       <span class="topbar-title" id="topbar-title">Dashboard</span>
     </div>
     <div class="content">
-      <div class="alert-banner" id="alert-no-key">
-        ⚠️ Configure sua chave Asaas em <a onclick="navegarPara('config')">Configurações</a> para começar.
-      </div>
+      <div class="alert" id="alert-key">⚠️ Configure sua chave Asaas em <a onclick="ir('config')">Configurações</a> para começar.</div>
 
+      <!-- DASHBOARD -->
       <div class="page active" id="page-dashboard">
         <div class="stats-grid">
-          <div class="stat-card accent">
-            <div class="stat-label">Clientes</div>
-            <div class="stat-value" id="stat-clientes">—</div>
-            <div class="stat-sub">Total cadastrados</div>
+          <div class="stat-card c-accent">
+            <div class="stat-label">MRR</div>
+            <div class="stat-val" id="s-mrr">—</div>
+            <div class="stat-sub">Receita recorrente mensal</div>
           </div>
-          <div class="stat-card success">
+          <div class="stat-card c-success">
             <div class="stat-label">Assinaturas ativas</div>
-            <div class="stat-value" id="stat-ativas">—</div>
-            <div class="stat-sub">Status ACTIVE</div>
+            <div class="stat-val" id="s-ativas">—</div>
+            <div class="stat-sub">Clientes pagantes</div>
           </div>
-          <div class="stat-card warning">
-            <div class="stat-label">Cobranças pendentes</div>
-            <div class="stat-value" id="stat-pendentes">—</div>
-            <div class="stat-sub">Aguardando pagamento</div>
+          <div class="stat-card c-warn">
+            <div class="stat-label">A receber</div>
+            <div class="stat-val" id="s-pendentes">—</div>
+            <div class="stat-sub">Cobranças pendentes</div>
           </div>
-          <div class="stat-card danger">
-            <div class="stat-label">Vencidas</div>
-            <div class="stat-value" id="stat-vencidas">—</div>
-            <div class="stat-sub">Cobranças em atraso</div>
+          <div class="stat-card c-danger">
+            <div class="stat-label">Inadimplência</div>
+            <div class="stat-val" id="s-vencidas">—</div>
+            <div class="stat-sub">Cobranças vencidas</div>
           </div>
         </div>
         <div class="table-card">
-          <div class="table-card-header">
+          <div class="tc-header">
             <h3>Cobranças recentes</h3>
-            <button class="btn-sm btn-outline" onclick="navegarPara('cobrancas')">Ver todas →</button>
+            <button class="btn-sm btn-outline" onclick="ir('cobrancas')">Ver todas →</button>
           </div>
-          <div class="table-wrap">
+          <div class="tw">
             <table>
-              <thead><tr>
-                <th>Cliente</th>
-                <th class="col-hide">Vencimento</th>
-                <th>Valor</th>
-                <th>Status</th>
-              </tr></thead>
-              <tbody id="dash-cobrancas-tbody">
-                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
-              </tbody>
+              <thead><tr><th>Cliente</th><th class="col-hide">Vencimento</th><th>Valor</th><th>Status</th></tr></thead>
+              <tbody id="dash-tbody"><tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr></tbody>
             </table>
           </div>
-          <div class="card-list" id="dash-cobrancas-cards"></div>
+          <div class="card-list" id="dash-cards"></div>
         </div>
       </div>
 
+      <!-- CLIENTES -->
       <div class="page" id="page-clientes">
         <div class="page-header">
           <h2>Clientes</h2>
-          <button class="btn-sm btn-outline" onclick="carregarClientes()">↻ Atualizar</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <input class="search-box" id="busca-clientes" placeholder="Buscar nome ou e-mail…" oninput="filtrarClientes()">
+            <button class="btn-sm btn-accent" onclick="abrirModalCliente()">+ Novo cliente</button>
+            <button class="btn-sm btn-outline" onclick="carregarClientes()">↻</button>
+          </div>
         </div>
         <div class="table-card">
-          <div class="table-wrap">
+          <div class="tw">
             <table>
-              <thead><tr>
-                <th>Nome</th>
-                <th class="col-hide">E-mail</th>
-                <th class="col-hide">CPF/CNPJ</th>
-                <th>Status</th>
-              </tr></thead>
-              <tbody id="clientes-tbody">
-                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
-              </tbody>
+              <thead><tr><th>Nome</th><th class="col-hide">E-mail</th><th class="col-hide">CPF/CNPJ</th><th>Status</th></tr></thead>
+              <tbody id="cli-tbody"><tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr></tbody>
             </table>
           </div>
-          <div class="card-list" id="clientes-cards"></div>
+          <div class="card-list" id="cli-cards"></div>
+          <div class="pagination" id="cli-pag" style="display:none">
+            <span id="cli-pag-info"></span>
+            <div class="pagination-btns">
+              <button class="pg-btn" id="cli-prev" onclick="pagClientes(-1)">← Anterior</button>
+              <button class="pg-btn" id="cli-next" onclick="pagClientes(1)">Próxima →</button>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- ASSINATURAS -->
       <div class="page" id="page-assinaturas">
         <div class="page-header">
           <h2>Assinaturas</h2>
-          <button class="btn-sm btn-outline" onclick="carregarAssinaturas()">↻ Atualizar</button>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select class="filter-sel" id="filtro-ass" onchange="carregarAssinaturas()">
+              <option value="">Todos os status</option>
+              <option value="ACTIVE">Ativas</option>
+              <option value="INACTIVE">Inativas</option>
+            </select>
+            <button class="btn-sm btn-accent" onclick="abrirModalAssinatura()">+ Nova assinatura</button>
+            <button class="btn-sm btn-outline" onclick="carregarAssinaturas()">↻</button>
+          </div>
         </div>
         <div class="table-card">
-          <div class="table-wrap">
+          <div class="tw">
             <table>
-              <thead><tr>
-                <th>Cliente</th>
-                <th class="col-hide">Ciclo</th>
-                <th>Valor</th>
-                <th>Status</th>
-              </tr></thead>
-              <tbody id="assinaturas-tbody">
-                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
-              </tbody>
+              <thead><tr><th>Cliente</th><th class="col-hide">Ciclo</th><th>Valor</th><th>Próx. cobrança</th><th>Status</th></tr></thead>
+              <tbody id="ass-tbody"><tr class="loading-row"><td colspan="5"><div class="spinner"></div></td></tr></tbody>
             </table>
           </div>
-          <div class="card-list" id="assinaturas-cards"></div>
+          <div class="card-list" id="ass-cards"></div>
         </div>
       </div>
 
+      <!-- COBRANÇAS -->
       <div class="page" id="page-cobrancas">
         <div class="page-header">
           <h2>Cobranças</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <select id="filtro-status" onchange="filtrarCobrancas()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;">
-              <option value="">Todos os status</option>
+            <select class="filter-sel" id="filtro-cob" onchange="carregarCobrancas(1)">
+              <option value="">Todos</option>
               <option value="PENDING">Pendentes</option>
               <option value="RECEIVED">Recebidas</option>
               <option value="OVERDUE">Vencidas</option>
               <option value="REFUNDED">Estornadas</option>
             </select>
-            <button class="btn-sm btn-outline" onclick="carregarCobrancas()">↻ Atualizar</button>
+            <button class="btn-sm btn-accent" onclick="abrirModalCobranca()">+ Nova cobrança</button>
+            <button class="btn-sm btn-outline" onclick="carregarCobrancas(1)">↻</button>
           </div>
         </div>
         <div class="table-card">
-          <div class="table-wrap">
+          <div class="tw">
             <table>
-              <thead><tr>
-                <th>Cliente</th>
-                <th class="col-hide">Vencimento</th>
-                <th>Valor</th>
-                <th>Status</th>
-                <th class="col-hide">Tipo</th>
-              </tr></thead>
-              <tbody id="cobrancas-tbody">
-                <tr class="loading-row"><td colspan="5"><div class="spinner"></div></td></tr>
-              </tbody>
+              <thead><tr><th>Cliente</th><th class="col-hide">Vencimento</th><th>Valor</th><th>Status</th><th class="col-hide">Tipo</th></tr></thead>
+              <tbody id="cob-tbody"><tr class="loading-row"><td colspan="5"><div class="spinner"></div></td></tr></tbody>
             </table>
           </div>
-          <div class="card-list" id="cobrancas-cards"></div>
+          <div class="card-list" id="cob-cards"></div>
+          <div class="pagination" id="cob-pag" style="display:none">
+            <span id="cob-pag-info"></span>
+            <div class="pagination-btns">
+              <button class="pg-btn" id="cob-prev" onclick="pagCobrancas(-1)">← Anterior</button>
+              <button class="pg-btn" id="cob-next" onclick="pagCobrancas(1)">Próxima →</button>
+            </div>
+          </div>
         </div>
       </div>
 
+      <!-- CONFIG -->
       <div class="page" id="page-config">
         <div class="page-header"><h2>Configurações</h2></div>
-        <div class="config-section">
-          <h3>🔑 Chave de API Asaas</h3>
-          <div class="form-group">
-            <label>Chave de API</label>
-            <input type="password" id="cfg-apikey" placeholder="$aact_...">
-          </div>
-          <div class="form-group">
+        <div class="cfg-section">
+          <h3>🔑 API Asaas</h3>
+          <div class="fg"><label>Chave de API</label><input type="password" id="cfg-key" placeholder="$aact_..."></div>
+          <div class="fg">
             <label>Ambiente</label>
             <div class="radio-group">
-              <label class="radio-opt selected" id="radio-sandbox">
-                <input type="radio" name="cfg-env" value="sandbox" checked onchange="selecionarEnv('sandbox')">
-                Sandbox (testes)
-              </label>
-              <label class="radio-opt" id="radio-production">
-                <input type="radio" name="cfg-env" value="production" onchange="selecionarEnv('production')">
-                Produção
-              </label>
+              <label class="radio-opt selected" id="r-sandbox"><input type="radio" name="env" value="sandbox" checked onchange="selEnv('sandbox')"> Sandbox</label>
+              <label class="radio-opt" id="r-prod"><input type="radio" name="env" value="production" onchange="selEnv('production')"> Produção</label>
             </div>
           </div>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px">
-            <button class="btn-sm btn-accent" onclick="salvarConfig()">Salvar configurações</button>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px">
+            <button class="btn-sm btn-accent" onclick="salvarConfig()">Salvar</button>
             <button class="btn-sm btn-outline" onclick="testarConexao()">Testar conexão</button>
-            <span id="conn-status-label"></span>
+            <span id="conn-tag"></span>
           </div>
         </div>
-        <div class="config-section">
+        <div class="cfg-section">
           <h3>🔒 Alterar senha</h3>
-          <div class="form-group">
-            <label>Nova senha</label>
-            <input type="password" id="cfg-nova-senha" placeholder="mín. 6 caracteres">
-          </div>
+          <div class="fg"><label>Nova senha</label><input type="password" id="cfg-senha" placeholder="mín. 6 caracteres"></div>
           <button class="btn-sm btn-accent" onclick="alterarSenha()">Atualizar senha</button>
         </div>
       </div>
-
     </div>
   </div>
 </div>
 
-<div class="panel-overlay" id="panel-overlay" onclick="fecharPainel(event)">
-  <div class="detail-panel" id="detail-panel">
-    <button class="panel-close" onclick="fecharPainel()">✕</button>
-    <div class="panel-title" id="panel-title">Detalhes</div>
-    <div id="panel-body"></div>
+<!-- MODAL CLIENTE -->
+<div class="overlay" id="modal-cliente" onclick="fecharModalSe(event,'modal-cliente')">
+  <div class="drawer" onclick.stop>
+    <button class="drawer-close" onclick="fecharModal('modal-cliente')">✕</button>
+    <div class="drawer-title" id="cli-modal-title">Novo cliente</div>
+    <input type="hidden" id="cli-edit-id">
+    <div class="form-row">
+      <div class="fg"><label>Nome completo *</label><input type="text" id="cli-nome" placeholder="João Silva"></div>
+      <div class="fg"><label>CPF / CNPJ</label><input type="text" id="cli-cpf" placeholder="000.000.000-00"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>E-mail</label><input type="email" id="cli-email" placeholder="joao@email.com"></div>
+      <div class="fg"><label>Telefone</label><input type="text" id="cli-fone" placeholder="(11) 99999-9999"></div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn-sm btn-outline" onclick="fecharModal('modal-cliente')">Cancelar</button>
+      <button class="btn-sm btn-accent" id="btn-salvar-cliente" onclick="salvarCliente()">Salvar cliente</button>
+    </div>
   </div>
 </div>
 
-<div class="toast-container" id="toast-container"></div>
+<!-- MODAL ASSINATURA -->
+<div class="overlay" id="modal-assinatura" onclick="fecharModalSe(event,'modal-assinatura')">
+  <div class="drawer" onclick.stop>
+    <button class="drawer-close" onclick="fecharModal('modal-assinatura')">✕</button>
+    <div class="drawer-title">Nova assinatura</div>
+    <div class="fg">
+      <label>Cliente *</label>
+      <select id="ass-cliente"><option value="">Selecione um cliente…</option></select>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Valor (R$) *</label><input type="number" id="ass-valor" placeholder="99.90" step="0.01" min="0"></div>
+      <div class="fg">
+        <label>Ciclo *</label>
+        <select id="ass-ciclo">
+          <option value="MONTHLY">Mensal</option>
+          <option value="YEARLY">Anual</option>
+          <option value="WEEKLY">Semanal</option>
+          <option value="BIWEEKLY">Quinzenal</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="fg">
+        <label>Forma de pagamento *</label>
+        <select id="ass-tipo">
+          <option value="BOLETO">Boleto</option>
+          <option value="PIX">Pix</option>
+          <option value="CREDIT_CARD">Cartão de crédito</option>
+        </select>
+      </div>
+      <div class="fg"><label>Primeira cobrança *</label><input type="date" id="ass-data"></div>
+    </div>
+    <div class="fg"><label>Descrição</label><input type="text" id="ass-desc" placeholder="Plano Mensal Pro"></div>
+    <div class="drawer-footer">
+      <button class="btn-sm btn-outline" onclick="fecharModal('modal-assinatura')">Cancelar</button>
+      <button class="btn-sm btn-accent" id="btn-salvar-ass" onclick="salvarAssinatura()">Criar assinatura</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL COBRANÇA -->
+<div class="overlay" id="modal-cobranca" onclick="fecharModalSe(event,'modal-cobranca')">
+  <div class="drawer" onclick.stop>
+    <button class="drawer-close" onclick="fecharModal('modal-cobranca')">✕</button>
+    <div class="drawer-title">Nova cobrança</div>
+    <div class="fg">
+      <label>Cliente *</label>
+      <select id="cob-cliente"><option value="">Selecione um cliente…</option></select>
+    </div>
+    <div class="form-row">
+      <div class="fg"><label>Valor (R$) *</label><input type="number" id="cob-valor" placeholder="99.90" step="0.01" min="0"></div>
+      <div class="fg"><label>Vencimento *</label><input type="date" id="cob-venc"></div>
+    </div>
+    <div class="form-row">
+      <div class="fg">
+        <label>Forma de pagamento *</label>
+        <select id="cob-tipo">
+          <option value="BOLETO">Boleto</option>
+          <option value="PIX">Pix</option>
+          <option value="CREDIT_CARD">Cartão de crédito</option>
+        </select>
+      </div>
+      <div class="fg"><label>Descrição</label><input type="text" id="cob-desc" placeholder="Cobrança avulsa"></div>
+    </div>
+    <div class="drawer-footer">
+      <button class="btn-sm btn-outline" onclick="fecharModal('modal-cobranca')">Cancelar</button>
+      <button class="btn-sm btn-accent" id="btn-salvar-cob" onclick="salvarCobranca()">Gerar cobrança</button>
+    </div>
+  </div>
+</div>
+
+<!-- DETAIL PANEL -->
+<div class="panel-overlay" id="panel-ov" onclick="fecharPainel(event)">
+  <div class="detail-panel">
+    <button class="panel-close" onclick="fecharPainel()">✕</button>
+    <div class="panel-title" id="panel-title">Detalhes</div>
+    <div id="panel-body"></div>
+    <div class="panel-actions" id="panel-actions"></div>
+  </div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
 
 <script>
 const AUTH_URL    = '/.netlify/functions/auth';
 const STORAGE_URL = '/.netlify/functions/storage';
 const ASAAS_URL   = '/.netlify/functions/asaas';
+const PAGE_SIZE   = 20;
 
 let sessao = null;
-let dadosCache = { clientes: [], assinaturas: [], cobrancas: [] };
+let cache  = { clientes: [], assinaturas: [], cobrancas: [] };
+let estado = {
+  cliPage: 1, cliTotal: 0, cliAll: [],
+  cobPage: 1, cobTotal: 0, cobHasMore: false
+};
 let resetToken = null;
-let paginaAtual = 'dashboard';
 
-function fmt(val) {
-  if (val == null) return '—';
-  return 'R$ ' + Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-}
+// ── UTILS ───────────────────────────────────────────────────────────────────
 
-function fmtData(d) {
-  if (!d) return '—';
-  const [y, m, day] = d.split('T')[0].split('-');
-  return `${day}/${m}/${y}`;
-}
+const fmtR = v => v == null ? '—' : 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2});
+const fmtD = d => { if (!d) return '—'; const [y,m,day] = d.split('T')[0].split('-'); return `${day}/${m}/${y}`; };
+const hoje = () => new Date().toISOString().split('T')[0];
 
-function nomeCliente(customerId) {
-  if (!customerId) return '—';
-  const id = typeof customerId === 'object' ? customerId.id : customerId;
-  const c = dadosCache.clientes.find(x => x.id === id);
-  return c?.name || id?.slice(0, 12) + '…' || '—';
-}
-
-function badgeStatus(status) {
-  const mapa = {
-    ACTIVE: ['badge-success', 'Ativa'],
-    INACTIVE: ['badge-muted', 'Inativa'],
-    RECEIVED: ['badge-success', 'Recebida'],
-    CONFIRMED: ['badge-success', 'Confirmada'],
-    PENDING: ['badge-warning', 'Pendente'],
-    OVERDUE: ['badge-danger', 'Vencida'],
-    REFUNDED: ['badge-muted', 'Estornada'],
-    CANCELED: ['badge-muted', 'Cancelada'],
-    MONTHLY: ['badge-accent', 'Mensal'],
-    YEARLY: ['badge-accent', 'Anual'],
-    WEEKLY: ['badge-accent', 'Semanal'],
+function badge(status) {
+  const m = {
+    ACTIVE:['bg-success','Ativa'], INACTIVE:['bg-muted','Inativa'],
+    RECEIVED:['bg-success','Recebida'], CONFIRMED:['bg-success','Confirmada'],
+    PENDING:['bg-warn','Pendente'], OVERDUE:['bg-danger','Vencida'],
+    REFUNDED:['bg-muted','Estornada'], CANCELED:['bg-muted','Cancelada'],
+    MONTHLY:['bg-accent','Mensal'], YEARLY:['bg-accent','Anual'],
+    WEEKLY:['bg-accent','Semanal'], BIWEEKLY:['bg-accent','Quinzenal'],
   };
-  const [cls, label] = mapa[status] || ['badge-muted', status || '—'];
-  return `<span class="badge ${cls}">${label}</span>`;
+  const [c,l] = m[status] || ['bg-muted', status||'—'];
+  return `<span class="badge ${c}">${l}</span>`;
 }
 
-function toast(msg, tipo = 'info') {
+function nomeCli(id) {
+  if (!id) return '—';
+  const rid = typeof id === 'object' ? id.id : id;
+  const c = cache.clientes.find(x => x.id === rid);
+  return c?.name || rid.slice(0,10)+'…';
+}
+
+function toast(msg, tipo='') {
   const el = document.createElement('div');
-  el.className = 'toast' + (tipo === 'success' ? ' success' : tipo === 'error' ? ' error' : '');
+  el.className = 'toast' + (tipo==='ok'?' ok':tipo==='err'?' err':'');
   el.textContent = msg;
-  document.getElementById('toast-container').appendChild(el);
-  setTimeout(() => el.remove(), 3500);
+  document.getElementById('toasts').appendChild(el);
+  setTimeout(() => el.remove(), 3800);
 }
 
-function salvarSessao(s) {
-  sessao = s;
-  if (s) localStorage.setItem('rh_sessao', JSON.stringify(s));
-  else localStorage.removeItem('rh_sessao');
+function setTr(id, cols, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.innerHTML = msg === null
+    ? `<tr class="loading-row"><td colspan="${cols}"><div class="spinner"></div></td></tr>`
+    : `<tr><td colspan="${cols}" class="no-data">${msg}</td></tr>`;
 }
 
-function carregarSessaoLocal() {
-  try { return JSON.parse(localStorage.getItem('rh_sessao') || 'null'); } catch { return null; }
-}
+// ── AUTH API ─────────────────────────────────────────────────────────────────
 
 async function authAPI(action, body) {
-  const res = await fetch(`${AUTH_URL}?action=${action}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
+  const r = await fetch(`${AUTH_URL}?action=${action}`, {
+    method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(body)
   });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) throw new Error(data.error || 'Erro ao processar.');
-  return data;
+  const d = await r.json().catch(()=>({}));
+  if (!r.ok) throw new Error(d.error || 'Erro.');
+  return d;
 }
 
 async function storageGet(tipo) {
   if (!sessao?.token) return null;
   try {
-    const res = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`);
-    if (res.status === 401) { fazerLogout(); return null; }
-    if (res.ok) return await res.json();
-  } catch(e) { console.warn('[storage] GET:', e.message); }
+    const r = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`);
+    if (r.status===401){fazerLogout();return null;}
+    if (r.ok) return await r.json();
+  } catch{}
   return null;
 }
 
 async function storageSet(tipo, dados) {
   if (!sessao?.token) return;
   try {
-    const res = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dados)
+    const r = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`,{
+      method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify(dados)
     });
-    if (res.status === 401) fazerLogout();
-  } catch(e) { console.warn('[storage] SET:', e.message); }
+    if (r.status===401) fazerLogout();
+  } catch{}
 }
 
-async function asaasAPI(method, path, body, qs) {
-  if (!sessao?.asaasApiKey) throw new Error('Configure sua chave Asaas em Configurações.');
+// ── ASAAS API ────────────────────────────────────────────────────────────────
+
+async function asaas(method, path, body, qs) {
+  if (!sessao?.asaasApiKey) throw new Error('Configure a chave Asaas em Configurações.');
   let url = ASAAS_URL + path;
   if (qs) {
     const p = new URLSearchParams();
-    for (const [k, v] of Object.entries(qs)) { if (v != null) p.set(k, String(v)); }
-    const str = p.toString();
-    if (str) url += '?' + str;
+    for (const [k,v] of Object.entries(qs)) if (v != null) p.set(k, String(v));
+    const s = p.toString();
+    if (s) url += '?' + s;
   }
-  const res = await fetch(url, {
+  const r = await fetch(url, {
     method,
-    headers: {
-      'Content-Type': 'application/json',
-      'access_token': sessao.asaasApiKey,
-      'asaas_env': sessao.env || 'sandbox'
-    },
+    headers:{'Content-Type':'application/json','access_token':sessao.asaasApiKey,'asaas_env':sessao.env||'sandbox'},
     body: body ? JSON.stringify(body) : undefined
   });
-  const text = await res.text();
-  let data;
-  try { data = JSON.parse(text); } catch { throw new Error('Resposta inválida: ' + text.slice(0, 80)); }
-  if (!res.ok) {
-    const err = data?.errors?.[0]?.description || data?.error || 'Erro Asaas ' + res.status;
-    throw new Error(err);
-  }
-  return data;
+  const txt = await r.text();
+  let d; try { d = JSON.parse(txt); } catch { throw new Error('Resposta inválida.'); }
+  if (!r.ok) throw new Error(d?.errors?.[0]?.description || d?.error || 'Erro Asaas '+r.status);
+  return d;
 }
 
-function trocarTab(tab) {
-  ['login','cadastro','forgot','reset'].forEach(t => {
-    document.getElementById('form-' + t).style.display = t === tab ? '' : 'none';
+// ── AUTH FORMS ───────────────────────────────────────────────────────────────
+
+function trocarTab(t) {
+  ['login','cad','forgot','reset'].forEach(x => {
+    document.getElementById('form-'+x).style.display = x===t ? '' : 'none';
   });
-  ['tab-login','tab-cadastro'].forEach(id => {
+  ['tab-login','tab-cad'].forEach(id => {
     document.getElementById(id)?.classList.toggle('active',
-      (id === 'tab-login' && tab === 'login') ||
-      (id === 'tab-cadastro' && tab === 'cadastro'));
+      (id==='tab-login'&&t==='login')||(id==='tab-cad'&&t==='cad'));
   });
 }
 
-function mostrarErro(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg;
-  el.style.display = msg ? '' : 'none';
-}
-
-function mostrarOk(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  el.textContent = msg;
-  el.style.display = msg ? '' : 'none';
-}
+function msgErr(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display=m?'':'none';}
+function msgOk(id,m){const e=document.getElementById(id);e.textContent=m;e.style.display=m?'':'none';}
 
 async function fazerLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  const senha = document.getElementById('login-senha').value;
-  mostrarErro('login-err', '');
-  if (!email || !senha) { mostrarErro('login-err', 'Preencha e-mail e senha.'); return; }
-  const btn = document.getElementById('btn-login');
-  btn.disabled = true; btn.textContent = 'Entrando…';
+  const email=document.getElementById('l-email').value.trim();
+  const senha=document.getElementById('l-senha').value;
+  msgErr('login-err','');
+  if(!email||!senha){msgErr('login-err','Preencha e-mail e senha.');return;}
+  const btn=document.getElementById('btn-login');
+  btn.disabled=true;btn.textContent='Entrando…';
   try {
-    const data = await authAPI('login', { email, password: senha });
-    const s = { email: data.email, token: data.token, asaasApiKey: '', env: 'sandbox' };
-    if (data.config) {
-      s.asaasApiKey = data.config.apiKey || '';
-      s.env = data.config.env || 'sandbox';
-    }
+    const d = await authAPI('login',{email,password:senha});
+    const s = {email:d.email,token:d.token,asaasApiKey:'',env:'sandbox'};
+    if(d.config){s.asaasApiKey=d.config.apiKey||'';s.env=d.config.env||'sandbox';}
     salvarSessao(s);
     iniciarApp();
-  } catch(e) {
-    mostrarErro('login-err', e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = 'Entrar';
-  }
+  } catch(e){msgErr('login-err',e.message);}
+  finally{btn.disabled=false;btn.textContent='Entrar';}
 }
 
 async function fazerCadastro() {
-  const email = document.getElementById('cad-email').value.trim();
-  const senha = document.getElementById('cad-senha').value;
-  const invite = document.getElementById('cad-invite').value.trim();
-  mostrarErro('cad-err', ''); mostrarOk('cad-ok', '');
-  if (!email || !senha) { mostrarErro('cad-err', 'Preencha todos os campos.'); return; }
-  const btn = document.getElementById('btn-cad');
-  btn.disabled = true; btn.textContent = 'Criando…';
+  const email=document.getElementById('c-email').value.trim();
+  const senha=document.getElementById('c-senha').value;
+  const inv=document.getElementById('c-invite').value.trim();
+  msgErr('cad-err','');msgOk('cad-ok','');
+  if(!email||!senha){msgErr('cad-err','Preencha todos os campos.');return;}
+  const btn=document.getElementById('btn-cad');
+  btn.disabled=true;btn.textContent='Criando…';
   try {
-    await authAPI('register', { email, password: senha, inviteCode: invite });
-    mostrarOk('cad-ok', 'Conta criada! Faça login para continuar.');
+    await authAPI('register',{email,password:senha,inviteCode:inv});
+    msgOk('cad-ok','Conta criada! Faça login.');
     trocarTab('login');
-    document.getElementById('login-email').value = email;
-  } catch(e) {
-    mostrarErro('cad-err', e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = 'Criar conta';
-  }
+    document.getElementById('l-email').value=email;
+  } catch(e){msgErr('cad-err',e.message);}
+  finally{btn.disabled=false;btn.textContent='Criar conta';}
 }
 
 async function enviarReset() {
-  const email = document.getElementById('forgot-email').value.trim();
-  mostrarErro('forgot-err', '');
-  if (!email) { mostrarErro('forgot-err', 'Informe seu e-mail.'); return; }
-  const btn = document.getElementById('btn-forgot');
-  btn.disabled = true; btn.textContent = 'Enviando…';
-  try {
-    await authAPI('forgot', { email });
-    mostrarOk('forgot-ok', 'Se o e-mail estiver cadastrado, você receberá o link em breve.');
-  } catch(e) {
-    mostrarErro('forgot-err', e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = 'Enviar link de recuperação';
-  }
+  const email=document.getElementById('f-email').value.trim();
+  msgErr('forgot-err','');
+  if(!email){msgErr('forgot-err','Informe o e-mail.');return;}
+  const btn=document.getElementById('btn-forgot');
+  btn.disabled=true;btn.textContent='Enviando…';
+  try{
+    await authAPI('forgot',{email});
+    msgOk('forgot-ok','Se cadastrado, receberá o link em breve.');
+  }catch(e){msgErr('forgot-err',e.message);}
+  finally{btn.disabled=false;btn.textContent='Enviar link de recuperação';}
 }
 
 async function resetarSenha() {
-  const senha = document.getElementById('reset-senha').value;
-  mostrarErro('reset-err', '');
-  if (!senha || senha.length < 6) { mostrarErro('reset-err', 'A senha deve ter pelo menos 6 caracteres.'); return; }
-  const btn = document.getElementById('btn-reset');
-  btn.disabled = true; btn.textContent = 'Redefinindo…';
-  try {
-    await authAPI('reset', { token: resetToken, password: senha });
-    mostrarOk('reset-ok', 'Senha redefinida! Faça login.');
-    setTimeout(() => trocarTab('login'), 1500);
-  } catch(e) {
-    mostrarErro('reset-err', e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = 'Redefinir senha';
-  }
+  const senha=document.getElementById('r-senha').value;
+  msgErr('reset-err','');
+  if(!senha||senha.length<6){msgErr('reset-err','Mínimo 6 caracteres.');return;}
+  const btn=document.getElementById('btn-reset');
+  btn.disabled=true;btn.textContent='Redefinindo…';
+  try{
+    await authAPI('reset',{token:resetToken,password:senha});
+    msgOk('reset-ok','Senha redefinida! Faça login.');
+    setTimeout(()=>trocarTab('login'),1500);
+  }catch(e){msgErr('reset-err',e.message);}
+  finally{btn.disabled=false;btn.textContent='Redefinir senha';}
 }
 
-function navegarPara(pagina) {
-  paginaAtual = pagina;
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  const el = document.getElementById('page-' + pagina);
-  if (el) el.classList.add('active');
-  document.querySelectorAll('.nav-item').forEach(n => {
-    n.classList.toggle('active', n.dataset.page === pagina);
-  });
-  const titulos = { dashboard: 'Dashboard', clientes: 'Clientes', assinaturas: 'Assinaturas', cobrancas: 'Cobranças', config: 'Configurações' };
-  document.getElementById('topbar-title').textContent = titulos[pagina] || pagina;
+// ── SESSION ──────────────────────────────────────────────────────────────────
+
+function salvarSessao(s){
+  sessao=s;
+  if(s) localStorage.setItem('rh_s',JSON.stringify(s));
+  else localStorage.removeItem('rh_s');
+}
+
+function carregarSessaoLocal(){
+  try{return JSON.parse(localStorage.getItem('rh_s')||'null');}catch{return null;}
+}
+
+// ── NAVIGATION ───────────────────────────────────────────────────────────────
+
+function ir(pagina) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+pagina)?.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active',n.dataset.page===pagina));
+  const t={dashboard:'Dashboard',clientes:'Clientes',assinaturas:'Assinaturas',cobrancas:'Cobranças',config:'Configurações'};
+  document.getElementById('topbar-title').textContent=t[pagina]||pagina;
   fecharSidebar();
-  if (pagina === 'dashboard') renderDashboard();
-  if (pagina === 'clientes') carregarClientes();
-  if (pagina === 'assinaturas') carregarAssinaturas();
-  if (pagina === 'cobrancas') carregarCobrancas();
-  if (pagina === 'config') preencherConfig();
+  if(pagina==='dashboard') carregarDashboard();
+  if(pagina==='clientes') carregarClientes();
+  if(pagina==='assinaturas') carregarAssinaturas();
+  if(pagina==='cobrancas') carregarCobrancas(1);
+  if(pagina==='config') preencherConfig();
 }
 
-function toggleSidebar() {
-  const sb = document.getElementById('sidebar');
-  const ov = document.getElementById('sidebar-overlay');
-  const open = sb.classList.toggle('open');
-  ov.style.display = open ? '' : 'none';
+function toggleSidebar(){
+  const sb=document.getElementById('sidebar');
+  const ov=document.getElementById('sidebar-overlay');
+  const open=sb.classList.toggle('open');
+  ov.style.display=open?'block':'none';
 }
-
-function fecharSidebar() {
+function fecharSidebar(){
   document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('sidebar-overlay').style.display = 'none';
+  document.getElementById('sidebar-overlay').style.display='none';
 }
 
-function abrirPainel(titulo, linhas, btnLabel, btnFn) {
-  document.getElementById('panel-title').textContent = titulo;
-  const body = document.getElementById('panel-body');
-  body.innerHTML = linhas.map(([l, v]) =>
-    `<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value">${v}</span></div>`
-  ).join('');
-  if (btnLabel && btnFn) {
-    const btn = document.createElement('button');
-    btn.className = 'btn-full btn-accent-full';
-    btn.textContent = btnLabel;
-    btn.onclick = btnFn;
-    body.appendChild(btn);
-  }
-  document.getElementById('panel-overlay').classList.add('open');
+// ── APP INIT ─────────────────────────────────────────────────────────────────
+
+function iniciarApp(){
+  document.getElementById('auth-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  document.getElementById('sb-avatar').textContent=sessao.email?.[0]?.toUpperCase()||'?';
+  document.getElementById('sb-email').textContent=sessao.email||'';
+  if(!sessao.asaasApiKey) document.getElementById('alert-key').style.display='';
+  ir('dashboard');
 }
 
-function fecharPainel(e) {
-  if (!e || e.target === document.getElementById('panel-overlay')) {
-    document.getElementById('panel-overlay').classList.remove('open');
-  }
-}
-
-function iniciarApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = 'block';
-  document.getElementById('user-avatar').textContent = sessao.email?.[0]?.toUpperCase() || '?';
-  document.getElementById('user-email-label').textContent = sessao.email || '';
-  if (!sessao.asaasApiKey) document.getElementById('alert-no-key').style.display = '';
-  navegarPara('dashboard');
-}
-
-async function fazerLogout() {
-  if (sessao?.token) authAPI('logout', { token: sessao.token }).catch(() => {});
+async function fazerLogout(){
+  if(sessao?.token) authAPI('logout',{token:sessao.token}).catch(()=>{});
   salvarSessao(null);
-  dadosCache = { clientes: [], assinaturas: [], cobrancas: [] };
-  document.getElementById('login-screen').style.display = '';
-  document.getElementById('app-screen').style.display = 'none';
+  cache={clientes:[],assinaturas:[],cobrancas:[]};
+  document.getElementById('auth-screen').style.display='';
+  document.getElementById('app').style.display='none';
   trocarTab('login');
 }
 
-async function renderDashboard() {
-  if (!sessao?.asaasApiKey) {
-    setTbody('dash-cobrancas-tbody', 4, '<em>Configure a chave Asaas primeiro.</em>');
+// ── DASHBOARD ────────────────────────────────────────────────────────────────
+
+async function carregarDashboard(){
+  if(!sessao?.asaasApiKey){
+    setTr('dash-tbody',4,'Configure a chave Asaas para ver os dados.');
     return;
   }
-  setTbody('dash-cobrancas-tbody', 4, null);
-  try {
-    await Promise.all([carregarClientesCache(), carregarAssinaturasCache(), carregarCobrancasCache()]);
-    atualizarStats();
-    renderTbodyCobrancas('dash-cobrancas-tbody', dadosCache.cobrancas.slice(0, 8));
-    renderCardsCobrancas('dash-cobrancas-cards', dadosCache.cobrancas.slice(0, 8));
-  } catch(e) {
-    setTbody('dash-cobrancas-tbody', 4, 'Erro ao carregar: ' + e.message);
-  }
+  setTr('dash-tbody',4,null);
+  try{
+    await Promise.all([
+      asaas('GET','/customers',null,{limit:100}).then(d=>{cache.clientes=d?.data||[];}),
+      asaas('GET','/subscriptions',null,{limit:100}).then(d=>{cache.assinaturas=d?.data||[];}),
+      asaas('GET','/payments',null,{limit:100}).then(d=>{cache.cobrancas=d?.data||[];})
+    ]);
+    renderStats();
+    renderTrCob('dash-tbody',cache.cobrancas.slice(0,10));
+    renderCardsCob('dash-cards',cache.cobrancas.slice(0,10));
+  }catch(e){setTr('dash-tbody',4,'Erro: '+e.message);}
 }
 
-function atualizarStats() {
-  document.getElementById('stat-clientes').textContent = dadosCache.clientes.length || '0';
-  document.getElementById('stat-ativas').textContent = dadosCache.assinaturas.filter(a => a.status === 'ACTIVE').length;
-  document.getElementById('stat-pendentes').textContent = dadosCache.cobrancas.filter(c => c.status === 'PENDING').length;
-  document.getElementById('stat-vencidas').textContent = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE').length;
+function renderStats(){
+  const ativas=cache.assinaturas.filter(a=>a.status==='ACTIVE');
+  const mrr=ativas.reduce((s,a)=>{
+    const v=Number(a.value)||0;
+    if(a.cycle==='YEARLY') return s+(v/12);
+    if(a.cycle==='WEEKLY') return s+(v*4.33);
+    if(a.cycle==='BIWEEKLY') return s+(v*2.17);
+    return s+v;
+  },0);
+  const pendentes=cache.cobrancas.filter(c=>c.status==='PENDING');
+  const vencidas=cache.cobrancas.filter(c=>c.status==='OVERDUE');
+  document.getElementById('s-mrr').textContent=fmtR(mrr);
+  document.getElementById('s-ativas').textContent=ativas.length;
+  document.getElementById('s-pendentes').textContent=fmtR(pendentes.reduce((s,c)=>s+Number(c.value||0),0));
+  document.getElementById('s-vencidas').textContent=fmtR(vencidas.reduce((s,c)=>s+Number(c.value||0),0));
 }
 
-async function carregarClientesCache() {
-  const data = await asaasAPI('GET', '/customers', null, { limit: 100 });
-  dadosCache.clientes = data?.data || [];
+// ── CLIENTES ─────────────────────────────────────────────────────────────────
+
+async function carregarClientes(){
+  if(!sessao?.asaasApiKey){setTr('cli-tbody',4,'Configure a chave Asaas.');return;}
+  setTr('cli-tbody',4,null);
+  try{
+    const d=await asaas('GET','/customers',null,{limit:100});
+    estado.cliAll=d?.data||[];
+    cache.clientes=estado.cliAll;
+    filtrarClientes();
+  }catch(e){setTr('cli-tbody',4,'Erro: '+e.message);}
 }
 
-async function carregarClientes() {
-  if (!sessao?.asaasApiKey) { setTbody('clientes-tbody', 4, 'Configure a chave Asaas.'); return; }
-  setTbody('clientes-tbody', 4, null);
-  try { await carregarClientesCache(); renderTbodyClientes(); }
-  catch(e) { setTbody('clientes-tbody', 4, 'Erro: ' + e.message); }
+function filtrarClientes(){
+  const q=(document.getElementById('busca-clientes')?.value||'').toLowerCase();
+  const lista=q ? estado.cliAll.filter(c=>(c.name||'').toLowerCase().includes(q)||(c.email||'').toLowerCase().includes(q)) : estado.cliAll;
+  estado.cliTotal=lista.length;
+  estado.cliPage=1;
+  estado._cliFiltered=lista;
+  renderPagClientes();
 }
 
-function renderTbodyClientes() {
-  const tbody = document.getElementById('clientes-tbody');
-  const cards = document.getElementById('clientes-cards');
-  const lista = dadosCache.clientes;
-  if (!lista.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="no-data">Nenhum cliente encontrado.</td></tr>';
-    cards.innerHTML = '<div class="no-data">Nenhum cliente encontrado.</div>';
-    return;
-  }
-  tbody.innerHTML = lista.map(c => `
+function pagClientes(dir){
+  const total=Math.ceil(estado.cliTotal/PAGE_SIZE);
+  estado.cliPage=Math.max(1,Math.min(estado.cliPage+dir,total));
+  renderPagClientes();
+}
+
+function renderPagClientes(){
+  const lista=estado._cliFiltered||estado.cliAll;
+  const start=(estado.cliPage-1)*PAGE_SIZE;
+  const slice=lista.slice(start,start+PAGE_SIZE);
+  const total=Math.ceil(lista.length/PAGE_SIZE)||1;
+  renderTrCli(slice);
+  renderCardsCli(slice);
+  const pag=document.getElementById('cli-pag');
+  pag.style.display=lista.length>PAGE_SIZE?'flex':'none';
+  document.getElementById('cli-pag-info').textContent=`Página ${estado.cliPage} de ${total} (${lista.length} clientes)`;
+  document.getElementById('cli-prev').disabled=estado.cliPage<=1;
+  document.getElementById('cli-next').disabled=estado.cliPage>=total;
+}
+
+function renderTrCli(lista){
+  const tbody=document.getElementById('cli-tbody');
+  if(!lista.length){tbody.innerHTML='<tr><td colspan="4" class="no-data">Nenhum cliente encontrado.</td></tr>';return;}
+  tbody.innerHTML=lista.map(c=>`
     <tr onclick="abrirDetalheCliente('${c.id}')">
       <td title="${c.name||''}">${c.name||'—'}</td>
       <td class="col-hide" title="${c.email||''}">${c.email||'—'}</td>
       <td class="col-hide">${c.cpfCnpj||'—'}</td>
-      <td>${badgeStatus(c.active===false?'INACTIVE':'ACTIVE')}</td>
+      <td>${badge(c.active===false?'INACTIVE':'ACTIVE')}</td>
     </tr>`).join('');
-  cards.innerHTML = lista.map(c => `
-    <div class="list-card" onclick="abrirDetalheCliente('${c.id}')">
-      <div class="list-card-top">
-        <span class="list-card-name">${c.name||'—'}</span>
-        ${badgeStatus(c.active===false?'INACTIVE':'ACTIVE')}
-      </div>
-      <div class="list-card-sub">${c.email||c.cpfCnpj||'—'}</div>
+}
+
+function renderCardsCli(lista){
+  const cards=document.getElementById('cli-cards');
+  if(!lista.length){cards.innerHTML='<div class="no-data">Nenhum cliente.</div>';return;}
+  cards.innerHTML=lista.map(c=>`
+    <div class="m-card" onclick="abrirDetalheCliente('${c.id}')">
+      <div class="m-card-top"><span class="m-card-name">${c.name||'—'}</span>${badge(c.active===false?'INACTIVE':'ACTIVE')}</div>
+      <div class="m-card-sub">${c.email||c.cpfCnpj||'—'}</div>
     </div>`).join('');
 }
 
-function abrirDetalheCliente(id) {
-  const c = dadosCache.clientes.find(x => x.id === id);
-  if (!c) return;
-  abrirPainel(c.name||'Cliente', [
-    ['Nome', c.name||'—'], ['E-mail', c.email||'—'], ['CPF/CNPJ', c.cpfCnpj||'—'],
-    ['Telefone', c.mobilePhone||c.phone||'—'],
-    ['Status', c.active===false?'Inativo':'Ativo'], ['ID Asaas', c.id],
-  ], 'Ver cobranças →', () => { fecharPainel(); navegarPara('cobrancas'); });
+function abrirModalCliente(id){
+  const c=id ? cache.clientes.find(x=>x.id===id) : null;
+  document.getElementById('cli-modal-title').textContent=c?'Editar cliente':'Novo cliente';
+  document.getElementById('cli-edit-id').value=c?.id||'';
+  document.getElementById('cli-nome').value=c?.name||'';
+  document.getElementById('cli-cpf').value=c?.cpfCnpj||'';
+  document.getElementById('cli-email').value=c?.email||'';
+  document.getElementById('cli-fone').value=c?.mobilePhone||c?.phone||'';
+  abrirModal('modal-cliente');
 }
 
-async function carregarAssinaturasCache() {
-  const data = await asaasAPI('GET', '/subscriptions', null, { limit: 100 });
-  dadosCache.assinaturas = data?.data || [];
+async function salvarCliente(){
+  const nome=document.getElementById('cli-nome').value.trim();
+  const cpf=document.getElementById('cli-cpf').value.trim().replace(/\D/g,'');
+  const email=document.getElementById('cli-email').value.trim();
+  const fone=document.getElementById('cli-fone').value.trim().replace(/\D/g,'');
+  const editId=document.getElementById('cli-edit-id').value;
+  if(!nome){toast('Nome é obrigatório.','err');return;}
+  const btn=document.getElementById('btn-salvar-cliente');
+  btn.disabled=true;btn.textContent='Salvando…';
+  try{
+    const body={name:nome,notificationDisabled:true};
+    if(cpf) body.cpfCnpj=cpf;
+    if(email) body.email=email;
+    if(fone) body.mobilePhone=fone;
+    if(editId){
+      await asaas('PUT','/customers/'+editId,body);
+      toast('Cliente atualizado!','ok');
+    }else{
+      await asaas('POST','/customers',body);
+      toast('Cliente criado!','ok');
+    }
+    fecharModal('modal-cliente');
+    carregarClientes();
+  }catch(e){toast('Erro: '+e.message,'err');}
+  finally{btn.disabled=false;btn.textContent='Salvar cliente';}
 }
 
-async function carregarAssinaturas() {
-  if (!sessao?.asaasApiKey) { setTbody('assinaturas-tbody', 4, 'Configure a chave Asaas.'); return; }
-  setTbody('assinaturas-tbody', 4, null);
-  try {
-    if (!dadosCache.clientes.length) await carregarClientesCache();
-    await carregarAssinaturasCache();
-    renderTbodyAssinaturas();
-  } catch(e) { setTbody('assinaturas-tbody', 4, 'Erro: ' + e.message); }
-}
-
-function renderTbodyAssinaturas() {
-  const tbody = document.getElementById('assinaturas-tbody');
-  const cards = document.getElementById('assinaturas-cards');
-  const lista = dadosCache.assinaturas;
-  if (!lista.length) {
-    tbody.innerHTML = '<tr><td colspan="4" class="no-data">Nenhuma assinatura encontrada.</td></tr>';
-    cards.innerHTML = '<div class="no-data">Nenhuma assinatura encontrada.</div>';
-    return;
-  }
-  tbody.innerHTML = lista.map(a => `
-    <tr onclick="abrirDetalheAssinatura('${a.id}')">
-      <td title="${nomeCliente(a.customer)}">${nomeCliente(a.customer)}</td>
-      <td class="col-hide">${badgeStatus(a.cycle||a.billingType||'')}</td>
-      <td>${fmt(a.value)}</td>
-      <td>${badgeStatus(a.status)}</td>
-    </tr>`).join('');
-  cards.innerHTML = lista.map(a => `
-    <div class="list-card" onclick="abrirDetalheAssinatura('${a.id}')">
-      <div class="list-card-top">
-        <span class="list-card-name">${nomeCliente(a.customer)}</span>
-        ${badgeStatus(a.status)}
-      </div>
-      <div class="list-card-sub">${fmt(a.value)} · ${a.cycle||a.billingType||'—'}</div>
-    </div>`).join('');
-}
-
-function abrirDetalheAssinatura(id) {
-  const a = dadosCache.assinaturas.find(x => x.id === id);
-  if (!a) return;
-  abrirPainel('Assinatura', [
-    ['Cliente', nomeCliente(a.customer)], ['Valor', fmt(a.value)],
-    ['Ciclo', a.cycle||a.billingType||'—'], ['Próx. vencimento', fmtData(a.nextDueDate)],
-    ['Status', a.status||'—'], ['Criada em', fmtData(a.dateCreated)],
+function abrirDetalheCliente(id){
+  const c=cache.clientes.find(x=>x.id===id);
+  if(!c) return;
+  abrirPainel(c.name||'Cliente',[
+    ['Nome',c.name||'—'],['E-mail',c.email||'—'],['CPF/CNPJ',c.cpfCnpj||'—'],
+    ['Telefone',c.mobilePhone||c.phone||'—'],
+    ['Status',c.active===false?'Inativo':'Ativo'],['Cadastro',fmtD(c.dateCreated)],
+  ],[
+    {label:'✏️ Editar', cls:'btn-outline', fn:`abrirModalCliente('${id}')`},
+    {label:'🔁 Ver assinaturas', cls:'btn-outline', fn:`irCliAssinatura('${id}')`},
+    {label:'💳 Ver cobranças', cls:'btn-outline', fn:`irCliCobranca('${id}')`},
   ]);
 }
 
-async function carregarCobrancasCache(filtroStatus) {
-  const qs = { limit: 100 };
-  if (filtroStatus) qs.status = filtroStatus;
-  const data = await asaasAPI('GET', '/payments', null, qs);
-  if (!filtroStatus) dadosCache.cobrancas = data?.data || [];
-  return data?.data || [];
+function irCliAssinatura(id){fecharPainel();ir('assinaturas');}
+function irCliCobranca(id){fecharPainel();ir('cobrancas');}
+
+// ── ASSINATURAS ──────────────────────────────────────────────────────────────
+
+async function carregarAssinaturas(){
+  if(!sessao?.asaasApiKey){setTr('ass-tbody',5,'Configure a chave Asaas.');return;}
+  setTr('ass-tbody',5,null);
+  try{
+    if(!cache.clientes.length){
+      const d=await asaas('GET','/customers',null,{limit:100});
+      cache.clientes=d?.data||[];
+    }
+    const filtro=document.getElementById('filtro-ass').value;
+    const qs={limit:100};
+    if(filtro) qs.status=filtro;
+    const d=await asaas('GET','/subscriptions',null,qs);
+    cache.assinaturas=d?.data||[];
+    renderTrAss(cache.assinaturas);
+    renderCardsAss(cache.assinaturas);
+  }catch(e){setTr('ass-tbody',5,'Erro: '+e.message);}
 }
 
-async function carregarCobrancas() {
-  if (!sessao?.asaasApiKey) { setTbody('cobrancas-tbody', 5, 'Configure a chave Asaas.'); return; }
-  setTbody('cobrancas-tbody', 5, null);
-  try {
-    if (!dadosCache.clientes.length) await carregarClientesCache();
-    const filtro = document.getElementById('filtro-status').value;
-    const lista = await carregarCobrancasCache(filtro);
-    renderTbodyCobrancas('cobrancas-tbody', lista);
-    renderCardsCobrancas('cobrancas-cards', lista);
-    if (!filtro) atualizarStats();
-  } catch(e) { setTbody('cobrancas-tbody', 5, 'Erro: ' + e.message); }
+function renderTrAss(lista){
+  const tbody=document.getElementById('ass-tbody');
+  if(!lista.length){tbody.innerHTML='<tr><td colspan="5" class="no-data">Nenhuma assinatura.</td></tr>';return;}
+  tbody.innerHTML=lista.map(a=>`
+    <tr onclick="abrirDetalheAssinatura('${a.id}')">
+      <td title="${nomeCli(a.customer)}">${nomeCli(a.customer)}</td>
+      <td class="col-hide">${badge(a.cycle||'')}</td>
+      <td>${fmtR(a.value)}</td>
+      <td>${fmtD(a.nextDueDate)}</td>
+      <td>${badge(a.status)}</td>
+    </tr>`).join('');
 }
 
-function filtrarCobrancas() { carregarCobrancas(); }
+function renderCardsAss(lista){
+  const cards=document.getElementById('ass-cards');
+  if(!lista.length){cards.innerHTML='<div class="no-data">Nenhuma assinatura.</div>';return;}
+  cards.innerHTML=lista.map(a=>`
+    <div class="m-card" onclick="abrirDetalheAssinatura('${a.id}')">
+      <div class="m-card-top"><span class="m-card-name">${nomeCli(a.customer)}</span>${badge(a.status)}</div>
+      <div class="m-card-sub">${fmtR(a.value)} · próx. ${fmtD(a.nextDueDate)}</div>
+    </div>`).join('');
+}
 
-function renderTbodyCobrancas(tbodyId, lista) {
-  const tbody = document.getElementById(tbodyId);
-  if (!tbody) return;
-  if (!lista.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="no-data">Nenhuma cobrança encontrada.</td></tr>`;
-    return;
-  }
-  tbody.innerHTML = lista.map(c => `
+function abrirModalAssinatura(preClienteId){
+  const sel=document.getElementById('ass-cliente');
+  sel.innerHTML='<option value="">Selecione um cliente…</option>'+
+    cache.clientes.map(c=>`<option value="${c.id}"${c.id===preClienteId?' selected':''}>${c.name}</option>`).join('');
+  document.getElementById('ass-data').value=hoje();
+  abrirModal('modal-assinatura');
+}
+
+async function salvarAssinatura(){
+  const cliente=document.getElementById('ass-cliente').value;
+  const valor=document.getElementById('ass-valor').value;
+  const ciclo=document.getElementById('ass-ciclo').value;
+  const tipo=document.getElementById('ass-tipo').value;
+  const data=document.getElementById('ass-data').value;
+  const desc=document.getElementById('ass-desc').value.trim();
+  if(!cliente||!valor||!data){toast('Preencha os campos obrigatórios.','err');return;}
+  const btn=document.getElementById('btn-salvar-ass');
+  btn.disabled=true;btn.textContent='Criando…';
+  try{
+    const body={customer:cliente,billingType:tipo,value:Number(valor),nextDueDate:data,cycle:ciclo};
+    if(desc) body.description=desc;
+    await asaas('POST','/subscriptions',body);
+    toast('Assinatura criada!','ok');
+    fecharModal('modal-assinatura');
+    carregarAssinaturas();
+  }catch(e){toast('Erro: '+e.message,'err');}
+  finally{btn.disabled=false;btn.textContent='Criar assinatura';}
+}
+
+function abrirDetalheAssinatura(id){
+  const a=cache.assinaturas.find(x=>x.id===id);
+  if(!a) return;
+  const acoes=[{label:'💳 Ver cobranças', cls:'btn-outline', fn:`irCliCobranca('${a.customer}')`}];
+  if(a.status==='ACTIVE') acoes.push({label:'⏹ Cancelar assinatura', cls:'btn-danger', fn:`cancelarAssinatura('${id}')`});
+  abrirPainel('Assinatura',[
+    ['Cliente',nomeCli(a.customer)],['Valor',fmtR(a.value)],
+    ['Ciclo',badge(a.cycle||'')],['Próx. cobrança',fmtD(a.nextDueDate)],
+    ['Status',badge(a.status)],['Criada em',fmtD(a.dateCreated)],
+  ],acoes);
+}
+
+async function cancelarAssinatura(id){
+  if(!confirm('Cancelar esta assinatura? O cliente não será cobrado novamente.')) return;
+  try{
+    await asaas('DELETE','/subscriptions/'+id);
+    toast('Assinatura cancelada.','ok');
+    fecharPainel();
+    carregarAssinaturas();
+  }catch(e){toast('Erro: '+e.message,'err');}
+}
+
+// ── COBRANÇAS ────────────────────────────────────────────────────────────────
+
+async function carregarCobrancas(page){
+  if(!sessao?.asaasApiKey){setTr('cob-tbody',5,'Configure a chave Asaas.');return;}
+  if(page) estado.cobPage=page;
+  setTr('cob-tbody',5,null);
+  try{
+    if(!cache.clientes.length){
+      const d=await asaas('GET','/customers',null,{limit:100});
+      cache.clientes=d?.data||[];
+    }
+    const filtro=document.getElementById('filtro-cob').value;
+    const offset=(estado.cobPage-1)*PAGE_SIZE;
+    const qs={limit:PAGE_SIZE,offset};
+    if(filtro) qs.status=filtro;
+    const d=await asaas('GET','/payments',null,qs);
+    const lista=d?.data||[];
+    estado.cobTotal=d?.totalCount||lista.length;
+    estado.cobHasMore=d?.hasMore||false;
+    cache.cobrancas=lista;
+    renderTrCob('cob-tbody',lista);
+    renderCardsCob('cob-cards',lista);
+    const totalPag=Math.ceil(estado.cobTotal/PAGE_SIZE)||1;
+    const pag=document.getElementById('cob-pag');
+    pag.style.display=estado.cobTotal>PAGE_SIZE?'flex':'none';
+    document.getElementById('cob-pag-info').textContent=`Página ${estado.cobPage} de ${totalPag} (${estado.cobTotal} total)`;
+    document.getElementById('cob-prev').disabled=estado.cobPage<=1;
+    document.getElementById('cob-next').disabled=!estado.cobHasMore&&estado.cobPage>=totalPag;
+  }catch(e){setTr('cob-tbody',5,'Erro: '+e.message);}
+}
+
+function pagCobrancas(dir){estado.cobPage=Math.max(1,estado.cobPage+dir);carregarCobrancas();}
+
+function renderTrCob(tbodyId,lista){
+  const tbody=document.getElementById(tbodyId);
+  if(!tbody) return;
+  if(!lista.length){tbody.innerHTML='<tr><td colspan="5" class="no-data">Nenhuma cobrança.</td></tr>';return;}
+  tbody.innerHTML=lista.map(c=>`
     <tr onclick="abrirDetalheCobranca('${c.id}')">
-      <td title="${nomeCliente(c.customer)}">${nomeCliente(c.customer)}</td>
-      <td class="col-hide">${fmtData(c.dueDate)}</td>
-      <td>${fmt(c.value)}</td>
-      <td>${badgeStatus(c.status)}</td>
+      <td title="${nomeCli(c.customer)}">${nomeCli(c.customer)}</td>
+      <td class="col-hide">${fmtD(c.dueDate)}</td>
+      <td>${fmtR(c.value)}</td>
+      <td>${badge(c.status)}</td>
       <td class="col-hide">${c.billingType||'—'}</td>
     </tr>`).join('');
 }
 
-function renderCardsCobrancas(cardsId, lista) {
-  const cards = document.getElementById(cardsId);
-  if (!cards) return;
-  if (!lista.length) { cards.innerHTML = '<div class="no-data">Nenhuma cobrança encontrada.</div>'; return; }
-  cards.innerHTML = lista.map(c => `
-    <div class="list-card" onclick="abrirDetalheCobranca('${c.id}')">
-      <div class="list-card-top">
-        <span class="list-card-name">${nomeCliente(c.customer)}</span>
-        ${badgeStatus(c.status)}
-      </div>
-      <div class="list-card-sub">${fmt(c.value)} · venc. ${fmtData(c.dueDate)}</div>
+function renderCardsCob(cardsId,lista){
+  const cards=document.getElementById(cardsId);
+  if(!cards) return;
+  if(!lista.length){cards.innerHTML='<div class="no-data">Nenhuma cobrança.</div>';return;}
+  cards.innerHTML=lista.map(c=>`
+    <div class="m-card" onclick="abrirDetalheCobranca('${c.id}')">
+      <div class="m-card-top"><span class="m-card-name">${nomeCli(c.customer)}</span>${badge(c.status)}</div>
+      <div class="m-card-sub">${fmtR(c.value)} · venc. ${fmtD(c.dueDate)}</div>
     </div>`).join('');
 }
 
-function abrirDetalheCobranca(id) {
-  const c = dadosCache.cobrancas.find(x => x.id === id);
-  if (!c) return;
-  const linhas = [
-    ['Cliente', nomeCliente(c.customer)], ['Valor', fmt(c.value)],
-    ['Vencimento', fmtData(c.dueDate)], ['Status', c.status||'—'],
-    ['Tipo', c.billingType||'—'], ['Descrição', c.description||'—'],
+function abrirModalCobranca(preClienteId){
+  const sel=document.getElementById('cob-cliente');
+  sel.innerHTML='<option value="">Selecione um cliente…</option>'+
+    cache.clientes.map(c=>`<option value="${c.id}"${c.id===preClienteId?' selected':''}>${c.name}</option>`).join('');
+  document.getElementById('cob-venc').value=hoje();
+  abrirModal('modal-cobranca');
+}
+
+async function salvarCobranca(){
+  const cliente=document.getElementById('cob-cliente').value;
+  const valor=document.getElementById('cob-valor').value;
+  const venc=document.getElementById('cob-venc').value;
+  const tipo=document.getElementById('cob-tipo').value;
+  const desc=document.getElementById('cob-desc').value.trim();
+  if(!cliente||!valor||!venc){toast('Preencha os campos obrigatórios.','err');return;}
+  const btn=document.getElementById('btn-salvar-cob');
+  btn.disabled=true;btn.textContent='Gerando…';
+  try{
+    const body={customer:cliente,billingType:tipo,value:Number(valor),dueDate:venc};
+    if(desc) body.description=desc;
+    const d=await asaas('POST','/payments',body);
+    toast('Cobrança gerada!','ok');
+    fecharModal('modal-cobranca');
+    carregarCobrancas(1);
+    if(d?.invoiceUrl) window.open(d.invoiceUrl,'_blank');
+  }catch(e){toast('Erro: '+e.message,'err');}
+  finally{btn.disabled=false;btn.textContent='Gerar cobrança';}
+}
+
+function abrirDetalheCobranca(id){
+  const c=cache.cobrancas.find(x=>x.id===id);
+  if(!c) return;
+  const linhas=[
+    ['Cliente',nomeCli(c.customer)],['Valor',fmtR(c.value)],
+    ['Vencimento',fmtD(c.dueDate)],['Status',badge(c.status)],
+    ['Tipo',c.billingType||'—'],['Descrição',c.description||'—'],
   ];
-  if (c.paymentDate) linhas.push(['Pago em', fmtData(c.paymentDate)]);
-  if (c.clientPaymentDate) linhas.push(['Confirmado em', fmtData(c.clientPaymentDate)]);
-  abrirPainel('Cobrança', linhas,
-    c.invoiceUrl ? '🔗 Ver boleto/fatura' : null,
-    c.invoiceUrl ? () => window.open(c.invoiceUrl, '_blank') : null
-  );
+  if(c.paymentDate) linhas.push(['Pago em',fmtD(c.paymentDate)]);
+  const acoes=[];
+  if(c.invoiceUrl) acoes.push({label:'🔗 Abrir boleto/fatura',cls:'btn-accent',fn:`window.open('${c.invoiceUrl}','_blank')`});
+  if(c.invoiceUrl) acoes.push({label:'📲 Enviar por WhatsApp',cls:'btn-success',fn:`enviarWhatsApp('${c.id}')`});
+  abrirPainel('Cobrança',linhas,acoes);
 }
 
-function preencherConfig() {
-  if (sessao?.asaasApiKey) document.getElementById('cfg-apikey').value = sessao.asaasApiKey;
-  const env = sessao?.env || 'sandbox';
-  selecionarEnv(env);
-  document.querySelector(`input[name="cfg-env"][value="${env}"]`).checked = true;
+function enviarWhatsApp(id){
+  const c=cache.cobrancas.find(x=>x.id===id);
+  if(!c||!c.invoiceUrl) return;
+  const nome=nomeCli(c.customer);
+  const msg=encodeURIComponent(`Olá ${nome}! Segue o link para pagamento da sua cobrança de ${fmtR(c.value)} com vencimento em ${fmtD(c.dueDate)}: ${c.invoiceUrl}`);
+  window.open(`https://wa.me/?text=${msg}`,'_blank');
 }
 
-function selecionarEnv(env) {
-  document.getElementById('radio-sandbox').classList.toggle('selected', env === 'sandbox');
-  document.getElementById('radio-production').classList.toggle('selected', env === 'production');
+// ── CONFIG ───────────────────────────────────────────────────────────────────
+
+function preencherConfig(){
+  if(sessao?.asaasApiKey) document.getElementById('cfg-key').value=sessao.asaasApiKey;
+  const env=sessao?.env||'sandbox';
+  selEnv(env);
+  document.querySelector(`input[name="env"][value="${env}"]`).checked=true;
 }
 
-async function salvarConfig() {
-  const apiKey = document.getElementById('cfg-apikey').value.trim();
-  const env = document.querySelector('input[name="cfg-env"]:checked')?.value || 'sandbox';
-  if (!apiKey) { toast('Informe a chave de API.', 'error'); return; }
-  sessao.asaasApiKey = apiKey;
-  sessao.env = env;
+function selEnv(env){
+  document.getElementById('r-sandbox').classList.toggle('selected',env==='sandbox');
+  document.getElementById('r-prod').classList.toggle('selected',env==='production');
+}
+
+async function salvarConfig(){
+  const apiKey=document.getElementById('cfg-key').value.trim();
+  const env=document.querySelector('input[name="env"]:checked')?.value||'sandbox';
+  if(!apiKey){toast('Informe a chave de API.','err');return;}
+  sessao.asaasApiKey=apiKey;sessao.env=env;
   salvarSessao(sessao);
-  try { await storageSet('config', { apiKey, env }); } catch(e) {}
-  document.getElementById('alert-no-key').style.display = 'none';
-  toast('Configurações salvas!', 'success');
+  await storageSet('config',{apiKey,env});
+  document.getElementById('alert-key').style.display='none';
+  toast('Configurações salvas!','ok');
 }
 
-async function testarConexao() {
-  const label = document.getElementById('conn-status-label');
-  label.className = 'conn-status conn-testing';
-  label.textContent = '⏳ Testando…';
-  try {
-    const apiKey = document.getElementById('cfg-apikey').value.trim() || sessao?.asaasApiKey;
-    const env = document.querySelector('input[name="cfg-env"]:checked')?.value || sessao?.env || 'sandbox';
-    if (!apiKey) throw new Error('Sem chave');
-    const saved = sessao;
-    sessao = { ...sessao, asaasApiKey: apiKey, env };
-    await asaasAPI('GET', '/customers', null, { limit: 1 });
-    sessao = saved;
-    label.className = 'conn-status conn-ok';
-    label.textContent = '✓ Conectado';
-  } catch(e) {
-    label.className = 'conn-status conn-err';
-    label.textContent = '✗ Falhou: ' + e.message.slice(0, 40);
+async function testarConexao(){
+  const tag=document.getElementById('conn-tag');
+  tag.className='conn-tag conn-wait';tag.textContent='⏳ Testando…';
+  try{
+    const apiKey=document.getElementById('cfg-key').value.trim()||sessao?.asaasApiKey;
+    const env=document.querySelector('input[name="env"]:checked')?.value||'sandbox';
+    if(!apiKey) throw new Error('Sem chave');
+    const saved=sessao;
+    sessao={...sessao,asaasApiKey:apiKey,env};
+    await asaas('GET','/customers',null,{limit:1});
+    sessao=saved;
+    tag.className='conn-tag conn-ok';tag.textContent='✓ Conectado';
+  }catch(e){
+    tag.className='conn-tag conn-err';tag.textContent='✗ '+e.message.slice(0,40);
   }
 }
 
-async function alterarSenha() {
-  const senha = document.getElementById('cfg-nova-senha').value;
-  if (!senha || senha.length < 6) { toast('Senha deve ter pelo menos 6 caracteres.', 'error'); return; }
-  try {
-    await authAPI('change-password', { token: sessao.token, password: senha });
-    document.getElementById('cfg-nova-senha').value = '';
-    toast('Senha alterada com sucesso!', 'success');
-  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+async function alterarSenha(){
+  const senha=document.getElementById('cfg-senha').value;
+  if(!senha||senha.length<6){toast('Mínimo 6 caracteres.','err');return;}
+  try{
+    await authAPI('change-password',{token:sessao.token,password:senha});
+    document.getElementById('cfg-senha').value='';
+    toast('Senha alterada!','ok');
+  }catch(e){toast('Erro: '+e.message,'err');}
 }
 
-function setTbody(id, cols, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
-  if (msg === null) {
-    el.innerHTML = `<tr class="loading-row"><td colspan="${cols}"><div class="spinner"></div></td></tr>`;
-  } else {
-    el.innerHTML = `<tr><td colspan="${cols}" class="no-data">${msg}</td></tr>`;
-  }
+// ── MODAL / PANEL HELPERS ────────────────────────────────────────────────────
+
+function abrirModal(id){document.getElementById(id).classList.add('open');}
+function fecharModal(id){document.getElementById(id).classList.remove('open');}
+function fecharModalSe(e,id){if(e.target===document.getElementById(id))fecharModal(id);}
+
+function abrirPainel(titulo, linhas, acoes){
+  document.getElementById('panel-title').textContent=titulo;
+  document.getElementById('panel-body').innerHTML=linhas.map(([l,v])=>
+    `<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-val">${v}</span></div>`
+  ).join('');
+  const acts=document.getElementById('panel-actions');
+  acts.innerHTML=(acoes||[]).map(a=>
+    `<button class="btn-sm ${a.cls}" onclick="${a.fn}">${a.label}</button>`
+  ).join('');
+  document.getElementById('panel-ov').classList.add('open');
 }
 
-(function boot() {
-  const params = new URLSearchParams(location.search);
-  resetToken = params.get('reset');
-  if (resetToken) { trocarTab('reset'); return; }
-  const s = carregarSessaoLocal();
-  if (s?.token) { salvarSessao(s); iniciarApp(); }
+function fecharPainel(e){
+  if(!e||e.target===document.getElementById('panel-ov'))
+    document.getElementById('panel-ov').classList.remove('open');
+}
+
+// ── BOOT ─────────────────────────────────────────────────────────────────────
+
+(function boot(){
+  const p=new URLSearchParams(location.search);
+  resetToken=p.get('reset');
+  if(resetToken){trocarTab('reset');return;}
+  const s=carregarSessaoLocal();
+  if(s?.token){salvarSessao(s);iniciarApp();}
 })();
 </script>
 </body>
