@@ -589,15 +589,20 @@ async function storageSet(tipo, dados) {
 
 async function asaasAPI(method, path, body, qs) {
   if (!sessao?.asaasApiKey) throw new Error('Configure sua chave Asaas em Configurações.');
-  let url = `${ASAAS_URL}?_path=${encodeURIComponent(path)}&_token=${encodeURIComponent(sessao.asaasApiKey)}&_env=${sessao.env || 'sandbox'}`;
+  let url = ASAAS_URL + path;
   if (qs) {
-    for (const [k, v] of Object.entries(qs)) {
-      if (v != null) url += `&${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
-    }
+    const p = new URLSearchParams();
+    for (const [k, v] of Object.entries(qs)) { if (v != null) p.set(k, String(v)); }
+    const str = p.toString();
+    if (str) url += '?' + str;
   }
   const res = await fetch(url, {
     method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'access_token': sessao.asaasApiKey,
+      'asaas_env': sessao.env || 'sandbox'
+    },
     body: body ? JSON.stringify(body) : undefined
   });
   const text = await res.text();
