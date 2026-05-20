@@ -765,7 +765,7 @@ function fecharPainel(e) {
 
 function iniciarApp() {
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = '';
+  document.getElementById('app-screen').style.display = 'block';
   document.getElementById('user-avatar').textContent = sessao.email?.[0]?.toUpperCase() || '?';
   document.getElementById('user-email-label').textContent = sessao.email || '';
   if (!sessao.asaasApiKey) document.getElementById('alert-no-key').style.display = '';
