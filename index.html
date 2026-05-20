@@ -71,17 +71,6 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px}
 .page-header h2{font-size:19px;font-weight:700;color:var(--white)}
 
-/* ── STATS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px}
-.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:16px 18px}
-.stat-card.c-accent{border-color:rgba(108,99,255,.4);background:rgba(108,99,255,.07)}
-.stat-card.c-success{border-color:rgba(34,197,94,.3);background:rgba(34,197,94,.05)}
-.stat-card.c-warn{border-color:rgba(245,158,11,.3);background:rgba(245,158,11,.05)}
-.stat-card.c-danger{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.05)}
-.stat-label{font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
-.stat-val{font-size:24px;font-weight:700;color:var(--white);line-height:1}
-.stat-sub{font-size:11px;color:var(--muted);margin-top:5px}
-
 /* ── TABLE CARD ── */
 .table-card{background:var(--surface);border:1px solid var(--border);border-radius:13px;overflow:hidden}
 .tc-header{padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
@@ -186,26 +175,110 @@ tbody tr:hover{background:var(--surface2)}
 .alert{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.3);border-radius:11px;padding:12px 16px;margin-bottom:18px;font-size:13px;color:#FCD34D;display:none}
 .alert a{color:#FCD34D;font-weight:600;cursor:pointer;text-decoration:underline}
 
+/* ── PERIOD TABS ── */
+.period-tabs{display:flex;gap:3px;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:3px}
+.ptab{padding:5px 14px;border-radius:6px;border:none;font-family:'Inter',sans-serif;font-size:12px;font-weight:600;color:var(--muted);background:transparent;cursor:pointer;transition:all .2s;white-space:nowrap}
+.ptab.active{background:var(--accent);color:var(--white)}
+.ptab:hover:not(.active){background:var(--surface2);color:var(--text)}
+
+/* ── DASH CONTENT TABS ── */
+.dash-toprow{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px}
+.dash-content-tabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px;overflow-x:auto}
+.dctab{padding:9px 18px;font-size:13px;font-weight:500;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap;display:flex;align-items:center;gap:6px;flex-shrink:0}
+.dctab:hover{color:var(--text)}
+.dctab.active{color:var(--accent2);border-bottom-color:var(--accent)}
+.dtab-panel{display:none}
+.dtab-panel.active{display:block}
+.tbadge{background:var(--danger);color:var(--white);border-radius:10px;padding:1px 7px;font-size:10px;font-weight:700;min-width:18px;text-align:center;display:none}
+.tbadge.vis{display:inline-block}
+
+/* ── HERO CARD ── */
+.hero-card{background:linear-gradient(135deg,#1a1d27 0%,#1e2235 100%);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:16px}
+.hero-phrase{font-size:17px;font-weight:600;color:var(--text);line-height:1.6;margin-bottom:20px;min-height:26px}
+.ph-safe{color:#86EFAC;font-weight:700}
+.ph-risk{color:#FCA5A5;font-weight:700}
+.ph-load{display:inline-flex;align-items:center;gap:8px;color:var(--muted);font-size:14px}
+.hero-mini-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.mini-card{background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:11px;padding:14px 15px;transition:background .2s}
+.mini-card.mini-received{border-color:rgba(34,197,94,.22)}
+.mini-card.mini-pending{border-color:rgba(108,99,255,.22)}
+.mini-card.mini-overdue{border-color:rgba(239,68,68,.22)}
+.mini-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:7px}
+.mini-val{font-size:16px;font-weight:700;color:var(--white);margin-bottom:5px;line-height:1}
+.mini-delta{font-size:10px;min-height:13px;color:var(--muted)}
+.delta-ok{color:#86EFAC}
+.delta-bad{color:#FCA5A5}
+.delta-neu{color:var(--muted)}
+
+/* ── RISK CARD ── */
+.risk-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:14px}
+.risk-col-label{font-size:11px;font-weight:700;margin-bottom:5px;display:flex;align-items:center;gap:5px}
+.risk-col-val{font-size:20px;font-weight:700;color:var(--white);line-height:1}
+.risk-col-sub{font-size:11px;color:var(--muted);margin-top:4px}
+.risk-bar-track{height:8px;background:rgba(239,68,68,.18);border-radius:4px;overflow:hidden;margin-bottom:10px}
+.risk-bar-fill{height:100%;background:linear-gradient(90deg,#22C55E,#4ADE80);border-radius:4px;transition:width .7s cubic-bezier(.4,0,.2,1)}
+.risk-footer{font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;margin-top:4px}
+
+/* ── CONSELHEIRO ── */
+.conselheiro-body{padding:16px 18px}
+.conselheiro-text{font-size:13px;line-height:1.75;color:var(--text)}
+.conselheiro-text.c-alert{color:#FCD34D}
+.conselheiro-text.c-ok{color:#86EFAC}
+.conselheiro-label{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+
+/* ── TASK ITEMS ── */
+.task-section{margin-bottom:22px}
+.task-section-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;margin-bottom:9px;display:flex;align-items:center;gap:8px}
+.task-section-label.tsl-urgente{color:#FCA5A5}
+.task-section-label.tsl-semana{color:#FCD34D}
+.task-section-label.tsl-monitor{color:var(--accent2)}
+.task-item{background:var(--surface);border:1px solid var(--border);border-left-width:3px;border-radius:11px;padding:13px 15px;margin-bottom:7px;cursor:pointer;transition:background .12s}
+.task-item:hover{background:var(--surface2)}
+.task-item.ti-urgente{border-left-color:var(--danger)}
+.task-item.ti-semana{border-left-color:var(--warning)}
+.task-item.ti-monitor{border-left-color:var(--accent)}
+.task-item-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;margin-bottom:5px}
+.task-item-name{font-size:13px;font-weight:600;color:var(--white);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.task-item-val{font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;flex-shrink:0}
+.task-item-sub{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.twabtn{padding:2px 8px;background:rgba(34,197,94,.15);border:1px solid rgba(34,197,94,.3);border-radius:5px;color:#86EFAC;font-size:10px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif}
+.twabtn:hover{background:rgba(34,197,94,.25)}
+.empty-tasks{padding:32px 16px;text-align:center;color:var(--muted);font-size:13px}
+
+/* ── DASH CLIENTES ── */
+.dcli-item{background:var(--surface);border:1px solid var(--border);border-radius:11px;padding:12px 15px;margin-bottom:7px;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;transition:background .12s}
+.dcli-item:hover{background:var(--surface2)}
+.dcli-left{flex:1;min-width:0}
+.dcli-name{font-size:13px;font-weight:600;color:var(--white);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dcli-sub{font-size:11px;color:var(--muted);margin-top:3px}
+.risk-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0}
+.risk-dot.alto{background:var(--danger)}
+.risk-dot.medio{background:var(--warning)}
+.risk-dot.baixo{background:var(--success)}
+.dcli-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.dcli-val{font-size:12px;font-weight:600;color:var(--muted)}
+
 /* ── RESPONSIVE ── */
-@media(max-width:900px){.stats-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:900px){.hero-mini-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:768px){
   #sidebar{transform:translateX(-100%);width:250px}
   #sidebar.open{transform:translateX(0)}
   .main{margin-left:0}
   #menu-btn{display:block}
-  .stats-grid{grid-template-columns:1fr 1fr;gap:10px}
-  .stat-card{padding:13px 14px}
-  .stat-val{font-size:20px}
+  .hero-mini-grid{grid-template-columns:1fr 1fr}
   .content{padding:14px}
   .tw table{display:none}
   .card-list{display:block}
   .col-hide{display:none}
   .detail-panel{max-width:100%}
   .form-row{grid-template-columns:1fr}
+  .risk-cols{grid-template-columns:1fr 1fr}
 }
 @media(max-width:480px){
-  .stats-grid{grid-template-columns:1fr}
+  .hero-mini-grid{grid-template-columns:1fr}
+  .hero-phrase{font-size:15px}
   .auth-card{padding:26px 18px}
+  .dash-toprow{flex-direction:column;align-items:flex-start}
 }
 </style>
 </head>
@@ -223,8 +296,6 @@ tbody tr:hover{background:var(--surface2)}
       <div class="auth-tab active" id="tab-login" onclick="trocarTab('login')">Entrar</div>
       <div class="auth-tab" id="tab-cad" onclick="trocarTab('cad')">Cadastrar</div>
     </div>
-
-    <!-- LOGIN -->
     <div id="form-login">
       <div class="msg-err" id="login-err"></div>
       <div class="fg"><label>E-mail</label><input type="email" id="l-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerLogin()"></div>
@@ -232,8 +303,6 @@ tbody tr:hover{background:var(--surface2)}
       <button class="btn btn-primary" id="btn-login" onclick="fazerLogin()">Entrar</button>
       <div class="auth-sub" style="margin-top:10px"><a onclick="trocarTab('forgot')">Esqueci minha senha</a></div>
     </div>
-
-    <!-- CADASTRO -->
     <div id="form-cad" style="display:none">
       <div class="msg-err" id="cad-err"></div>
       <div class="msg-ok" id="cad-ok"></div>
@@ -242,8 +311,6 @@ tbody tr:hover{background:var(--surface2)}
       <div class="fg"><label>Código de acesso</label><input type="text" id="c-invite" placeholder="Código da equipe" onkeydown="if(event.key==='Enter')fazerCadastro()"></div>
       <button class="btn btn-primary" id="btn-cad" onclick="fazerCadastro()">Criar conta</button>
     </div>
-
-    <!-- FORGOT -->
     <div id="form-forgot" style="display:none">
       <div class="msg-err" id="forgot-err"></div>
       <div class="msg-ok" id="forgot-ok"></div>
@@ -251,8 +318,6 @@ tbody tr:hover{background:var(--surface2)}
       <button class="btn btn-primary" id="btn-forgot" onclick="enviarReset()">Enviar link de recuperação</button>
       <div class="auth-sub" style="margin-top:10px"><a onclick="trocarTab('login')">← Voltar</a></div>
     </div>
-
-    <!-- RESET -->
     <div id="form-reset" style="display:none">
       <div class="msg-err" id="reset-err"></div>
       <div class="msg-ok" id="reset-ok"></div>
@@ -294,50 +359,108 @@ tbody tr:hover{background:var(--surface2)}
     <div class="topbar">
       <button id="menu-btn" onclick="toggleSidebar()">☰</button>
       <span class="topbar-title" id="topbar-title">Dashboard</span>
+      <button class="btn-sm btn-accent" style="flex-shrink:0" onclick="novaAssinaturaRapida()">+ Nova assinatura</button>
     </div>
     <div class="content">
       <div class="alert" id="alert-key">⚠️ Configure sua chave Asaas em <a onclick="ir('config')">Configurações</a> para começar.</div>
 
-      <!-- DASHBOARD -->
+      <!-- ── DASHBOARD ── -->
       <div class="page active" id="page-dashboard">
-        <div class="stats-grid">
-          <div class="stat-card c-accent">
-            <div class="stat-label">MRR</div>
-            <div class="stat-val" id="s-mrr">—</div>
-            <div class="stat-sub">Receita recorrente mensal</div>
+        <!-- Filtro de período + ações -->
+        <div class="dash-toprow">
+          <div class="period-tabs">
+            <button class="ptab" id="pt-semana" onclick="setPeriodo('semana')">Semana</button>
+            <button class="ptab active" id="pt-mes" onclick="setPeriodo('mes')">Mês</button>
+            <button class="ptab" id="pt-ano" onclick="setPeriodo('ano')">Ano</button>
           </div>
-          <div class="stat-card c-success">
-            <div class="stat-label">Assinaturas ativas</div>
-            <div class="stat-val" id="s-ativas">—</div>
-            <div class="stat-sub">Clientes pagantes</div>
+          <button class="btn-sm btn-outline" onclick="carregarDashboard()" id="btn-refresh-dash">↻ Atualizar</button>
+        </div>
+
+        <!-- Abas de conteúdo -->
+        <div class="dash-content-tabs">
+          <div class="dctab active" id="dct-visao" onclick="dashTab('visao')">Visão geral</div>
+          <div class="dctab" id="dct-tarefas" onclick="dashTab('tarefas')">Tarefas <span class="tbadge" id="badge-tarefas">0</span></div>
+          <div class="dctab" id="dct-clientes" onclick="dashTab('clientes')">Clientes</div>
+        </div>
+
+        <!-- Painel: Visão geral -->
+        <div class="dtab-panel active" id="dp-visao">
+          <!-- Hero card -->
+          <div class="hero-card">
+            <div class="hero-phrase" id="hero-phrase">
+              <span class="ph-load"><div class="spinner"></div> Carregando dados…</span>
+            </div>
+            <div class="hero-mini-grid">
+              <div class="mini-card mini-received">
+                <div class="mini-label">Já recebido</div>
+                <div class="mini-val" id="m-recebido">—</div>
+                <div class="mini-delta" id="d-recebido"></div>
+              </div>
+              <div class="mini-card mini-pending">
+                <div class="mini-label">Previsto entrar</div>
+                <div class="mini-val" id="m-previsto">—</div>
+                <div class="mini-delta" id="d-previsto"></div>
+              </div>
+              <div class="mini-card mini-overdue">
+                <div class="mini-label">Atrasado</div>
+                <div class="mini-val" id="m-atrasado">—</div>
+                <div class="mini-delta" id="d-atrasado"></div>
+              </div>
+            </div>
           </div>
-          <div class="stat-card c-warn">
-            <div class="stat-label">A receber</div>
-            <div class="stat-val" id="s-pendentes">—</div>
-            <div class="stat-sub">Cobranças pendentes</div>
+
+          <!-- Receita garantida vs em risco -->
+          <div class="table-card" style="margin-bottom:16px">
+            <div class="tc-header">
+              <h3>Receita garantida vs. em risco</h3>
+              <span class="conn-tag conn-wait" id="risk-status" style="display:none"><div class="spinner" style="width:11px;height:11px;border-width:1.5px"></div></span>
+            </div>
+            <div style="padding:16px 18px">
+              <div class="risk-cols" id="risk-cols">
+                <div>
+                  <div class="risk-col-label" style="color:#86EFAC">● Garantida</div>
+                  <div class="risk-col-val" id="risk-garantida">—</div>
+                  <div class="risk-col-sub" id="risk-garantida-n"></div>
+                </div>
+                <div>
+                  <div class="risk-col-label" style="color:#FCA5A5">● Em risco</div>
+                  <div class="risk-col-val" id="risk-risco">—</div>
+                  <div class="risk-col-sub" id="risk-risco-n"></div>
+                </div>
+              </div>
+              <div class="risk-bar-track">
+                <div class="risk-bar-fill" id="risk-bar" style="width:0%"></div>
+              </div>
+              <div class="risk-footer" id="risk-footer">Clientes com 0–1 atrasos nos últimos 90 dias são garantidos. Com 2 ou mais, em risco.</div>
+            </div>
           </div>
-          <div class="stat-card c-danger">
-            <div class="stat-label">Inadimplência</div>
-            <div class="stat-val" id="s-vencidas">—</div>
-            <div class="stat-sub">Cobranças vencidas</div>
+
+          <!-- Conselheiro -->
+          <div class="table-card">
+            <div class="tc-header"><h3>💡 Conselheiro</h3></div>
+            <div class="conselheiro-body">
+              <div class="conselheiro-label">Análise do período</div>
+              <div class="conselheiro-text" id="conselheiro-text">Aguardando dados…</div>
+            </div>
           </div>
         </div>
-        <div class="table-card">
-          <div class="tc-header">
-            <h3>Cobranças recentes</h3>
-            <button class="btn-sm btn-outline" onclick="ir('cobrancas')">Ver todas →</button>
+
+        <!-- Painel: Tarefas -->
+        <div class="dtab-panel" id="dp-tarefas">
+          <div id="tarefas-content">
+            <div class="no-data">Carregando…</div>
           </div>
-          <div class="tw">
-            <table>
-              <thead><tr><th>Cliente</th><th class="col-hide">Vencimento</th><th>Valor</th><th>Status</th></tr></thead>
-              <tbody id="dash-tbody"><tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr></tbody>
-            </table>
+        </div>
+
+        <!-- Painel: Clientes -->
+        <div class="dtab-panel" id="dp-clientes">
+          <div id="dash-clientes-content">
+            <div class="no-data">Carregando…</div>
           </div>
-          <div class="card-list" id="dash-cards"></div>
         </div>
       </div>
 
-      <!-- CLIENTES -->
+      <!-- ── CLIENTES ── -->
       <div class="page" id="page-clientes">
         <div class="page-header">
           <h2>Clientes</h2>
@@ -365,7 +488,7 @@ tbody tr:hover{background:var(--surface2)}
         </div>
       </div>
 
-      <!-- ASSINATURAS -->
+      <!-- ── ASSINATURAS ── -->
       <div class="page" id="page-assinaturas">
         <div class="page-header">
           <h2>Assinaturas</h2>
@@ -390,7 +513,7 @@ tbody tr:hover{background:var(--surface2)}
         </div>
       </div>
 
-      <!-- COBRANÇAS -->
+      <!-- ── COBRANÇAS ── -->
       <div class="page" id="page-cobrancas">
         <div class="page-header">
           <h2>Cobranças</h2>
@@ -424,7 +547,7 @@ tbody tr:hover{background:var(--surface2)}
         </div>
       </div>
 
-      <!-- CONFIG -->
+      <!-- ── CONFIG ── -->
       <div class="page" id="page-config">
         <div class="page-header"><h2>Configurações</h2></div>
         <div class="cfg-section">
@@ -455,7 +578,7 @@ tbody tr:hover{background:var(--surface2)}
 
 <!-- MODAL CLIENTE -->
 <div class="overlay" id="modal-cliente" onclick="fecharModalSe(event,'modal-cliente')">
-  <div class="drawer" onclick.stop>
+  <div class="drawer">
     <button class="drawer-close" onclick="fecharModal('modal-cliente')">✕</button>
     <div class="drawer-title" id="cli-modal-title">Novo cliente</div>
     <input type="hidden" id="cli-edit-id">
@@ -476,7 +599,7 @@ tbody tr:hover{background:var(--surface2)}
 
 <!-- MODAL ASSINATURA -->
 <div class="overlay" id="modal-assinatura" onclick="fecharModalSe(event,'modal-assinatura')">
-  <div class="drawer" onclick.stop>
+  <div class="drawer">
     <button class="drawer-close" onclick="fecharModal('modal-assinatura')">✕</button>
     <div class="drawer-title">Nova assinatura</div>
     <div class="fg">
@@ -516,7 +639,7 @@ tbody tr:hover{background:var(--surface2)}
 
 <!-- MODAL COBRANÇA -->
 <div class="overlay" id="modal-cobranca" onclick="fecharModalSe(event,'modal-cobranca')">
-  <div class="drawer" onclick.stop>
+  <div class="drawer">
     <button class="drawer-close" onclick="fecharModal('modal-cobranca')">✕</button>
     <div class="drawer-title">Nova cobrança</div>
     <div class="fg">
@@ -569,9 +692,11 @@ let estado = {
   cliPage: 1, cliTotal: 0, cliAll: [],
   cobPage: 1, cobTotal: 0, cobHasMore: false
 };
-let resetToken = null;
+let dashPeriodo = 'mes';
+let dashCache   = { tarefas: [], clienteRisco: [] };
+let resetToken  = null;
 
-// ── UTILS ───────────────────────────────────────────────────────────────────
+// ── UTILS ────────────────────────────────────────────────────────────────────
 
 const fmtR = v => v == null ? '—' : 'R$ ' + Number(v).toLocaleString('pt-BR', {minimumFractionDigits:2});
 const fmtD = d => { if (!d) return '—'; const [y,m,day] = d.split('T')[0].split('-'); return `${day}/${m}/${y}`; };
@@ -590,9 +715,13 @@ function badge(status) {
   return `<span class="badge ${c}">${l}</span>`;
 }
 
+function cliId(v) {
+  return typeof v === 'object' ? (v?.id || '') : (v || '');
+}
+
 function nomeCli(id) {
-  if (!id) return '—';
-  const rid = typeof id === 'object' ? id.id : id;
+  const rid = cliId(id);
+  if (!rid) return '—';
   const c = cache.clientes.find(x => x.id === rid);
   return c?.name || rid.slice(0,10)+'…';
 }
@@ -613,7 +742,7 @@ function setTr(id, cols, msg) {
     : `<tr><td colspan="${cols}" class="no-data">${msg}</td></tr>`;
 }
 
-// ── AUTH API ─────────────────────────────────────────────────────────────────
+// ── AUTH API ──────────────────────────────────────────────────────────────────
 
 async function authAPI(action, body) {
   const r = await fetch(`${AUTH_URL}?action=${action}`, {
@@ -644,7 +773,7 @@ async function storageSet(tipo, dados) {
   } catch{}
 }
 
-// ── ASAAS API ────────────────────────────────────────────────────────────────
+// ── ASAAS API ─────────────────────────────────────────────────────────────────
 
 async function asaas(method, path, body, qs) {
   if (!sessao?.asaasApiKey) throw new Error('Configure a chave Asaas em Configurações.');
@@ -666,7 +795,22 @@ async function asaas(method, path, body, qs) {
   return d;
 }
 
-// ── AUTH FORMS ───────────────────────────────────────────────────────────────
+async function asaasAll(path, qs={}) {
+  const all = [];
+  let offset = 0;
+  const limit = 100;
+  let safety = 0;
+  while (safety++ < 20) {
+    const d = await asaas('GET', path, null, {...qs, limit, offset});
+    const data = d?.data || [];
+    all.push(...data);
+    if (!d?.hasMore || !data.length) break;
+    offset += limit;
+  }
+  return all;
+}
+
+// ── AUTH FORMS ────────────────────────────────────────────────────────────────
 
 function trocarTab(t) {
   ['login','cad','forgot','reset'].forEach(x => {
@@ -742,7 +886,7 @@ async function resetarSenha() {
   finally{btn.disabled=false;btn.textContent='Redefinir senha';}
 }
 
-// ── SESSION ──────────────────────────────────────────────────────────────────
+// ── SESSION ───────────────────────────────────────────────────────────────────
 
 function salvarSessao(s){
   sessao=s;
@@ -754,7 +898,7 @@ function carregarSessaoLocal(){
   try{return JSON.parse(localStorage.getItem('rh_s')||'null');}catch{return null;}
 }
 
-// ── NAVIGATION ───────────────────────────────────────────────────────────────
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
 
 function ir(pagina) {
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -781,7 +925,7 @@ function fecharSidebar(){
   document.getElementById('sidebar-overlay').style.display='none';
 }
 
-// ── APP INIT ─────────────────────────────────────────────────────────────────
+// ── APP INIT ──────────────────────────────────────────────────────────────────
 
 function iniciarApp(){
   document.getElementById('auth-screen').style.display='none';
@@ -801,44 +945,396 @@ async function fazerLogout(){
   trocarTab('login');
 }
 
-// ── DASHBOARD ────────────────────────────────────────────────────────────────
+// ── DASHBOARD — PERÍODO ───────────────────────────────────────────────────────
 
-async function carregarDashboard(){
-  if(!sessao?.asaasApiKey){
-    setTr('dash-tbody',4,'Configure a chave Asaas para ver os dados.');
+function setPeriodo(p) {
+  dashPeriodo = p;
+  ['semana','mes','ano'].forEach(x => {
+    document.getElementById('pt-'+x)?.classList.toggle('active', x===p);
+  });
+  carregarDashboard();
+}
+
+function getPeriodDates(periodo) {
+  const now = new Date();
+  const todayStr = now.toISOString().split('T')[0];
+  let start, end, prevStart, prevEnd;
+
+  if (periodo === 'semana') {
+    const s = new Date(now); s.setDate(s.getDate() - 6);
+    start = s.toISOString().split('T')[0];
+    end = todayStr;
+    const ps = new Date(now); ps.setDate(ps.getDate() - 13);
+    const pe = new Date(now); pe.setDate(pe.getDate() - 7);
+    prevStart = ps.toISOString().split('T')[0];
+    prevEnd   = pe.toISOString().split('T')[0];
+  } else if (periodo === 'mes') {
+    start = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-01`;
+    end   = todayStr;
+    const pm = new Date(now.getFullYear(), now.getMonth()-1, 1);
+    prevStart = `${pm.getFullYear()}-${String(pm.getMonth()+1).padStart(2,'0')}-01`;
+    const ld  = new Date(now.getFullYear(), now.getMonth(), 0);
+    prevEnd   = ld.toISOString().split('T')[0];
+  } else {
+    start     = `${now.getFullYear()}-01-01`;
+    end       = todayStr;
+    prevStart = `${now.getFullYear()-1}-01-01`;
+    prevEnd   = `${now.getFullYear()-1}-12-31`;
+  }
+
+  const d90 = new Date(now); d90.setDate(d90.getDate() - 89);
+  const hist90Start = d90.toISOString().split('T')[0];
+
+  return { start, end, prevStart, prevEnd, hist90Start };
+}
+
+function periodoLabel() {
+  return dashPeriodo === 'semana' ? 'nesta semana' : dashPeriodo === 'ano' ? 'neste ano' : 'neste mês';
+}
+
+// ── DASHBOARD — CARREGAR ──────────────────────────────────────────────────────
+
+async function carregarDashboard() {
+  if (!sessao?.asaasApiKey) {
+    document.getElementById('hero-phrase').innerHTML = '<span style="color:var(--muted);font-size:14px">Configure a chave Asaas em Configurações para ver os dados.</span>';
+    document.getElementById('tarefas-content').innerHTML = '<div class="no-data">Configure a chave Asaas primeiro.</div>';
     return;
   }
-  setTr('dash-tbody',4,null);
-  try{
-    await Promise.all([
-      asaas('GET','/customers',null,{limit:100}).then(d=>{cache.clientes=d?.data||[];}),
-      asaas('GET','/subscriptions',null,{limit:100}).then(d=>{cache.assinaturas=d?.data||[];}),
-      asaas('GET','/payments',null,{limit:100}).then(d=>{cache.cobrancas=d?.data||[];})
+
+  const btn = document.getElementById('btn-refresh-dash');
+  if (btn) { btn.disabled = true; btn.textContent = '↻ Atualizando…'; }
+
+  document.getElementById('hero-phrase').innerHTML = '<span class="ph-load"><div class="spinner"></div> Carregando…</span>';
+  document.getElementById('risk-status').style.display = 'flex';
+
+  const { start, end, prevStart, prevEnd, hist90Start } = getPeriodDates(dashPeriodo);
+
+  try {
+    const [currRaw, prevRaw, hist90Raw, subsRaw, clisRaw] = await Promise.all([
+      asaasAll('/payments', {'dueDate[ge]': start, 'dueDate[le]': end}),
+      asaasAll('/payments', {'dueDate[ge]': prevStart, 'dueDate[le]': prevEnd}),
+      asaasAll('/payments', {'dueDate[ge]': hist90Start, 'dueDate[le]': end}),
+      asaas('GET', '/subscriptions', null, {limit:100}),
+      asaas('GET', '/customers', null, {limit:100})
     ]);
-    renderStats();
-    renderTrCob('dash-tbody',cache.cobrancas.slice(0,10));
-    renderCardsCob('dash-cards',cache.cobrancas.slice(0,10));
-  }catch(e){setTr('dash-tbody',4,'Erro: '+e.message);}
+
+    cache.clientes    = clisRaw?.data || [];
+    cache.assinaturas = subsRaw?.data || [];
+
+    // filtro client-side como segurança (caso API ignore dueDate)
+    const curr  = currRaw.filter(c => c.dueDate >= start && c.dueDate <= end);
+    const prev  = prevRaw.filter(c => c.dueDate >= prevStart && c.dueDate <= prevEnd);
+    const hist90 = hist90Raw.filter(c => c.dueDate >= hist90Start);
+
+    // Calcular valores do período atual
+    const recebidos  = curr.filter(c => c.status==='CONFIRMED'||c.status==='RECEIVED');
+    const pendentes  = curr.filter(c => c.status==='PENDING');
+    const atrasados  = curr.filter(c => c.status==='OVERDUE');
+
+    const vRecebido  = recebidos.reduce((s,c) => s + (Number(c.netValue)||Number(c.value)||0), 0);
+    const vPrevisto  = pendentes.reduce((s,c) => s + (Number(c.value)||0), 0);
+    const vAtrasado  = atrasados.reduce((s,c) => s + (Number(c.value)||0), 0);
+    const vTaxa      = recebidos.reduce((s,c) => s + Math.max(0, (Number(c.value)||0)-(Number(c.netValue)||Number(c.value)||0)), 0);
+
+    // Calcular valores período anterior
+    const prevRec    = prev.filter(c => c.status==='CONFIRMED'||c.status==='RECEIVED');
+    const prevPend   = prev.filter(c => c.status==='PENDING');
+    const prevAtras  = prev.filter(c => c.status==='OVERDUE');
+
+    const pvRecebido = prevRec.reduce((s,c) => s + (Number(c.netValue)||Number(c.value)||0), 0);
+    const pvPrevisto = prevPend.reduce((s,c) => s + (Number(c.value)||0), 0);
+    const pvAtrasado = prevAtras.reduce((s,c) => s + (Number(c.value)||0), 0);
+
+    // Risco baseado em 90 dias
+    const clienteRisco = calcRisco(hist90);
+    dashCache.clienteRisco = clienteRisco;
+
+    // Tarefas
+    const tarefas = gerarTarefas(hist90);
+    dashCache.tarefas = tarefas;
+
+    // Renderizar tudo
+    renderHero(vRecebido, vPrevisto, vAtrasado, pvRecebido, pvPrevisto, pvAtrasado);
+    renderRisco(clienteRisco, vTaxa);
+    renderConselheiro(vRecebido, vAtrasado, pvRecebido, pvAtrasado, vPrevisto);
+    renderTarefas(tarefas);
+    renderDashClientes(clienteRisco);
+
+    document.getElementById('risk-status').style.display = 'none';
+
+  } catch(e) {
+    document.getElementById('hero-phrase').innerHTML = `<span style="color:#FCA5A5;font-size:13px">Erro ao carregar: ${e.message}</span>`;
+    document.getElementById('risk-status').style.display = 'none';
+    toast('Erro ao carregar dashboard: '+e.message, 'err');
+  } finally {
+    if (btn) { btn.disabled = false; btn.textContent = '↻ Atualizar'; }
+  }
 }
 
-function renderStats(){
-  const ativas=cache.assinaturas.filter(a=>a.status==='ACTIVE');
-  const mrr=ativas.reduce((s,a)=>{
-    const v=Number(a.value)||0;
-    if(a.cycle==='YEARLY') return s+(v/12);
-    if(a.cycle==='WEEKLY') return s+(v*4.33);
-    if(a.cycle==='BIWEEKLY') return s+(v*2.17);
-    return s+v;
-  },0);
-  const pendentes=cache.cobrancas.filter(c=>c.status==='PENDING');
-  const vencidas=cache.cobrancas.filter(c=>c.status==='OVERDUE');
-  document.getElementById('s-mrr').textContent=fmtR(mrr);
-  document.getElementById('s-ativas').textContent=ativas.length;
-  document.getElementById('s-pendentes').textContent=fmtR(pendentes.reduce((s,c)=>s+Number(c.value||0),0));
-  document.getElementById('s-vencidas').textContent=fmtR(vencidas.reduce((s,c)=>s+Number(c.value||0),0));
+// ── DASHBOARD — HERO ──────────────────────────────────────────────────────────
+
+function renderHero(recebido, previsto, atrasado, pvRec, pvPrev, pvAtras) {
+  const garantido = recebido + previsto;
+  const label     = periodoLabel();
+  document.getElementById('hero-phrase').innerHTML =
+    `Você tem <span class="ph-safe">${fmtR(garantido)}</span> garantidos ${label}. Há <span class="ph-risk">${fmtR(atrasado)}</span> em risco.`;
+
+  document.getElementById('m-recebido').textContent = fmtR(recebido);
+  document.getElementById('m-previsto').textContent = fmtR(previsto);
+  document.getElementById('m-atrasado').textContent = fmtR(atrasado);
+
+  renderDelta('d-recebido', recebido, pvRec, false);
+  renderDelta('d-previsto', previsto, pvPrev, false);
+  renderDelta('d-atrasado', atrasado, pvAtras, true);
 }
 
-// ── CLIENTES ─────────────────────────────────────────────────────────────────
+function renderDelta(id, curr, prev, invertido) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (prev === 0 && curr === 0) { el.textContent = ''; el.className = 'mini-delta delta-neu'; return; }
+  if (prev === 0) { el.textContent = 'Novo período'; el.className = 'mini-delta delta-neu'; return; }
+  const pct = Math.round(((curr - prev) / prev) * 100);
+  if (pct === 0) { el.textContent = '= igual ao anterior'; el.className = 'mini-delta delta-neu'; return; }
+  const subindo = pct > 0;
+  const bom = invertido ? !subindo : subindo;
+  el.className = 'mini-delta ' + (bom ? 'delta-ok' : 'delta-bad');
+  el.textContent = (subindo ? '↑ ' : '↓ ') + Math.abs(pct) + '% vs anterior';
+}
+
+// ── DASHBOARD — RISCO ─────────────────────────────────────────────────────────
+
+function calcRisco(charges90) {
+  const byClient = {};
+  for (const c of charges90) {
+    const id = cliId(c.customer);
+    if (!id) continue;
+    if (!byClient[id]) byClient[id] = { overdues: 0, total: 0 };
+    byClient[id].total++;
+    if (c.status === 'OVERDUE') byClient[id].overdues++;
+  }
+  const result = [];
+  for (const [id, data] of Object.entries(byClient)) {
+    const nivel = data.overdues >= 2 ? 'alto' : data.overdues === 1 ? 'medio' : 'baixo';
+    const subVal = getSubValue(id);
+    result.push({ id, overdues: data.overdues, total: data.total, subVal, nivel });
+  }
+  return result.sort((a,b) => b.overdues - a.overdues);
+}
+
+function getSubValue(cid) {
+  return (cache.assinaturas||[])
+    .filter(s => cliId(s.customer)===cid && s.status==='ACTIVE')
+    .reduce((sum, s) => {
+      const v = Number(s.value)||0;
+      if(s.cycle==='YEARLY')   return sum + v/12;
+      if(s.cycle==='WEEKLY')   return sum + v*4.33;
+      if(s.cycle==='BIWEEKLY') return sum + v*2.17;
+      return sum + v;
+    }, 0);
+}
+
+function renderRisco(lista, taxaVal) {
+  const garantidos = lista.filter(c => c.nivel !== 'alto');
+  const emRisco    = lista.filter(c => c.nivel === 'alto');
+  const vGar  = garantidos.reduce((s,c) => s + c.subVal, 0);
+  const vRisk = emRisco.reduce((s,c) => s + c.subVal, 0);
+  const total = vGar + vRisk;
+  const pct   = total > 0 ? Math.round((vGar / total) * 100) : 100;
+
+  document.getElementById('risk-garantida').textContent = fmtR(vGar);
+  document.getElementById('risk-risco').textContent     = fmtR(vRisk);
+  document.getElementById('risk-garantida-n').textContent = `${garantidos.length} cliente${garantidos.length!==1?'s':''}`;
+  document.getElementById('risk-risco-n').textContent     = `${emRisco.length} cliente${emRisco.length!==1?'s':''}`;
+
+  setTimeout(() => {
+    document.getElementById('risk-bar').style.width = pct + '%';
+  }, 80);
+
+  const footer = document.getElementById('risk-footer');
+  const baseText = `Clientes com 0–1 atrasos em 90 dias são garantidos. Com 2 ou mais, em risco.`;
+  footer.textContent = taxaVal > 0
+    ? `${baseText} · Taxa processamento: ${fmtR(taxaVal)}`
+    : baseText;
+}
+
+// ── DASHBOARD — CONSELHEIRO ───────────────────────────────────────────────────
+
+function renderConselheiro(recebido, atrasado, pvRec, pvAtras, previsto) {
+  const el = document.getElementById('conselheiro-text');
+  el.className = 'conselheiro-text';
+
+  const semDados = recebido === 0 && atrasado === 0 && previsto === 0;
+  if (semDados) {
+    el.textContent = 'Nenhum movimento encontrado neste período. Verifique se há cobranças lançadas ou experimente outro filtro de período.';
+    return;
+  }
+
+  const deltaPctAtras = pvAtras > 0 ? ((atrasado - pvAtras) / pvAtras) * 100 : 0;
+  const deltaPctRec   = pvRec   > 0 ? ((recebido - pvRec)   / pvRec)   * 100 : 0;
+
+  if (atrasado === 0 && recebido > 0) {
+    el.className += ' c-ok';
+    el.textContent = `Período saudável — nenhuma cobrança em atraso e ${fmtR(recebido)} já confirmados. Se houver cobranças previstas, monitore os vencimentos próximos para manter esse resultado.`;
+    return;
+  }
+
+  if (deltaPctAtras > 20 && atrasado > 0) {
+    el.className += ' c-alert';
+    const variacao = Math.round(deltaPctAtras);
+    el.textContent = `Atenção: o valor em atraso cresceu ${variacao}% em relação ao período anterior. Recomendo contato proativo com os clientes na aba Tarefas antes que o prazo se estenda mais.`;
+    return;
+  }
+
+  if (deltaPctRec > 10 && deltaPctAtras <= 0) {
+    el.className += ' c-ok';
+    el.textContent = `A receita confirmada cresceu ${Math.round(deltaPctRec)}% em relação ao período anterior. O ritmo está positivo — mantenha o acompanhamento das cobranças que vencem nos próximos 7 dias.`;
+    return;
+  }
+
+  if (atrasado > recebido && atrasado > 0) {
+    el.className += ' c-alert';
+    el.textContent = `O valor em atraso (${fmtR(atrasado)}) supera o valor já confirmado (${fmtR(recebido)}) neste período. Priorize a aba Tarefas para contato com os clientes em aberto.`;
+    return;
+  }
+
+  if (previsto > 0 && atrasado === 0) {
+    el.textContent = `${fmtR(previsto)} estão previstos para entrar. Nenhum atraso registrado no período — cenário favorável. Acompanhe os vencimentos para garantir a confirmação.`;
+    return;
+  }
+
+  el.textContent = `Receita estável. Acompanhe as cobranças que vencem nos próximos 7 dias e use a aba Tarefas para não perder prazos.`;
+}
+
+// ── DASHBOARD — TAREFAS ───────────────────────────────────────────────────────
+
+function gerarTarefas(charges) {
+  const agora   = new Date(); agora.setHours(0,0,0,0);
+  const em7dias = new Date(agora); em7dias.setDate(em7dias.getDate()+7);
+  const tarefas = [];
+
+  for (const c of charges) {
+    if (c.status === 'OVERDUE') {
+      const due  = new Date(c.dueDate);
+      const dias = Math.max(0, Math.floor((agora - due) / (1000*60*60*24)));
+      tarefas.push({ tipo: dias >= 7 ? 'urgente' : 'semana', charge: c, dias });
+    } else if (c.status === 'PENDING') {
+      const due = new Date(c.dueDate);
+      if (due >= agora && due <= em7dias) {
+        tarefas.push({ tipo: 'monitor', charge: c, dias: 0 });
+      }
+    }
+  }
+
+  const ord = { urgente:0, semana:1, monitor:2 };
+  tarefas.sort((a,b) => {
+    if (ord[a.tipo] !== ord[b.tipo]) return ord[a.tipo] - ord[b.tipo];
+    return (b.dias||0) - (a.dias||0);
+  });
+  return tarefas;
+}
+
+function renderTarefas(tarefas) {
+  const badge = document.getElementById('badge-tarefas');
+  const urgentes = tarefas.filter(t=>t.tipo==='urgente');
+  const semana   = tarefas.filter(t=>t.tipo==='semana');
+  const monitor  = tarefas.filter(t=>t.tipo==='monitor');
+  const total    = urgentes.length + semana.length;
+
+  if (badge) {
+    badge.textContent = total;
+    badge.classList.toggle('vis', total > 0);
+  }
+
+  const wrap = document.getElementById('tarefas-content');
+  if (!tarefas.length) {
+    wrap.innerHTML = '<div class="empty-tasks">✅ Nenhuma tarefa pendente. Tudo em dia!</div>';
+    return;
+  }
+
+  let html = '';
+
+  if (urgentes.length) {
+    html += `<div class="task-section">
+      <div class="task-section-label tsl-urgente">🔴 Urgente — 7+ dias em atraso (${urgentes.length})</div>
+      ${urgentes.map(t => taskItemHTML(t)).join('')}
+    </div>`;
+  }
+  if (semana.length) {
+    html += `<div class="task-section">
+      <div class="task-section-label tsl-semana">🟡 Esta semana — atraso recente (${semana.length})</div>
+      ${semana.map(t => taskItemHTML(t)).join('')}
+    </div>`;
+  }
+  if (monitor.length) {
+    html += `<div class="task-section">
+      <div class="task-section-label tsl-monitor">🔵 Monitore — vence em 7 dias (${monitor.length})</div>
+      ${monitor.map(t => taskItemHTML(t)).join('')}
+    </div>`;
+  }
+
+  wrap.innerHTML = html;
+}
+
+function taskItemHTML(t) {
+  const c    = t.charge;
+  const nome = nomeCli(c.customer);
+  const sub  = t.tipo === 'monitor'
+    ? `Vence em ${fmtD(c.dueDate)} · ${c.billingType||'—'}`
+    : `${t.dias} dia${t.dias!==1?'s':''} em atraso · venceu ${fmtD(c.dueDate)}`;
+  const waBt = c.invoiceUrl
+    ? `<button class="twabtn" onclick="event.stopPropagation();enviarWaCobranca('${c.id}')">📲 WhatsApp</button>`
+    : '';
+  return `<div class="task-item ti-${t.tipo}" onclick="abrirDetalheCobrancaById('${c.id}')">
+    <div class="task-item-top">
+      <span class="task-item-name">${nome}</span>
+      <span class="task-item-val">${fmtR(c.value)}</span>
+    </div>
+    <div class="task-item-sub">${sub} ${waBt}</div>
+  </div>`;
+}
+
+// ── DASHBOARD — CLIENTES (aba) ────────────────────────────────────────────────
+
+function renderDashClientes(lista) {
+  const wrap = document.getElementById('dash-clientes-content');
+  if (!lista.length) {
+    wrap.innerHTML = '<div class="no-data">Nenhum cliente encontrado nos últimos 90 dias.</div>';
+    return;
+  }
+
+  const ordenado = [...lista].sort((a,b) => b.subVal - a.subVal || b.overdues - a.overdues);
+  const rotulo = { alto:'Em risco', medio:'Atenção', baixo:'Regular' };
+
+  wrap.innerHTML = ordenado.map(item => {
+    const cli  = cache.clientes.find(x => x.id === item.id);
+    const nome = cli?.name || item.id;
+    const sub  = item.subVal > 0
+      ? `Valor mensal: ${fmtR(item.subVal)}`
+      : 'Sem assinatura ativa';
+    const atr  = item.overdues > 0 ? ` · ${item.overdues} atraso${item.overdues>1?'s':''} em 90 dias` : '';
+    return `<div class="dcli-item" onclick="ir('clientes')">
+      <div class="dcli-left">
+        <div class="dcli-name">${nome}</div>
+        <div class="dcli-sub">${sub}${atr}</div>
+      </div>
+      <div class="dcli-right">
+        <span class="dcli-val">${rotulo[item.nivel]}</span>
+        <div class="risk-dot ${item.nivel}"></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DASHBOARD — TABS ──────────────────────────────────────────────────────────
+
+function dashTab(tab) {
+  ['visao','tarefas','clientes'].forEach(t => {
+    document.getElementById('dp-'+t)?.classList.toggle('active', t===tab);
+    document.getElementById('dct-'+t)?.classList.toggle('active', t===tab);
+  });
+}
+
+// ── CLIENTES ──────────────────────────────────────────────────────────────────
 
 async function carregarClientes(){
   if(!sessao?.asaasApiKey){setTr('cli-tbody',4,'Configure a chave Asaas.');return;}
@@ -949,15 +1445,12 @@ function abrirDetalheCliente(id){
     ['Status',c.active===false?'Inativo':'Ativo'],['Cadastro',fmtD(c.dateCreated)],
   ],[
     {label:'✏️ Editar', cls:'btn-outline', fn:`abrirModalCliente('${id}')`},
-    {label:'🔁 Ver assinaturas', cls:'btn-outline', fn:`irCliAssinatura('${id}')`},
-    {label:'💳 Ver cobranças', cls:'btn-outline', fn:`irCliCobranca('${id}')`},
+    {label:'🔁 Ver assinaturas', cls:'btn-outline', fn:`fecharPainel();ir('assinaturas')`},
+    {label:'💳 Ver cobranças', cls:'btn-outline', fn:`fecharPainel();ir('cobrancas')`},
   ]);
 }
 
-function irCliAssinatura(id){fecharPainel();ir('assinaturas');}
-function irCliCobranca(id){fecharPainel();ir('cobrancas');}
-
-// ── ASSINATURAS ──────────────────────────────────────────────────────────────
+// ── ASSINATURAS ───────────────────────────────────────────────────────────────
 
 async function carregarAssinaturas(){
   if(!sessao?.asaasApiKey){setTr('ass-tbody',5,'Configure a chave Asaas.');return;}
@@ -1008,6 +1501,17 @@ function abrirModalAssinatura(preClienteId){
   abrirModal('modal-assinatura');
 }
 
+async function novaAssinaturaRapida(){
+  if(!sessao?.asaasApiKey){toast('Configure a chave Asaas primeiro.','err');return;}
+  if(!cache.clientes.length){
+    try{
+      const d=await asaas('GET','/customers',null,{limit:100});
+      cache.clientes=d?.data||[];
+    }catch(e){toast('Erro ao carregar clientes.','err');return;}
+  }
+  abrirModalAssinatura();
+}
+
 async function salvarAssinatura(){
   const cliente=document.getElementById('ass-cliente').value;
   const valor=document.getElementById('ass-valor').value;
@@ -1032,7 +1536,7 @@ async function salvarAssinatura(){
 function abrirDetalheAssinatura(id){
   const a=cache.assinaturas.find(x=>x.id===id);
   if(!a) return;
-  const acoes=[{label:'💳 Ver cobranças', cls:'btn-outline', fn:`irCliCobranca('${a.customer}')`}];
+  const acoes=[{label:'💳 Ver cobranças', cls:'btn-outline', fn:`fecharPainel();ir('cobrancas')`}];
   if(a.status==='ACTIVE') acoes.push({label:'⏹ Cancelar assinatura', cls:'btn-danger', fn:`cancelarAssinatura('${id}')`});
   abrirPainel('Assinatura',[
     ['Cliente',nomeCli(a.customer)],['Valor',fmtR(a.value)],
@@ -1051,7 +1555,7 @@ async function cancelarAssinatura(id){
   }catch(e){toast('Erro: '+e.message,'err');}
 }
 
-// ── COBRANÇAS ────────────────────────────────────────────────────────────────
+// ── COBRANÇAS ─────────────────────────────────────────────────────────────────
 
 async function carregarCobrancas(page){
   if(!sessao?.asaasApiKey){setTr('cob-tbody',5,'Configure a chave Asaas.');return;}
@@ -1089,7 +1593,7 @@ function renderTrCob(tbodyId,lista){
   if(!tbody) return;
   if(!lista.length){tbody.innerHTML='<tr><td colspan="5" class="no-data">Nenhuma cobrança.</td></tr>';return;}
   tbody.innerHTML=lista.map(c=>`
-    <tr onclick="abrirDetalheCobranca('${c.id}')">
+    <tr onclick="abrirDetalheCobrancaById('${c.id}')">
       <td title="${nomeCli(c.customer)}">${nomeCli(c.customer)}</td>
       <td class="col-hide">${fmtD(c.dueDate)}</td>
       <td>${fmtR(c.value)}</td>
@@ -1103,7 +1607,7 @@ function renderCardsCob(cardsId,lista){
   if(!cards) return;
   if(!lista.length){cards.innerHTML='<div class="no-data">Nenhuma cobrança.</div>';return;}
   cards.innerHTML=lista.map(c=>`
-    <div class="m-card" onclick="abrirDetalheCobranca('${c.id}')">
+    <div class="m-card" onclick="abrirDetalheCobrancaById('${c.id}')">
       <div class="m-card-top"><span class="m-card-name">${nomeCli(c.customer)}</span>${badge(c.status)}</div>
       <div class="m-card-sub">${fmtR(c.value)} · venc. ${fmtD(c.dueDate)}</div>
     </div>`).join('');
@@ -1138,30 +1642,35 @@ async function salvarCobranca(){
   finally{btn.disabled=false;btn.textContent='Gerar cobrança';}
 }
 
-function abrirDetalheCobranca(id){
-  const c=cache.cobrancas.find(x=>x.id===id);
-  if(!c) return;
+function abrirDetalheCobrancaById(id) {
+  const c = [...cache.cobrancas, ...(dashCache.tarefas||[]).map(t=>t.charge)].find(x => x.id === id);
+  if (!c) return;
+  abrirDetalheCobrancaObj(c);
+}
+
+function abrirDetalheCobrancaObj(c){
   const linhas=[
     ['Cliente',nomeCli(c.customer)],['Valor',fmtR(c.value)],
     ['Vencimento',fmtD(c.dueDate)],['Status',badge(c.status)],
     ['Tipo',c.billingType||'—'],['Descrição',c.description||'—'],
   ];
   if(c.paymentDate) linhas.push(['Pago em',fmtD(c.paymentDate)]);
+  if(c.netValue && c.netValue !== c.value) linhas.push(['Valor líquido',fmtR(c.netValue)]);
   const acoes=[];
   if(c.invoiceUrl) acoes.push({label:'🔗 Abrir boleto/fatura',cls:'btn-accent',fn:`window.open('${c.invoiceUrl}','_blank')`});
-  if(c.invoiceUrl) acoes.push({label:'📲 Enviar por WhatsApp',cls:'btn-success',fn:`enviarWhatsApp('${c.id}')`});
+  if(c.invoiceUrl) acoes.push({label:'📲 Enviar por WhatsApp',cls:'btn-success',fn:`enviarWaCobranca('${c.id}')`});
   abrirPainel('Cobrança',linhas,acoes);
 }
 
-function enviarWhatsApp(id){
-  const c=cache.cobrancas.find(x=>x.id===id);
+function enviarWaCobranca(id){
+  const c = [...cache.cobrancas, ...(dashCache.tarefas||[]).map(t=>t.charge)].find(x => x.id === id);
   if(!c||!c.invoiceUrl) return;
   const nome=nomeCli(c.customer);
   const msg=encodeURIComponent(`Olá ${nome}! Segue o link para pagamento da sua cobrança de ${fmtR(c.value)} com vencimento em ${fmtD(c.dueDate)}: ${c.invoiceUrl}`);
   window.open(`https://wa.me/?text=${msg}`,'_blank');
 }
 
-// ── CONFIG ───────────────────────────────────────────────────────────────────
+// ── CONFIG ────────────────────────────────────────────────────────────────────
 
 function preencherConfig(){
   if(sessao?.asaasApiKey) document.getElementById('cfg-key').value=sessao.asaasApiKey;
@@ -1213,7 +1722,7 @@ async function alterarSenha(){
   }catch(e){toast('Erro: '+e.message,'err');}
 }
 
-// ── MODAL / PANEL HELPERS ────────────────────────────────────────────────────
+// ── MODAL / PANEL HELPERS ─────────────────────────────────────────────────────
 
 function abrirModal(id){document.getElementById(id).classList.add('open');}
 function fecharModal(id){document.getElementById(id).classList.remove('open');}
@@ -1236,7 +1745,7 @@ function fecharPainel(e){
     document.getElementById('panel-ov').classList.remove('open');
 }
 
-// ── BOOT ─────────────────────────────────────────────────────────────────────
+// ── BOOT ──────────────────────────────────────────────────────────────────────
 
 (function boot(){
   const p=new URLSearchParams(location.search);
