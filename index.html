@@ -220,6 +220,91 @@ tbody tr:hover { background: var(--surface2); }
   .stats-grid { grid-template-columns: 1fr; }
   .login-card { padding: 28px 20px; }
 }
+
+/* ── Nav badge ── */
+.nav-badge { background: var(--danger); color: #fff; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 6px; margin-left: auto; }
+
+/* ── Page back ── */
+.page-back { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); font-size: 13px; font-weight: 500; cursor: pointer; margin-bottom: 20px; background: none; border: none; font-family: 'Inter',sans-serif; transition: color .2s; }
+.page-back:hover { color: var(--accent2); }
+
+/* ── Score bar ── */
+.score-bar-wrap { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.score-bar { flex: 1; height: 8px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.score-bar-fill { height: 100%; border-radius: 4px; transition: width .4s ease; }
+.score-bar-fill.good { background: var(--success); }
+.score-bar-fill.warn { background: var(--warning); }
+.score-bar-fill.bad  { background: var(--danger); }
+.score-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
+
+/* ── Summary cards (client detail) ── */
+.summary-cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 24px; }
+.summary-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; }
+.summary-card .sc-label { font-size: 11px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
+.summary-card .sc-value { font-size: 18px; font-weight: 700; color: var(--white); }
+.summary-card .sc-sub { font-size: 11px; color: var(--muted); margin-top: 4px; }
+@media(max-width:768px){ .summary-cards { grid-template-columns: 1fr 1fr; } }
+@media(max-width:480px){ .summary-cards { grid-template-columns: 1fr; } }
+
+/* ── Timeline ── */
+.timeline { display: flex; flex-direction: column; gap: 0; }
+.tl-item { display: flex; align-items: center; gap: 14px; padding: 12px 0; border-bottom: 1px solid rgba(46,50,80,.5); font-size: 13px; }
+.tl-item:last-child { border-bottom: none; }
+.tl-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.tl-dot.ok { background: var(--success); }
+.tl-dot.late { background: var(--warning); }
+.tl-dot.overdue { background: var(--danger); }
+.tl-month { color: var(--muted); width: 80px; flex-shrink: 0; font-size: 12px; }
+.tl-value { font-weight: 600; color: var(--white); width: 90px; }
+.tl-status { flex: 1; }
+.tl-action { flex-shrink: 0; }
+
+/* ── Advisor box ── */
+.advisor-box { background: rgba(108,99,255,.07); border: 1px solid rgba(108,99,255,.25); border-left: 3px solid var(--accent); border-radius: 12px; padding: 18px 20px; margin: 20px 0; }
+.advisor-box h4 { font-size: 13px; font-weight: 700; color: var(--accent2); margin-bottom: 10px; }
+.advisor-text { font-size: 13px; color: var(--text); line-height: 1.6; margin-bottom: 14px; }
+.advisor-msg { background: var(--surface2); border-radius: 8px; padding: 12px 14px; font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 12px; font-style: italic; }
+
+/* ── Task cards ── */
+.task-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 14px; transition: border-color .2s; }
+.task-card.urgente { border-left: 3px solid var(--danger); }
+.task-card.esta-semana { border-left: 3px solid var(--warning); }
+.task-card.monitore { border-left: 3px solid var(--muted); }
+.task-card.resolvida { opacity: .4; pointer-events: none; }
+.urgency-tag { display: inline-block; font-size: 10px; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; padding: 3px 10px; border-radius: 20px; margin-bottom: 10px; }
+.urgency-tag.urgente { background: rgba(239,68,68,.15); color: #FCA5A5; }
+.urgency-tag.esta-semana { background: rgba(245,158,11,.15); color: #FCD34D; }
+.urgency-tag.monitore { background: rgba(136,144,181,.15); color: var(--muted); }
+.task-title { font-size: 15px; font-weight: 700; color: var(--white); margin-bottom: 4px; }
+.task-sub { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+.task-impact { font-size: 12px; color: #FCA5A5; margin-bottom: 12px; }
+.task-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+
+/* ── Filter tabs (Tarefas) ── */
+.filter-tabs { display: flex; gap: 8px; margin-bottom: 20px; flex-wrap: wrap; }
+.filter-tab { background: transparent; border: 1.5px solid var(--border); border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: 'Inter',sans-serif; transition: all .2s; }
+.filter-tab:hover { border-color: var(--accent); color: var(--text); }
+.filter-tab.active { border-color: var(--accent); background: rgba(108,99,255,.15); color: var(--accent2); }
+
+/* ── Onboarding overlay ── */
+.ob-overlay { position: fixed; inset: 0; background: var(--bg); z-index: 500; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.ob-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 480px; box-shadow: var(--shadow); }
+.ob-icon { font-size: 32px; margin-bottom: 16px; }
+.ob-title { font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 8px; }
+.ob-sub { font-size: 14px; color: var(--muted); margin-bottom: 28px; line-height: 1.5; }
+.ob-step { display: none; }
+.ob-step.active { display: block; }
+.ob-progress-item { display: flex; align-items: center; gap: 12px; padding: 10px 0; font-size: 14px; color: var(--muted); border-bottom: 1px solid rgba(46,50,80,.4); }
+.ob-progress-item:last-child { border-bottom: none; }
+.ob-progress-item.done { color: var(--text); }
+.ob-progress-item .ob-check { width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; }
+.ob-progress-item.done .ob-check { background: var(--success); border-color: var(--success); color: #fff; }
+.ob-progress-item.loading .ob-check { border-color: var(--accent); border-top-color: transparent; animation: spin .7s linear infinite; }
+.ob-insight { background: var(--surface2); border-radius: 12px; padding: 18px 20px; margin-bottom: 20px; }
+.ob-insight-row { display: flex; justify-content: space-between; padding: 6px 0; font-size: 13px; border-bottom: 1px solid rgba(46,50,80,.4); }
+.ob-insight-row:last-child { border-bottom: none; }
+.ob-insight-label { color: var(--muted); }
+.ob-insight-val { color: var(--white); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -322,6 +407,13 @@ tbody tr:hover { background: var(--surface2); }
       </div>
       <div class="nav-item" data-page="cobrancas" onclick="navegarPara('cobrancas')">
         <span class="nav-icon">💳</span> Cobranças
+      </div>
+      <div class="nav-item" data-page="tarefas" onclick="navegarPara('tarefas')">
+        <span class="nav-icon">✅</span> Tarefas
+        <span class="nav-badge" id="badge-tarefas" style="display:none">0</span>
+      </div>
+      <div class="nav-item" data-page="comissoes" onclick="navegarPara('comissoes')">
+        <span class="nav-icon">🤝</span> Comissões
       </div>
       <div class="nav-item" data-page="config" onclick="navegarPara('config')">
         <span class="nav-icon">⚙️</span> Configurações
@@ -543,6 +635,57 @@ tbody tr:hover { background: var(--surface2); }
         </div>
       </div>
 
+      <!-- ── Tarefas ── -->
+      <div class="page" id="page-tarefas">
+        <div class="page-header">
+          <h2>Tarefas</h2>
+          <button class="btn-sm btn-outline" onclick="renderTarefas()">↻ Atualizar</button>
+        </div>
+        <div class="filter-tabs">
+          <button class="filter-tab active" data-filtro="" onclick="filtrarTarefas(this)">Todas</button>
+          <button class="filter-tab" data-filtro="urgente" onclick="filtrarTarefas(this)">🔴 Urgente</button>
+          <button class="filter-tab" data-filtro="esta-semana" onclick="filtrarTarefas(this)">🟡 Esta semana</button>
+          <button class="filter-tab" data-filtro="monitore" onclick="filtrarTarefas(this)">⚪ Monitore</button>
+        </div>
+        <div id="tarefas-list"></div>
+      </div>
+
+      <!-- ── Comissões ── -->
+      <div class="page" id="page-comissoes">
+        <div class="page-header">
+          <h2>Comissões</h2>
+          <button class="btn-sm btn-outline" onclick="renderComissoes()">↻ Atualizar</button>
+        </div>
+        <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:24px">
+          <div class="stat-card success">
+            <div class="stat-label">Total confirmado</div>
+            <div class="stat-value" id="com-total" style="font-size:20px">—</div>
+            <div class="stat-sub">Cobranças recebidas com split</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-label">Previsto (pendente)</div>
+            <div class="stat-value" id="com-previsto" style="font-size:20px">—</div>
+            <div class="stat-sub">Estimativa — taxas descontadas na confirmação</div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header"><h3>Cobranças com split</h3></div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Cliente</th><th class="col-hide">Data</th><th>Valor</th><th class="col-hide">Split</th><th>Status</th></tr></thead>
+              <tbody id="comissoes-tbody"><tr class="loading-row"><td colspan="5"><div class="spinner"></div></td></tr></tbody>
+            </table>
+          </div>
+          <div class="card-list" id="comissoes-cards"></div>
+        </div>
+      </div>
+
+      <!-- ── Detalhe do Cliente ── -->
+      <div class="page" id="page-detalhe-cliente">
+        <button class="page-back" onclick="navegarPara('clientes')">← Clientes</button>
+        <div id="detalhe-cliente-body"></div>
+      </div>
+
     </div><!-- /content -->
   </div><!-- /main -->
 </div><!-- /app-screen -->
@@ -556,6 +699,56 @@ tbody tr:hover { background: var(--surface2); }
   </div>
 </div>
 
+<!-- Onboarding overlay -->
+<div class="ob-overlay" id="ob-overlay" style="display:none">
+  <div class="ob-card">
+    <!-- Step 1 -->
+    <div class="ob-step active" id="ob-step-1">
+      <div class="ob-icon">🔗</div>
+      <div class="ob-title">Conecte sua conta Asaas</div>
+      <div class="ob-sub">Seus dados vêm direto do Asaas. Não armazenamos cobranças — só lemos e organizamos para você.</div>
+      <div class="form-group">
+        <label>Chave de API Asaas</label>
+        <input type="password" id="ob-apikey" placeholder="$aact_...">
+      </div>
+      <div class="form-group">
+        <label>Ambiente</label>
+        <div class="radio-group">
+          <label class="radio-opt selected" id="ob-radio-sandbox">
+            <input type="radio" name="ob-env" value="sandbox" checked onchange="obSelecionarEnv('sandbox')"> Sandbox (testes)
+          </label>
+          <label class="radio-opt" id="ob-radio-production">
+            <input type="radio" name="ob-env" value="production" onchange="obSelecionarEnv('production')"> Produção
+          </label>
+        </div>
+      </div>
+      <div class="msg-error" id="ob-err"></div>
+      <button class="btn btn-primary" id="ob-btn-1" onclick="obConectar()">Conectar e importar dados →</button>
+      <div style="margin-top:12px;font-size:12px;color:var(--muted);text-align:center">
+        Onde encontrar: asaas.com → Configurações → API
+      </div>
+    </div>
+    <!-- Step 2 -->
+    <div class="ob-step" id="ob-step-2">
+      <div class="ob-icon">⚡</div>
+      <div class="ob-title">Importando seus dados...</div>
+      <div class="ob-sub">Isso leva menos de 30 segundos.</div>
+      <div style="margin-top:8px">
+        <div class="ob-progress-item" id="ob-prog-clientes"><div class="ob-check">1</div> Importando clientes...</div>
+        <div class="ob-progress-item" id="ob-prog-assinaturas"><div class="ob-check">2</div> Importando assinaturas...</div>
+        <div class="ob-progress-item" id="ob-prog-cobrancas"><div class="ob-check">3</div> Analisando cobranças...</div>
+      </div>
+    </div>
+    <!-- Step 3 -->
+    <div class="ob-step" id="ob-step-3">
+      <div class="ob-icon">✅</div>
+      <div class="ob-title">Pronto! Aqui está o resumo da sua base hoje:</div>
+      <div class="ob-insight" id="ob-insight"></div>
+      <button class="btn btn-primary" onclick="obConcluir()">Ir para o dashboard →</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast-container" id="toast-container"></div>
 
 <script>
@@ -563,11 +756,15 @@ const AUTH_URL    = '/.netlify/functions/auth';
 const STORAGE_URL = '/.netlify/functions/storage';
 const ASAAS_URL   = '/.netlify/functions/asaas';
 
-let sessao = null; // { email, token, asaasApiKey, env }
+let sessao = null;
 let dadosCache = { clientes: [], assinaturas: [], cobrancas: [] };
-let filtroTipoCobranca = ''; // '' | 'recorrente' | 'avulsa'
+let filtroTipoCobranca = '';
 let resetToken = null;
 let paginaAtual = 'dashboard';
+let clienteDetalheId = null;
+let clienteDetalheNome = '';
+let tarefasResolvidas = new Set();
+let filtroTarefaAtual = '';
 
 // ── Utils ────────────────────────────────────────────────────────────────────
 
@@ -807,13 +1004,15 @@ function navegarPara(pagina) {
   document.querySelectorAll('.nav-item').forEach(n => {
     n.classList.toggle('active', n.dataset.page === pagina);
   });
-  const titulos = { dashboard: 'Dashboard', clientes: 'Clientes', assinaturas: 'Assinaturas', cobrancas: 'Cobranças', config: 'Configurações' };
+  const titulos = { dashboard:'Dashboard', clientes:'Clientes', assinaturas:'Assinaturas', cobrancas:'Cobranças', tarefas:'Tarefas', comissoes:'Comissões', config:'Configurações', 'detalhe-cliente': clienteDetalheNome || 'Cliente' };
   document.getElementById('topbar-title').textContent = titulos[pagina] || pagina;
   fecharSidebar();
   if (pagina === 'dashboard') renderDashboard();
   if (pagina === 'clientes') carregarClientes();
   if (pagina === 'assinaturas') carregarAssinaturas();
   if (pagina === 'cobrancas') carregarCobrancas();
+  if (pagina === 'tarefas') renderTarefas();
+  if (pagina === 'comissoes') renderComissoes();
   if (pagina === 'config') preencherConfig();
 }
 
@@ -861,6 +1060,10 @@ function iniciarApp() {
   const av = sessao.email?.[0]?.toUpperCase() || '?';
   document.getElementById('user-avatar').textContent = av;
   document.getElementById('user-email-label').textContent = sessao.email || '';
+  if (!sessao.asaasApiKey && !sessao.onboardingCompleto) {
+    document.getElementById('ob-overlay').style.display = 'flex';
+    return;
+  }
   if (!sessao.asaasApiKey) {
     document.getElementById('alert-no-key').style.display = '';
   }
@@ -988,17 +1191,134 @@ function renderTbodyClientes() {
 function abrirDetalheCliente(id) {
   const c = dadosCache.clientes.find(x => x.id === id);
   if (!c) return;
-  abrirPainel(esc(c.name) || 'Cliente', [
-    ['Nome', esc(c.name) || '—'],
-    ['E-mail', esc(c.email) || '—'],
-    ['CPF/CNPJ', esc(c.cpfCnpj) || '—'],
-    ['Telefone', esc(c.mobilePhone || c.phone) || '—'],
-    ['Status', c.active === false ? 'Inativo' : 'Ativo'],
-    ['ID Asaas', esc(c.id)],
-  ], c.id ? 'Ver cobranças →' : null, c.id ? () => {
-    fecharPainel();
-    navegarPara('cobrancas');
-  } : null);
+  clienteDetalheId = id;
+  clienteDetalheNome = c.name || 'Cliente';
+  renderDetalheCliente(c);
+  navegarPara('detalhe-cliente');
+}
+
+function calcScore(clienteId) {
+  const pagamentos = dadosCache.cobrancas.filter(p => {
+    const cid = typeof p.customer === 'object' ? p.customer?.id : p.customer;
+    return cid === clienteId;
+  });
+  const confirmados = pagamentos.filter(p => p.status === 'RECEIVED' || p.status === 'CONFIRMED');
+  if (!confirmados.length) return { score: null, total: 0, atrasados: 0, pagamentos };
+  const atrasados = confirmados.filter(p => {
+    if (!p.paymentDate || !p.dueDate) return false;
+    return new Date(p.paymentDate) > new Date(p.dueDate);
+  }).length;
+  const score = Math.round(((confirmados.length - atrasados) / confirmados.length) * 100);
+  return { score, total: confirmados.length, atrasados, pagamentos };
+}
+
+function gerarConselheiro(clienteId, diasAtraso) {
+  const { score, total, pagamentos } = calcScore(clienteId);
+  let texto, mensagem;
+  const nome = dadosCache.clientes.find(x => x.id === clienteId)?.name?.split(' ')[0] || 'cliente';
+
+  if (total === 0) {
+    texto = 'Primeiro contato com este cliente sobre atraso. Tom amigável, informativo — pode ser apenas falta de familiaridade com o processo.';
+  } else if (score >= 80 && diasAtraso <= 7) {
+    texto = `${nome} tem ótimo histórico de pagamento. Este atraso provavelmente é pontual — esquecimento ou imprevisto. Contato leve e amigável resolve. Não force, só lembre.`;
+  } else if (score >= 50) {
+    texto = `Padrão de atrasos leves mas sempre paga. Raramente cancela — clientes assim ficam em média mais tempo. Ofereça ajustar a data de vencimento para uma data mais conveniente do mês.`;
+  } else {
+    texto = `Histórico com atrasos frequentes. Abordagem clara sobre a situação é necessária, mas sem pressão. Deixe evidente a necessidade de regularizar para manter o serviço ativo.`;
+  }
+
+  if (diasAtraso <= 3) {
+    mensagem = `Oi ${nome}! Passando só para avisar que o pagamento ainda não apareceu aqui. Às vezes cai no spam do banco 😅 Qualquer coisa é só falar!`;
+  } else if (diasAtraso <= 7) {
+    mensagem = `Olá ${nome}, tudo bem? O pagamento está em aberto há alguns dias. Consegue dar uma olhada? Se precisar de prazo extra, me avisa!`;
+  } else {
+    mensagem = `Olá ${nome}, o pagamento está em aberto há ${diasAtraso} dias. Para manter o serviço ativo precisamos regularizar. Se quiser conversar sobre algum acordo, estou aqui.`;
+  }
+
+  return { texto, mensagem, score };
+}
+
+function renderDetalheCliente(c) {
+  const { score, total, atrasados, pagamentos } = calcScore(c.id);
+  const assinatura = dadosCache.assinaturas.find(a => {
+    const cid = typeof a.customer === 'object' ? a.customer?.id : a.customer;
+    return cid === c.id && a.status === 'ACTIVE';
+  });
+
+  const mesesCliente = c.dateCreated ? Math.floor((Date.now() - new Date(c.dateCreated)) / (1000 * 60 * 60 * 24 * 30)) : null;
+  const totalPago = pagamentos.filter(p => p.status === 'RECEIVED' || p.status === 'CONFIRMED').reduce((s, p) => s + (p.value || 0), 0);
+  const ultimoPag = pagamentos.filter(p => p.paymentDate).sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate))[0];
+  const telefone = c.mobilePhone || c.phone || '';
+  const scoreClass = score === null ? 'warn' : score >= 80 ? 'good' : score >= 50 ? 'warn' : 'bad';
+  const scoreBadge = score === null ? '' : score >= 80 ? '<span class="badge badge-success">Em dia</span>' : score >= 50 ? '<span class="badge badge-warning">Atenção</span>' : '<span class="badge badge-danger">Risco alto</span>';
+
+  const timeline = [...pagamentos]
+    .sort((a, b) => new Date(b.dueDate) - new Date(a.dueDate))
+    .slice(0, 12);
+
+  const timelineHtml = timeline.length ? timeline.map(p => {
+    const isOverdue = p.status === 'OVERDUE';
+    const isLate = (p.status === 'RECEIVED' || p.status === 'CONFIRMED') && p.paymentDate && new Date(p.paymentDate) > new Date(p.dueDate);
+    const diasAtrasoPag = isOverdue ? Math.floor((Date.now() - new Date(p.dueDate)) / 86400000) : 0;
+    const dotClass = isOverdue ? 'overdue' : isLate ? 'late' : 'ok';
+    const statusTxt = isOverdue ? `<span style="color:#FCA5A5">ATRASADO ${diasAtrasoPag}d</span>` : isLate ? `<span style="color:#FCD34D">Pago com atraso</span>` : `<span style="color:#86EFAC">Pago em ${fmtData(p.paymentDate)}</span>`;
+    const mes = p.dueDate ? (() => { const [y,m] = p.dueDate.split('-'); return `${m}/${y}`; })() : '—';
+    const waBtn = isOverdue && telefone ? `<a href="https://wa.me/55${telefone.replace(/\D/g,'')}" target="_blank" class="btn-sm btn-outline" style="font-size:11px;padding:4px 10px">💬 Cobrar</a>` : '';
+    return `<div class="tl-item"><div class="tl-dot ${dotClass}"></div><div class="tl-month">${mes}</div><div class="tl-value">${fmt(p.value)}</div><div class="tl-status">${statusTxt}</div><div class="tl-action">${waBtn}</div></div>`;
+  }).join('') : '<div class="no-data">Nenhuma cobrança encontrada para este cliente.</div>';
+
+  const { texto: consText, mensagem: consMensagem } = gerarConselheiro(c.id, 0);
+  const waLink = telefone ? `https://wa.me/55${telefone.replace(/\D/g,'')}` : '#';
+
+  document.getElementById('detalhe-cliente-body').innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px">
+      <div style="display:flex;align-items:center;gap:16px">
+        <div style="width:52px;height:52px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#fff;flex-shrink:0">${esc(c.name?.[0]?.toUpperCase()) || '?'}</div>
+        <div>
+          <div style="font-size:20px;font-weight:700;color:var(--white)">${esc(c.name) || '—'}</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">${mesesCliente !== null ? `Cliente há ${mesesCliente} meses` : ''} · ${esc(c.cpfCnpj) || ''}</div>
+          ${assinatura ? `<div style="font-size:13px;color:var(--muted);margin-top:2px">${esc(assinatura.description || 'Assinatura')} · ${fmt(assinatura.value)}/mês</div>` : ''}
+          <div class="score-bar-wrap" style="margin-top:8px">
+            <div class="score-bar"><div class="score-bar-fill ${scoreClass}" style="width:${score ?? 50}%"></div></div>
+            <span class="score-label">Pontualidade: ${score !== null ? score + '%' : '—'}</span>
+            ${scoreBadge}
+          </div>
+        </div>
+      </div>
+      ${telefone ? `<a href="${waLink}" target="_blank" class="btn-sm btn-accent">💬 WhatsApp</a>` : ''}
+    </div>
+
+    <div class="summary-cards">
+      <div class="summary-card"><div class="sc-label">Total pago</div><div class="sc-value">${fmt(totalPago)}</div></div>
+      <div class="summary-card"><div class="sc-label">Mensalidade</div><div class="sc-value">${assinatura ? fmt(assinatura.value) : '—'}</div><div class="sc-sub">${assinatura ? (assinatura.cycle || assinatura.billingType || '') : ''}</div></div>
+      <div class="summary-card"><div class="sc-label">Cliente desde</div><div class="sc-value">${c.dateCreated ? fmtData(c.dateCreated) : '—'}</div></div>
+      <div class="summary-card"><div class="sc-label">Último pagamento</div><div class="sc-value">${ultimoPag ? fmtData(ultimoPag.paymentDate) : '—'}</div></div>
+    </div>
+
+    <div class="advisor-box">
+      <h4>🧠 Conselheiro</h4>
+      <div class="advisor-text">${esc(consText)}</div>
+      <div class="advisor-msg">"${esc(consMensagem)}"</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn-sm btn-outline" onclick="navigator.clipboard.writeText(${JSON.stringify(consMensagem)}).then(()=>toast('Mensagem copiada!','success'))">📋 Copiar</button>
+        ${telefone ? `<a href="https://wa.me/55${telefone.replace(/\D/g,'')}?text=${encodeURIComponent(consMensagem)}" target="_blank" class="btn-sm btn-accent">💬 Enviar via WhatsApp</a>` : ''}
+      </div>
+    </div>
+
+    <div class="table-card" style="margin-top:24px">
+      <div class="table-card-header"><h3>Linha do tempo de pagamentos</h3></div>
+      <div style="padding:0 20px 16px"><div class="timeline">${timelineHtml}</div></div>
+    </div>
+
+    <div class="table-card" style="margin-top:20px">
+      <div class="table-card-header"><h3>Informações de contato</h3></div>
+      <div style="padding:0 4px">
+        <div class="detail-row"><span class="detail-label">E-mail</span><span class="detail-value">${esc(c.email) || '—'}</span></div>
+        <div class="detail-row"><span class="detail-label">Telefone</span><span class="detail-value">${esc(telefone) || '—'}</span></div>
+        <div class="detail-row"><span class="detail-label">CPF/CNPJ</span><span class="detail-value">${esc(c.cpfCnpj) || '—'}</span></div>
+        <div class="detail-row"><span class="detail-label">ID Asaas</span><span class="detail-value" style="font-size:11px">${esc(c.id) || '—'}</span></div>
+      </div>
+    </div>`;
 }
 
 // ── Assinaturas ──────────────────────────────────────────────────────────────
@@ -1068,6 +1388,7 @@ async function carregarCobrancasCache(filtroStatus) {
   if (!filtroStatus) {
     dadosCache.cobrancas = data?.data || [];
     atualizarBadgesTipo();
+    atualizarBadgeTarefas();
   }
   return data?.data || [];
 }
@@ -1225,6 +1546,258 @@ async function alterarSenha() {
   } catch(e) {
     toast('Erro: ' + e.message, 'error');
   }
+}
+
+// ── Tarefas ──────────────────────────────────────────────────────────────────
+
+function atualizarBadgeTarefas() {
+  const overdue = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE');
+  const uniqueClientes = new Set(overdue.map(c => typeof c.customer === 'object' ? c.customer?.id : c.customer));
+  const count = uniqueClientes.size;
+  const badge = document.getElementById('badge-tarefas');
+  if (!badge) return;
+  badge.textContent = count;
+  badge.style.display = count > 0 ? '' : 'none';
+}
+
+function filtrarTarefas(btn) {
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  filtroTarefaAtual = btn.dataset.filtro;
+  renderTarefas();
+}
+
+async function renderTarefas() {
+  const container = document.getElementById('tarefas-list');
+  if (!container) return;
+  if (!sessao?.asaasApiKey) {
+    container.innerHTML = '<div class="no-data">Configure a chave Asaas em Configurações.</div>';
+    return;
+  }
+  container.innerHTML = '<div class="no-data"><div class="spinner"></div></div>';
+  try {
+    if (!dadosCache.clientes.length) await carregarClientesCache();
+    if (!dadosCache.assinaturas.length) await carregarAssinaturasCache();
+    if (!dadosCache.cobrancas.length) await carregarCobrancasCache();
+  } catch(e) { /* usa cache parcial */ }
+
+  const overdue = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE');
+  const porCliente = new Map();
+  for (const cob of overdue) {
+    const cid = typeof cob.customer === 'object' ? cob.customer?.id : cob.customer;
+    if (!cid) continue;
+    if (!porCliente.has(cid)) porCliente.set(cid, []);
+    porCliente.get(cid).push(cob);
+  }
+
+  const tarefas = [];
+  for (const [cid, cobs] of porCliente) {
+    if (tarefasResolvidas.has(cid)) continue;
+    const maxDias = Math.max(...cobs.map(c => Math.floor((Date.now() - new Date(c.dueDate)) / 86400000)));
+    const urgencia = maxDias >= 8 ? 'urgente' : maxDias >= 4 ? 'esta-semana' : 'monitore';
+    tarefas.push({ cid, cobs, maxDias, urgencia });
+  }
+  tarefas.sort((a, b) => b.maxDias - a.maxDias);
+  atualizarBadgeTarefas();
+
+  const filtradas = filtroTarefaAtual ? tarefas.filter(t => t.urgencia === filtroTarefaAtual) : tarefas;
+
+  if (!filtradas.length) {
+    container.innerHTML = '<div class="empty-state"><div class="empty-icon">🎉</div><h3>Nada pendente hoje</h3><p>Sua base está saudável.</p></div>';
+    return;
+  }
+
+  container.innerHTML = filtradas.map(({ cid, cobs, maxDias, urgencia }) => {
+    const cliente = dadosCache.clientes.find(x => x.id === cid);
+    const nome = esc(cliente?.name || 'Cliente desconhecido');
+    const telefone = (cliente?.mobilePhone || cliente?.phone || '').replace(/\D/g, '');
+    const assinatura = dadosCache.assinaturas.find(a => {
+      const aid = typeof a.customer === 'object' ? a.customer?.id : a.customer;
+      return aid === cid && a.status === 'ACTIVE';
+    });
+    const valorAnual = assinatura ? fmt(assinatura.value * 12) : null;
+    const { texto, mensagem } = gerarConselheiro(cid, maxDias);
+    const urgLabel = urgencia === 'urgente' ? '🔴 URGENTE' : urgencia === 'esta-semana' ? '🟡 ESTA SEMANA' : '⚪ MONITORE';
+    const waUrl = telefone ? `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}` : '';
+
+    return `<div class="task-card ${urgencia}" id="task-${cid}">
+      <div><span class="urgency-tag ${urgencia}">${urgLabel}</span></div>
+      <div class="task-title">${nome} — atrasado ${maxDias} dia${maxDias !== 1 ? 's' : ''}</div>
+      <div class="task-sub">${cobs.length} cobrança${cobs.length !== 1 ? 's' : ''} em aberto · ${fmt(cobs.reduce((s,c) => s+(c.value||0),0))} total</div>
+      ${valorAnual ? `<div class="task-impact">⚠ Se cancelar, você perde ${valorAnual}/ano</div>` : ''}
+      <div class="advisor-box" style="margin:14px 0 0">
+        <h4>🧠 Como abordar</h4>
+        <div class="advisor-text">${esc(texto)}</div>
+        <div class="advisor-msg">"${esc(mensagem)}"</div>
+        <button class="btn-sm btn-outline" style="font-size:12px" onclick="navigator.clipboard.writeText(${JSON.stringify(mensagem)}).then(()=>toast('Copiado!','success'))">📋 Copiar mensagem</button>
+      </div>
+      <div class="task-actions">
+        ${waUrl ? `<a href="${waUrl}" target="_blank" class="btn-sm btn-accent">💬 Abrir WhatsApp</a>` : ''}
+        <button class="btn-sm btn-outline" onclick="abrirDetalheCliente('${cid}')">Ver histórico</button>
+        <button class="btn-sm btn-outline" onclick="marcarTarefaResolvida('${cid}')">✓ Marcar resolvido</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function marcarTarefaResolvida(cid) {
+  tarefasResolvidas.add(cid);
+  const el = document.getElementById('task-' + cid);
+  if (el) {
+    el.style.transition = 'opacity .4s, transform .4s';
+    el.style.opacity = '0';
+    el.style.transform = 'translateX(40px)';
+    setTimeout(() => el.remove(), 420);
+  }
+  atualizarBadgeTarefas();
+  toast('Tarefa marcada como resolvida.', 'success');
+}
+
+// ── Comissões ────────────────────────────────────────────────────────────────
+
+async function renderComissoes() {
+  const tbody = document.getElementById('comissoes-tbody');
+  const cards = document.getElementById('comissoes-cards');
+  if (!tbody) return;
+  if (!sessao?.asaasApiKey) {
+    setTbody('comissoes-tbody', 5, 'Configure a chave Asaas em Configurações.');
+    return;
+  }
+  setTbody('comissoes-tbody', 5, null);
+  try {
+    if (!dadosCache.clientes.length) await carregarClientesCache();
+    if (!dadosCache.cobrancas.length) await carregarCobrancasCache();
+  } catch(e) { setTbody('comissoes-tbody', 5, '⚠️ ' + e.message); return; }
+
+  const comSplit = dadosCache.cobrancas.filter(c => c.split && c.split.length > 0);
+  const confirmadas = comSplit.filter(c => c.status === 'RECEIVED' || c.status === 'CONFIRMED');
+  const pendentes = comSplit.filter(c => c.status === 'PENDING');
+
+  const totalSplit = confirmadas.reduce((s, c) => {
+    const splitVal = c.split.reduce((ss, sp) => ss + (sp.fixedValue || 0), 0);
+    return s + splitVal;
+  }, 0);
+  const totalPrev = pendentes.reduce((s, c) => {
+    const splitVal = c.split.reduce((ss, sp) => ss + (sp.fixedValue || 0), 0);
+    return s + splitVal;
+  }, 0);
+
+  const el1 = document.getElementById('com-total');
+  const el2 = document.getElementById('com-previsto');
+  if (el1) el1.textContent = fmt(totalSplit);
+  if (el2) el2.textContent = fmt(totalPrev);
+
+  if (!comSplit.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="no-data">Nenhuma cobrança com split encontrada.<br><small style="color:var(--muted)">Configure parceiros em Configurações e aplique split ao criar assinaturas.</small></td></tr>`;
+    if (cards) cards.innerHTML = '';
+    return;
+  }
+
+  tbody.innerHTML = comSplit.slice(0, 50).map(c => {
+    const splitInfo = c.split.map(s => `${s.walletId?.slice(0,8)}… ${s.fixedValue ? fmt(s.fixedValue) : (s.percentualValue ? s.percentualValue + '%' : '')}`).join(', ');
+    return `<tr onclick="abrirDetalheCobranca('${c.id}')">
+      <td>${nomeCliente(c.customer)}</td>
+      <td class="col-hide">${fmtData(c.dueDate)}</td>
+      <td>${fmt(c.value)}</td>
+      <td class="col-hide" style="font-size:11px;color:var(--muted)">${esc(splitInfo)}</td>
+      <td>${badgeStatus(c.status)}</td>
+    </tr>`;
+  }).join('');
+
+  if (cards) {
+    cards.innerHTML = comSplit.slice(0, 20).map(c => `
+      <div class="list-card" onclick="abrirDetalheCobranca('${c.id}')">
+        <div class="list-card-top"><span class="list-card-name">${nomeCliente(c.customer)}</span>${badgeStatus(c.status)}</div>
+        <div class="list-card-sub">${fmt(c.value)} · venc. ${fmtData(c.dueDate)}</div>
+      </div>`).join('');
+  }
+}
+
+// ── Onboarding ───────────────────────────────────────────────────────────────
+
+function obSelecionarEnv(env) {
+  document.getElementById('ob-radio-sandbox').classList.toggle('selected', env === 'sandbox');
+  document.getElementById('ob-radio-production').classList.toggle('selected', env === 'production');
+}
+
+async function obConectar() {
+  const apiKey = document.getElementById('ob-apikey').value.trim();
+  const env = document.querySelector('input[name="ob-env"]:checked')?.value || 'sandbox';
+  const errEl = document.getElementById('ob-err');
+  errEl.style.display = 'none';
+  if (!apiKey) { errEl.textContent = 'Informe a chave de API.'; errEl.style.display = ''; return; }
+
+  const btn = document.getElementById('ob-btn-1');
+  btn.disabled = true; btn.textContent = 'Conectando…';
+
+  // Salva temporariamente para usar asaasAPI
+  sessao.asaasApiKey = apiKey;
+  sessao.env = env;
+
+  try {
+    await asaasAPI('GET', '/customers', null, { limit: 1 });
+  } catch(e) {
+    errEl.textContent = 'Chave inválida ou sem conexão: ' + e.message;
+    errEl.style.display = '';
+    btn.disabled = false; btn.textContent = 'Conectar e importar dados →';
+    sessao.asaasApiKey = '';
+    return;
+  }
+
+  // Vai para step 2
+  document.getElementById('ob-step-1').classList.remove('active');
+  document.getElementById('ob-step-2').classList.add('active');
+  btn.disabled = false;
+
+  const setProgresso = (id, estado) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.classList.toggle('done', estado === 'done');
+    el.classList.toggle('loading', estado === 'loading');
+    if (estado === 'done') el.querySelector('.ob-check').textContent = '✓';
+  };
+
+  setProgresso('ob-prog-clientes', 'loading');
+  try { await carregarClientesCache(); } catch(e) {}
+  setProgresso('ob-prog-clientes', 'done');
+
+  setProgresso('ob-prog-assinaturas', 'loading');
+  try { await carregarAssinaturasCache(); } catch(e) {}
+  setProgresso('ob-prog-assinaturas', 'done');
+
+  setProgresso('ob-prog-cobrancas', 'loading');
+  try { await carregarCobrancasCache(); } catch(e) {}
+  setProgresso('ob-prog-cobrancas', 'done');
+
+  // Salva config
+  salvarSessao({ ...sessao, asaasApiKey: apiKey, env });
+  storageSet('config', { apiKey, env }).catch(() => {});
+
+  // Calcula insights
+  const nClientes = dadosCache.clientes.length;
+  const ativas = dadosCache.assinaturas.filter(a => a.status === 'ACTIVE');
+  const agora = new Date();
+  const mesAtual = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}`;
+  const recebido = dadosCache.cobrancas.filter(c => (c.status==='RECEIVED'||c.status==='CONFIRMED') && (c.paymentDate||'').startsWith(mesAtual)).reduce((s,c) => s+(c.value||0), 0);
+  const atrasado = dadosCache.cobrancas.filter(c => c.status==='OVERDUE').reduce((s,c) => s+(c.value||0), 0);
+  const nAtencao = new Set(dadosCache.cobrancas.filter(c=>c.status==='OVERDUE').map(c=>typeof c.customer==='object'?c.customer?.id:c.customer)).size;
+
+  document.getElementById('ob-insight').innerHTML = `
+    <div class="ob-insight-row"><span class="ob-insight-label">Clientes importados</span><span class="ob-insight-val">${nClientes}</span></div>
+    <div class="ob-insight-row"><span class="ob-insight-label">Assinaturas ativas</span><span class="ob-insight-val">${ativas.length}</span></div>
+    <div class="ob-insight-row"><span class="ob-insight-label">Receita este mês</span><span class="ob-insight-val">${fmt(recebido)}</span></div>
+    <div class="ob-insight-row"><span class="ob-insight-label">Em atraso</span><span class="ob-insight-val" style="color:#FCA5A5">${fmt(atrasado)}</span></div>
+    ${nAtencao ? `<div class="ob-insight-row"><span class="ob-insight-label">🚨 Precisam de atenção</span><span class="ob-insight-val" style="color:#FCA5A5">${nAtencao} clientes</span></div>` : ''}`;
+
+  document.getElementById('ob-step-2').classList.remove('active');
+  document.getElementById('ob-step-3').classList.add('active');
+}
+
+function obConcluir() {
+  salvarSessao({ ...sessao, onboardingCompleto: true });
+  document.getElementById('ob-overlay').style.display = 'none';
+  document.getElementById('alert-no-key').style.display = 'none';
+  navegarPara('dashboard');
 }
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
