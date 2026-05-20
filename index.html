@@ -1,83 +1,1259 @@
-const https = require('https');
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recorre Hub — CRM de Assinaturas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0F1117;
+  --surface: #1A1D27;
+  --surface2: #22263A;
+  --border: #2E3250;
+  --accent: #6C63FF;
+  --accent2: #8B85FF;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --text: #E8EAFF;
+  --muted: #8890B5;
+  --white: #FFFFFF;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-exports.handler = async (event) => {
-  const headers = {
-    'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type',
-    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-    'Content-Type': 'application/json'
+/* ── Login ── */
+#login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: var(--shadow); }
+.brand { text-align: center; margin-bottom: 32px; }
+.brand-icon { width: 48px; height: 48px; background: var(--accent); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 20px; }
+.brand h1 { font-size: 22px; font-weight: 700; color: var(--white); }
+.brand p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.login-tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+.login-tab { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all .2s; }
+.login-tab.active { background: var(--accent); color: var(--white); }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.form-group input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); transition: border-color .2s; outline: none; }
+.form-group input:focus { border-color: var(--accent); }
+.btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.btn-primary { background: var(--accent); color: var(--white); }
+.btn-primary:hover { background: var(--accent2); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.auth-link { text-align: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
+.auth-link a { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+.auth-link a:hover { text-decoration: underline; }
+.msg-error { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #FCA5A5; margin-bottom: 14px; display: none; }
+.msg-success { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #86EFAC; margin-bottom: 14px; display: none; }
+
+/* ── App layout ── */
+#app-screen { display: none; min-height: 100vh; }
+
+/* ── Sidebar ── */
+#sidebar {
+  width: 240px; min-width: 240px; background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh;
+  z-index: 100; transition: transform .25s ease;
+}
+.sidebar-brand { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.sidebar-brand-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.sidebar-brand-name { font-size: 16px; font-weight: 700; color: var(--white); }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all .2s; color: var(--muted); font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: rgba(108,99,255,.18); color: var(--accent2); }
+.nav-item .nav-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
+.sidebar-footer { padding: 14px 10px; border-top: 1px solid var(--border); }
+.sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; }
+.user-avatar { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--white); flex-shrink: 0; }
+.user-email { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn-logout { width: 100%; margin-top: 8px; padding: 8px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 13px; cursor: pointer; transition: all .2s; font-family: 'Inter', sans-serif; }
+.btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── Main area ── */
+.main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; }
+#menu-btn { display: none; background: transparent; border: none; color: var(--text); font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; }
+.topbar-title { font-size: 16px; font-weight: 600; color: var(--white); }
+.content { padding: 24px; flex: 1; }
+
+/* ── Pages ── */
+.page { display: none; }
+.page.active { display: block; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.page-header h2 { font-size: 20px; font-weight: 700; color: var(--white); }
+
+/* ── Stats ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+.stat-label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.stat-value { font-size: 26px; font-weight: 700; color: var(--white); line-height: 1; }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.stat-card.accent { border-color: rgba(108,99,255,.4); background: rgba(108,99,255,.08); }
+.stat-card.success { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.06); }
+.stat-card.warning { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.06); }
+.stat-card.danger { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.06); }
+
+/* ── Badges ── */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.badge-success { background: rgba(34,197,94,.15); color: #86EFAC; }
+.badge-warning { background: rgba(245,158,11,.15); color: #FCD34D; }
+.badge-danger  { background: rgba(239,68,68,.15); color: #FCA5A5; }
+.badge-muted   { background: rgba(136,144,181,.15); color: var(--muted); }
+.badge-accent  { background: rgba(108,99,255,.15); color: var(--accent2); }
+
+/* ── Table ── */
+.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.table-card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.table-card-header h3 { font-size: 14px; font-weight: 600; color: var(--white); }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+th { padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); background: var(--bg); white-space: nowrap; }
+td { padding: 13px 16px; font-size: 13px; color: var(--text); border-bottom: 1px solid rgba(46,50,80,.5); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+tbody tr { cursor: pointer; transition: background .15s; }
+tbody tr:hover { background: var(--surface2); }
+.no-data { padding: 48px 20px; text-align: center; color: var(--muted); font-size: 14px; }
+
+/* ── Cards list (mobile alternative) ── */
+.card-list { display: none; }
+.list-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: background .15s; }
+.list-card:hover { background: var(--surface2); }
+.list-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.list-card-name { font-size: 14px; font-weight: 600; color: var(--white); }
+.list-card-sub { font-size: 12px; color: var(--muted); }
+
+/* ── Action buttons ── */
+.btn-sm { padding: 7px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; }
+.btn-accent { background: var(--accent); color: var(--white); }
+.btn-accent:hover { background: var(--accent2); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent2); }
+
+/* ── Config section ── */
+.config-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+.config-section h3 { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+.radio-opt { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all .2s; }
+.radio-opt input[type=radio] { accent-color: var(--accent); width: 15px; height: 15px; }
+.radio-opt.selected { border-color: var(--accent); color: var(--accent2); }
+.conn-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+.conn-ok { background: rgba(34,197,94,.15); color: #86EFAC; }
+.conn-err { background: rgba(239,68,68,.15); color: #FCA5A5; }
+.conn-testing { background: rgba(245,158,11,.15); color: #FCD34D; }
+
+/* ── Loading spinner ── */
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(108,99,255,.3); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-row td { text-align: center; padding: 40px; }
+
+/* ── Toast ── */
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-size: 13px; color: var(--text); box-shadow: var(--shadow); animation: slideIn .25s ease; max-width: 320px; }
+.toast.success { border-color: rgba(34,197,94,.4); color: #86EFAC; }
+.toast.error { border-color: rgba(239,68,68,.4); color: #FCA5A5; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+
+/* ── Empty state ── */
+.empty-state { text-align: center; padding: 60px 24px; }
+.empty-state .empty-icon { font-size: 40px; margin-bottom: 16px; }
+.empty-state h3 { font-size: 16px; font-weight: 600; color: var(--white); margin-bottom: 8px; }
+.empty-state p { font-size: 13px; color: var(--muted); }
+
+/* ── Alert banner ── */
+.alert-banner { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: #FCD34D; display: none; }
+.alert-banner a { color: #FCD34D; font-weight: 600; cursor: pointer; text-decoration: underline; }
+
+/* ── Detail panel (slide-in) ── */
+.panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 200; display: none; }
+.panel-overlay.open { display: block; }
+.detail-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 420px; background: var(--surface); border-left: 1px solid var(--border); z-index: 201; padding: 24px; overflow-y: auto; transform: translateX(100%); transition: transform .25s ease; }
+.panel-overlay.open .detail-panel { transform: translateX(0); }
+.panel-close { position: absolute; top: 18px; right: 18px; background: transparent; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; }
+.panel-title { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 20px; padding-right: 40px; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: var(--muted); font-weight: 500; }
+.detail-value { color: var(--text); font-weight: 600; text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn-full { width: 100%; margin-top: 16px; padding: 11px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; }
+.btn-accent-full { background: var(--accent); color: var(--white); }
+.btn-accent-full:hover { background: var(--accent2); }
+
+/* ── Tipo tabs (Cobranças) ── */
+.tipo-tabs { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+.tipo-tab { background: transparent; border: 1.5px solid var(--border); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; display: flex; align-items: center; gap: 6px; }
+.tipo-tab:hover { border-color: var(--accent); color: var(--text); }
+.tipo-tab.active { border-color: var(--accent); background: rgba(108,99,255,.15); color: var(--accent2); }
+.badge-count { background: var(--surface2); border-radius: 10px; padding: 1px 7px; font-size: 11px; font-weight: 700; }
+.tipo-tab.active .badge-count { background: rgba(108,99,255,.25); }
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 768px) {
+  #sidebar {
+    transform: translateX(-100%);
+    width: 260px;
+    min-width: 260px;
+  }
+  #sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  #menu-btn { display: block; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat-card { padding: 14px 16px; }
+  .stat-value { font-size: 20px; }
+  .content { padding: 16px; }
+  .page-header h2 { font-size: 17px; }
+  .table-wrap table { display: none; }
+  .card-list { display: block; }
+  td, th { padding: 10px 12px; }
+  .col-hide { display: none; }
+  .detail-panel { max-width: 100%; }
+}
+
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .login-card { padding: 28px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Login Screen ── -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-icon">🔄</div>
+      <h1>Recorre Hub</h1>
+      <p>CRM de Assinaturas Asaas</p>
+    </div>
+
+    <div class="login-tabs">
+      <div class="login-tab active" id="tab-login" onclick="trocarTab('login')">Entrar</div>
+      <div class="login-tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Cadastrar</div>
+    </div>
+
+    <!-- Login form -->
+    <div id="form-login">
+      <div class="msg-error" id="login-err"></div>
+      <div class="msg-success" id="login-ok"></div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="login-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerLogin()">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
+      </div>
+      <button class="btn btn-primary" id="btn-login" onclick="fazerLogin()">Entrar</button>
+      <div class="auth-link" style="margin-top:12px">
+        <a onclick="trocarTab('forgot')">Esqueci minha senha</a>
+      </div>
+    </div>
+
+    <!-- Register form -->
+    <div id="form-cadastro" style="display:none">
+      <div class="msg-error" id="cad-err"></div>
+      <div class="msg-success" id="cad-ok"></div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="cad-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerCadastro()">
+      </div>
+      <div class="form-group">
+        <label>Senha</label>
+        <input type="password" id="cad-senha" placeholder="mín. 6 caracteres" onkeydown="if(event.key==='Enter')fazerCadastro()">
+      </div>
+      <div class="form-group">
+        <label>Código de acesso</label>
+        <input type="text" id="cad-invite" placeholder="Código fornecido pela equipe" onkeydown="if(event.key==='Enter')fazerCadastro()">
+      </div>
+      <button class="btn btn-primary" id="btn-cad" onclick="fazerCadastro()">Criar conta</button>
+    </div>
+
+    <!-- Forgot password form -->
+    <div id="form-forgot" style="display:none">
+      <div class="msg-error" id="forgot-err"></div>
+      <div class="msg-success" id="forgot-ok"></div>
+      <div class="form-group">
+        <label>E-mail</label>
+        <input type="email" id="forgot-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')enviarReset()">
+      </div>
+      <button class="btn btn-primary" id="btn-forgot" onclick="enviarReset()">Enviar link de recuperação</button>
+      <div class="auth-link" style="margin-top:12px">
+        <a onclick="trocarTab('login')">← Voltar para login</a>
+      </div>
+    </div>
+
+    <!-- Reset password form -->
+    <div id="form-reset" style="display:none">
+      <div class="msg-error" id="reset-err"></div>
+      <div class="msg-success" id="reset-ok"></div>
+      <div class="form-group">
+        <label>Nova senha</label>
+        <input type="password" id="reset-senha" placeholder="mín. 6 caracteres" onkeydown="if(event.key==='Enter')resetarSenha()">
+      </div>
+      <button class="btn btn-primary" id="btn-reset" onclick="resetarSenha()">Redefinir senha</button>
+    </div>
+  </div>
+</div>
+
+<!-- ── App Screen ── -->
+<div id="app-screen">
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <div class="sidebar-brand">
+      <div class="sidebar-brand-icon">🔄</div>
+      <span class="sidebar-brand-name">Recorre Hub</span>
+    </div>
+    <nav class="sidebar-nav">
+      <div class="nav-item active" data-page="dashboard" onclick="navegarPara('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" data-page="clientes" onclick="navegarPara('clientes')">
+        <span class="nav-icon">👥</span> Clientes
+      </div>
+      <div class="nav-item" data-page="assinaturas" onclick="navegarPara('assinaturas')">
+        <span class="nav-icon">🔁</span> Assinaturas
+      </div>
+      <div class="nav-item" data-page="cobrancas" onclick="navegarPara('cobrancas')">
+        <span class="nav-icon">💳</span> Cobranças
+      </div>
+      <div class="nav-item" data-page="config" onclick="navegarPara('config')">
+        <span class="nav-icon">⚙️</span> Configurações
+      </div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-email" id="user-email-label">—</div>
+      </div>
+      <button class="btn-logout" onclick="fazerLogout()">Sair da conta</button>
+    </div>
+  </div>
+
+  <!-- Overlay for mobile sidebar -->
+  <div id="sidebar-overlay" onclick="fecharSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;"></div>
+
+  <!-- Main area -->
+  <div class="main">
+    <div class="topbar">
+      <button id="menu-btn" onclick="toggleSidebar()">☰</button>
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
+    </div>
+
+    <div class="content">
+      <!-- Alert: API key missing -->
+      <div class="alert-banner" id="alert-no-key">
+        ⚠️ Configure sua chave Asaas em <a onclick="navegarPara('config')">Configurações</a> para começar.
+      </div>
+
+      <!-- ── Dashboard ── -->
+      <div class="page active" id="page-dashboard">
+        <div id="dash-erros" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#FCA5A5;word-break:break-all;"></div>
+        <div class="stats-grid">
+          <div class="stat-card accent">
+            <div class="stat-label">MRR</div>
+            <div class="stat-value" id="stat-mrr" style="font-size:20px">—</div>
+            <div class="stat-sub"><span id="stat-ativas">—</span> assinaturas ativas</div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-label">Receita recebida</div>
+            <div class="stat-value" id="stat-recebido" style="font-size:20px">—</div>
+            <div class="stat-sub">Cobranças confirmadas (mês)</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-label">A receber</div>
+            <div class="stat-value" id="stat-pendentes" style="font-size:20px">—</div>
+            <div class="stat-sub">Cobranças de assinaturas pendentes</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-label">Vencidas</div>
+            <div class="stat-value" id="stat-vencidas">—</div>
+            <div class="stat-sub">Cobranças em atraso</div>
+          </div>
+        </div>
+
+        <div class="table-card">
+          <div class="table-card-header">
+            <h3>Cobranças recentes</h3>
+            <button class="btn-sm btn-outline" onclick="navegarPara('cobrancas')">Ver todas →</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th class="col-hide">Vencimento</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="dash-cobrancas-tbody">
+                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <!-- Mobile cards -->
+          <div class="card-list" id="dash-cobrancas-cards"></div>
+        </div>
+      </div>
+
+      <!-- ── Clientes ── -->
+      <div class="page" id="page-clientes">
+        <div class="page-header">
+          <h2>Clientes</h2>
+          <button class="btn-sm btn-outline" onclick="carregarClientes()">↻ Atualizar</button>
+        </div>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nome</th>
+                  <th class="col-hide">E-mail</th>
+                  <th class="col-hide">CPF/CNPJ</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="clientes-tbody">
+                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-list" id="clientes-cards"></div>
+        </div>
+      </div>
+
+      <!-- ── Assinaturas ── -->
+      <div class="page" id="page-assinaturas">
+        <div class="page-header">
+          <h2>Assinaturas</h2>
+          <button class="btn-sm btn-outline" onclick="carregarAssinaturas()">↻ Atualizar</button>
+        </div>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th class="col-hide">Ciclo</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody id="assinaturas-tbody">
+                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-list" id="assinaturas-cards"></div>
+        </div>
+      </div>
+
+      <!-- ── Cobranças ── -->
+      <div class="page" id="page-cobrancas">
+        <div class="page-header">
+          <h2>Cobranças</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="filtro-status" onchange="filtrarCobrancas()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;">
+              <option value="">Todos os status</option>
+              <option value="PENDING">Pendentes</option>
+              <option value="RECEIVED">Recebidas</option>
+              <option value="OVERDUE">Vencidas</option>
+              <option value="REFUNDED">Estornadas</option>
+            </select>
+            <button class="btn-sm btn-outline" onclick="carregarCobrancas()">↻ Atualizar</button>
+          </div>
+        </div>
+        <div class="tipo-tabs">
+          <button class="tipo-tab active" data-tipo="" onclick="filtrarTipoCobranca(this)">
+            Todas <span class="badge-count" id="count-todas">—</span>
+          </button>
+          <button class="tipo-tab" data-tipo="recorrente" onclick="filtrarTipoCobranca(this)">
+            Recorrentes <span class="badge-count" id="count-recorrentes">—</span>
+          </button>
+          <button class="tipo-tab" data-tipo="avulsa" onclick="filtrarTipoCobranca(this)">
+            Avulsas <span class="badge-count" id="count-avulsas">—</span>
+          </button>
+        </div>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th class="col-hide">Vencimento</th>
+                  <th>Valor</th>
+                  <th>Status</th>
+                  <th class="col-hide">Tipo</th>
+                </tr>
+              </thead>
+              <tbody id="cobrancas-tbody">
+                <tr class="loading-row"><td colspan="5"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-list" id="cobrancas-cards"></div>
+        </div>
+      </div>
+
+      <!-- ── Config ── -->
+      <div class="page" id="page-config">
+        <div class="page-header">
+          <h2>Configurações</h2>
+        </div>
+        <div class="config-section">
+          <h3>🔑 Chave de API Asaas</h3>
+          <div class="form-group">
+            <label>Chave de API</label>
+            <input type="password" id="cfg-apikey" placeholder="$aact_...">
+          </div>
+          <div class="form-group">
+            <label>Ambiente</label>
+            <div class="radio-group">
+              <label class="radio-opt selected" id="radio-sandbox">
+                <input type="radio" name="cfg-env" value="sandbox" checked onchange="selecionarEnv('sandbox')">
+                Sandbox (testes)
+              </label>
+              <label class="radio-opt" id="radio-production">
+                <input type="radio" name="cfg-env" value="production" onchange="selecionarEnv('production')">
+                Produção
+              </label>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px">
+            <button class="btn-sm btn-accent" onclick="salvarConfig()">Salvar configurações</button>
+            <button class="btn-sm btn-outline" onclick="testarConexao()">Testar conexão</button>
+            <span id="conn-status-label"></span>
+          </div>
+        </div>
+
+        <div class="config-section">
+          <h3>🔒 Alterar senha</h3>
+          <div class="form-group">
+            <label>Nova senha</label>
+            <input type="password" id="cfg-nova-senha" placeholder="mín. 6 caracteres">
+          </div>
+          <button class="btn-sm btn-accent" onclick="alterarSenha()">Atualizar senha</button>
+        </div>
+      </div>
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app-screen -->
+
+<!-- Detail panel -->
+<div class="panel-overlay" id="panel-overlay" onclick="fecharPainel(event)">
+  <div class="detail-panel" id="detail-panel">
+    <button class="panel-close" onclick="fecharPainel()">✕</button>
+    <div class="panel-title" id="panel-title">Detalhes</div>
+    <div id="panel-body"></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toast-container"></div>
+
+<script>
+const AUTH_URL    = '/.netlify/functions/auth';
+const STORAGE_URL = '/.netlify/functions/storage';
+const ASAAS_URL   = '/.netlify/functions/asaas';
+
+let sessao = null; // { email, token, asaasApiKey, env }
+let dadosCache = { clientes: [], assinaturas: [], cobrancas: [] };
+let filtroTipoCobranca = ''; // '' | 'recorrente' | 'avulsa'
+let resetToken = null;
+let paginaAtual = 'dashboard';
+
+// ── Utils ────────────────────────────────────────────────────────────────────
+
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+function fmt(val) {
+  if (val == null) return '—';
+  return 'R$ ' + Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+}
+
+function fmtData(d) {
+  if (!d) return '—';
+  const [y, m, day] = d.split('T')[0].split('-');
+  return `${day}/${m}/${y}`;
+}
+
+function nomeCliente(customerId) {
+  if (!customerId) return '—';
+  const id = typeof customerId === 'object' ? customerId.id : customerId;
+  const c = dadosCache.clientes.find(x => x.id === id);
+  return esc(c?.name) || esc(id?.slice(0, 12)) + '…' || '—';
+}
+
+function badgeStatus(status) {
+  const mapa = {
+    ACTIVE: ['badge-success', 'Ativa'],
+    INACTIVE: ['badge-muted', 'Inativa'],
+    RECEIVED: ['badge-success', 'Recebida'],
+    CONFIRMED: ['badge-success', 'Confirmada'],
+    PENDING: ['badge-warning', 'Pendente'],
+    OVERDUE: ['badge-danger', 'Vencida'],
+    REFUNDED: ['badge-muted', 'Estornada'],
+    CANCELED: ['badge-muted', 'Cancelada'],
+    MONTHLY: ['badge-accent', 'Mensal'],
+    YEARLY: ['badge-accent', 'Anual'],
+    WEEKLY: ['badge-accent', 'Semanal'],
   };
+  const [cls, label] = mapa[status] || ['badge-muted', status || '—'];
+  return `<span class="badge ${cls}">${label}</span>`;
+}
 
-  if (event.httpMethod === 'OPTIONS') {
-    return { statusCode: 204, headers, body: '' };
-  }
+function toast(msg, tipo = 'info') {
+  const el = document.createElement('div');
+  el.className = 'toast' + (tipo === 'success' ? ' success' : tipo === 'error' ? ' error' : '');
+  el.textContent = msg;
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
 
-  // Usa rawQuery (string crua) em vez de queryStringParameters (objeto parsed)
-  // event.queryStringParameters pode retornar vazio em alguns runtimes do Netlify
-  // quando os valores contêm caracteres especiais encodados (%24, %2F, etc.)
-  const rawQuery = event.rawQuery
-    || (event.rawUrl ? (event.rawUrl.split('?')[1] || '') : '')
-    || '';
+// ── Session storage ──────────────────────────────────────────────────────────
 
-  const params = new URLSearchParams(rawQuery);
+function salvarSessao(s) {
+  sessao = s;
+  if (s) localStorage.setItem('rh_sessao', JSON.stringify(s));
+  else localStorage.removeItem('rh_sessao');
+}
 
-  const apiKey = params.get('_token') || '';
-  const env = params.get('_env') || 'sandbox';
-  const asaasPath = params.get('_path') || '/';
+function carregarSessaoLocal() {
+  try { return JSON.parse(localStorage.getItem('rh_sessao') || 'null'); } catch { return null; }
+}
 
-  params.delete('_token');
-  params.delete('_env');
-  params.delete('_path');
-  const qsStr = params.toString();
+// ── Auth API ─────────────────────────────────────────────────────────────────
 
-  const host = env === 'production' ? 'api.asaas.com' : 'sandbox.asaas.com';
-  const targetPath = '/api/v3' + asaasPath + (qsStr ? '?' + qsStr : '');
-
-  let bodyStr = '';
-  if (event.body) {
-    bodyStr = event.isBase64Encoded
-      ? Buffer.from(event.body, 'base64').toString('utf8')
-      : event.body;
-  }
-
-  console.log('[asaas] path:', asaasPath, '| host:', host, '| target:', targetPath);
-  console.log('[asaas] apiKey length:', apiKey.length, '| env:', env);
-
-  return new Promise((resolve) => {
-    const reqHeaders = {
-      'Content-Type': 'application/json',
-      'access_token': apiKey,
-      'User-Agent': 'RecorreHub/1.0'
-    };
-    if (bodyStr) reqHeaders['Content-Length'] = Buffer.byteLength(bodyStr);
-
-    const options = {
-      hostname: host,
-      port: 443,
-      path: targetPath,
-      method: event.httpMethod,
-      headers: reqHeaders
-    };
-
-    const req = https.request(options, (res) => {
-      let data = '';
-      res.on('data', chunk => data += chunk);
-      res.on('end', () => {
-        console.log('[asaas] status:', res.statusCode);
-        resolve({ statusCode: res.statusCode, headers, body: data || '{}' });
-      });
-    });
-
-    req.on('error', (e) => {
-      console.error('[asaas] erro:', e.message);
-      resolve({
-        statusCode: 500,
-        headers,
-        body: JSON.stringify({ errors: [{ code: 'proxy_error', description: e.message }] })
-      });
-    });
-
-    if (bodyStr) req.write(bodyStr);
-    req.end();
+async function authAPI(action, body) {
+  const res = await fetch(`${AUTH_URL}?action=${action}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
   });
-};
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(data.error || 'Erro ao processar.');
+  return data;
+}
+
+// ── Storage API ──────────────────────────────────────────────────────────────
+
+async function storageSet(tipo, dados) {
+  if (!sessao?.token) return;
+  try {
+    const res = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    });
+    if (res.status === 401) fazerLogout();
+  } catch(e) { console.warn('[storage] SET:', e.message); }
+}
+
+// ── Asaas API ────────────────────────────────────────────────────────────────
+
+async function asaasAPI(method, path, body, qs) {
+  if (!sessao?.asaasApiKey) throw new Error('Configure sua chave Asaas em Configurações.');
+  let url = ASAAS_URL;
+  if (qs) {
+    const params = new URLSearchParams();
+    for (const [k, v] of Object.entries(qs)) {
+      if (v != null) params.set(k, v);
+    }
+    const qstr = params.toString();
+    if (qstr) url += '?' + qstr;
+  }
+  const res = await fetch(url, {
+    method,
+    headers: {
+      'Content-Type': 'application/json',
+      'x-asaas-token': sessao.asaasApiKey,
+      'x-asaas-env': sessao.env || 'sandbox',
+      'x-asaas-path': path
+    },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch { throw new Error('Resposta inválida: ' + text.slice(0, 80)); }
+  if (!res.ok) {
+    const desc = data?.errors?.[0]?.description || data?.errors?.[0]?.code || data?.error || data?.message || '';
+    const err = desc ? `${desc} (${res.status} ${path})` : `Erro ${res.status} em ${path}`;
+    throw new Error(err);
+  }
+  return data;
+}
+
+// ── Login forms ──────────────────────────────────────────────────────────────
+
+function trocarTab(tab) {
+  ['login','cadastro','forgot','reset'].forEach(t => {
+    document.getElementById('form-' + t).style.display = t === tab ? '' : 'none';
+  });
+  ['tab-login','tab-cadastro'].forEach(id => {
+    document.getElementById(id)?.classList.toggle('active',
+      (id === 'tab-login' && tab === 'login') ||
+      (id === 'tab-cadastro' && tab === 'cadastro'));
+  });
+}
+
+function mostrarErro(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
+
+function mostrarOk(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
+
+async function fazerLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const senha = document.getElementById('login-senha').value;
+  mostrarErro('login-err', '');
+  if (!email || !senha) { mostrarErro('login-err', 'Preencha e-mail e senha.'); return; }
+  const btn = document.getElementById('btn-login');
+  btn.disabled = true; btn.textContent = 'Entrando…';
+  try {
+    const data = await authAPI('login', { email, password: senha });
+    const s = { email: data.email, token: data.token, asaasApiKey: '', env: 'sandbox' };
+    if (data.config) {
+      s.asaasApiKey = data.config.apiKey || '';
+      s.env = data.config.env || 'sandbox';
+    }
+    salvarSessao(s);
+    iniciarApp();
+  } catch(e) {
+    mostrarErro('login-err', e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Entrar';
+  }
+}
+
+async function fazerCadastro() {
+  const email = document.getElementById('cad-email').value.trim();
+  const senha = document.getElementById('cad-senha').value;
+  const invite = document.getElementById('cad-invite').value.trim();
+  mostrarErro('cad-err', '');
+  mostrarOk('cad-ok', '');
+  if (!email || !senha) { mostrarErro('cad-err', 'Preencha todos os campos.'); return; }
+  const btn = document.getElementById('btn-cad');
+  btn.disabled = true; btn.textContent = 'Criando…';
+  try {
+    await authAPI('register', { email, password: senha, inviteCode: invite });
+    mostrarOk('cad-ok', 'Conta criada! Faça login para continuar.');
+    trocarTab('login');
+    document.getElementById('login-email').value = email;
+  } catch(e) {
+    mostrarErro('cad-err', e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Criar conta';
+  }
+}
+
+async function enviarReset() {
+  const email = document.getElementById('forgot-email').value.trim();
+  mostrarErro('forgot-err', '');
+  if (!email) { mostrarErro('forgot-err', 'Informe seu e-mail.'); return; }
+  const btn = document.getElementById('btn-forgot');
+  btn.disabled = true; btn.textContent = 'Enviando…';
+  try {
+    await authAPI('forgot', { email });
+    mostrarOk('forgot-ok', 'Se o e-mail estiver cadastrado, você receberá o link em breve.');
+  } catch(e) {
+    mostrarErro('forgot-err', e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Enviar link de recuperação';
+  }
+}
+
+async function resetarSenha() {
+  const senha = document.getElementById('reset-senha').value;
+  mostrarErro('reset-err', '');
+  if (!senha || senha.length < 6) { mostrarErro('reset-err', 'A senha deve ter pelo menos 6 caracteres.'); return; }
+  const btn = document.getElementById('btn-reset');
+  btn.disabled = true; btn.textContent = 'Redefinindo…';
+  try {
+    await authAPI('reset', { token: resetToken, password: senha });
+    mostrarOk('reset-ok', 'Senha redefinida! Faça login.');
+    setTimeout(() => trocarTab('login'), 1500);
+  } catch(e) {
+    mostrarErro('reset-err', e.message);
+  } finally {
+    btn.disabled = false; btn.textContent = 'Redefinir senha';
+  }
+}
+
+// ── Navigation ───────────────────────────────────────────────────────────────
+
+function navegarPara(pagina) {
+  paginaAtual = pagina;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + pagina);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === pagina);
+  });
+  const titulos = { dashboard: 'Dashboard', clientes: 'Clientes', assinaturas: 'Assinaturas', cobrancas: 'Cobranças', config: 'Configurações' };
+  document.getElementById('topbar-title').textContent = titulos[pagina] || pagina;
+  fecharSidebar();
+  if (pagina === 'dashboard') renderDashboard();
+  if (pagina === 'clientes') carregarClientes();
+  if (pagina === 'assinaturas') carregarAssinaturas();
+  if (pagina === 'cobrancas') carregarCobrancas();
+  if (pagina === 'config') preencherConfig();
+}
+
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  const open = sb.classList.toggle('open');
+  ov.style.display = open ? '' : 'none';
+}
+
+function fecharSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').style.display = 'none';
+}
+
+// ── Detail panel ─────────────────────────────────────────────────────────────
+
+function abrirPainel(titulo, linhas, btnLabel, btnFn) {
+  document.getElementById('panel-title').textContent = titulo;
+  const body = document.getElementById('panel-body');
+  body.innerHTML = linhas.map(([l, v]) =>
+    `<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value">${v}</span></div>`
+  ).join('');
+  if (btnLabel && btnFn) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-full btn-accent-full';
+    btn.textContent = btnLabel;
+    btn.onclick = btnFn;
+    body.appendChild(btn);
+  }
+  document.getElementById('panel-overlay').classList.add('open');
+}
+
+function fecharPainel(e) {
+  if (!e || e.target === document.getElementById('panel-overlay')) {
+    document.getElementById('panel-overlay').classList.remove('open');
+  }
+}
+
+// ── App init ─────────────────────────────────────────────────────────────────
+
+function iniciarApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  const av = sessao.email?.[0]?.toUpperCase() || '?';
+  document.getElementById('user-avatar').textContent = av;
+  document.getElementById('user-email-label').textContent = sessao.email || '';
+  if (!sessao.asaasApiKey) {
+    document.getElementById('alert-no-key').style.display = '';
+  }
+  navegarPara('dashboard');
+}
+
+async function fazerLogout() {
+  if (sessao?.token) authAPI('logout', { token: sessao.token }).catch(() => {});
+  salvarSessao(null);
+  dadosCache = { clientes: [], assinaturas: [], cobrancas: [] };
+  document.getElementById('login-screen').style.display = '';
+  document.getElementById('app-screen').style.display = 'none';
+  trocarTab('login');
+}
+
+// ── Dashboard ────────────────────────────────────────────────────────────────
+
+async function renderDashboard() {
+  const errEl = document.getElementById('dash-erros');
+  if (errEl) errEl.style.display = 'none';
+
+  if (!sessao?.asaasApiKey) {
+    setTbody('dash-cobrancas-tbody', 4, '<em>Configure a chave Asaas primeiro.</em>');
+    const dc = document.getElementById('dash-cobrancas-cards');
+    if (dc) dc.innerHTML = '';
+    return;
+  }
+  setTbody('dash-cobrancas-tbody', 4, null);
+
+  // Carrega cada endpoint de forma independente para isolar falhas
+  const falhas = [];
+  await Promise.all([
+    carregarClientesCache().catch(e => falhas.push('Clientes → ' + e.message)),
+    carregarAssinaturasCache().catch(e => falhas.push('Assinaturas → ' + e.message)),
+    carregarCobrancasCache().catch(e => falhas.push('Cobranças → ' + e.message))
+  ]);
+
+  // Mostra erros visíveis e permanentes (sem depender do console)
+  if (falhas.length > 0 && errEl) {
+    errEl.style.display = '';
+    errEl.innerHTML = '⚠️ Falha ao carregar:<br>' + falhas.map(f => `• ${f}`).join('<br>');
+  }
+
+  // Se todos falharam, para aqui
+  if (falhas.length === 3) {
+    setTbody('dash-cobrancas-tbody', 4, 'Todos os endpoints falharam. Verifique o banner acima.');
+    return;
+  }
+
+  atualizarStats();
+  const assinatura = dadosCache.cobrancas.filter(c => c.subscription);
+  const preview = [...assinatura, ...dadosCache.cobrancas.filter(c => !c.subscription)].slice(0, 8);
+  renderTbodyCobrancas('dash-cobrancas-tbody', preview);
+  renderCardsCobrancas('dash-cobrancas-cards', preview);
+}
+
+function atualizarStats() {
+  // MRR — soma das assinaturas ACTIVE
+  const ativas = dadosCache.assinaturas.filter(a => a.status === 'ACTIVE');
+  const mrr = ativas.reduce((s, a) => s + (a.value || 0), 0);
+  document.getElementById('stat-mrr').textContent = fmt(mrr);
+  document.getElementById('stat-ativas').textContent = ativas.length;
+
+  // Cobranças de assinaturas (subscription != null)
+  const deAssinatura = dadosCache.cobrancas.filter(c => c.subscription);
+  const pendentes = deAssinatura.filter(c => c.status === 'PENDING').reduce((s, c) => s + (c.value || 0), 0);
+  document.getElementById('stat-pendentes').textContent = fmt(pendentes);
+
+  // Receita recebida do mês (RECEIVED ou CONFIRMED)
+  const agora = new Date();
+  const mesAtual = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}`;
+  const recebido = dadosCache.cobrancas
+    .filter(c => (c.status === 'RECEIVED' || c.status === 'CONFIRMED') && (c.paymentDate || '').startsWith(mesAtual))
+    .reduce((s, c) => s + (c.value || 0), 0);
+  document.getElementById('stat-recebido').textContent = fmt(recebido);
+
+  const vencidas = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE').length;
+  document.getElementById('stat-vencidas').textContent = vencidas;
+}
+
+// ── Clientes ─────────────────────────────────────────────────────────────────
+
+async function carregarClientesCache() {
+  const data = await asaasAPI('GET', '/customers', null, { limit: 100 });
+  dadosCache.clientes = data?.data || [];
+}
+
+async function carregarClientes() {
+  if (!sessao?.asaasApiKey) { setTbody('clientes-tbody', 4, 'Configure a chave Asaas.'); return; }
+  setTbody('clientes-tbody', 4, null);
+  try {
+    await carregarClientesCache();
+    renderTbodyClientes();
+  } catch(e) {
+    setTbody('clientes-tbody', 4, '⚠️ ' + e.message);
+  }
+}
+
+function renderTbodyClientes() {
+  const tbody = document.getElementById('clientes-tbody');
+  const cards = document.getElementById('clientes-cards');
+  const lista = dadosCache.clientes;
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="no-data">Nenhum cliente encontrado.</td></tr>';
+    cards.innerHTML = '<div class="no-data">Nenhum cliente encontrado.</div>';
+    return;
+  }
+  tbody.innerHTML = lista.map(c => `
+    <tr onclick="abrirDetalheCliente('${c.id}')">
+      <td title="${esc(c.name)}">${esc(c.name) || '—'}</td>
+      <td class="col-hide" title="${esc(c.email)}">${esc(c.email) || '—'}</td>
+      <td class="col-hide">${esc(c.cpfCnpj) || '—'}</td>
+      <td>${badgeStatus(c.active === false ? 'INACTIVE' : 'ACTIVE')}</td>
+    </tr>`).join('');
+  cards.innerHTML = lista.map(c => `
+    <div class="list-card" onclick="abrirDetalheCliente('${c.id}')">
+      <div class="list-card-top">
+        <span class="list-card-name">${esc(c.name) || '—'}</span>
+        ${badgeStatus(c.active === false ? 'INACTIVE' : 'ACTIVE')}
+      </div>
+      <div class="list-card-sub">${esc(c.email) || esc(c.cpfCnpj) || '—'}</div>
+    </div>`).join('');
+}
+
+function abrirDetalheCliente(id) {
+  const c = dadosCache.clientes.find(x => x.id === id);
+  if (!c) return;
+  abrirPainel(esc(c.name) || 'Cliente', [
+    ['Nome', esc(c.name) || '—'],
+    ['E-mail', esc(c.email) || '—'],
+    ['CPF/CNPJ', esc(c.cpfCnpj) || '—'],
+    ['Telefone', esc(c.mobilePhone || c.phone) || '—'],
+    ['Status', c.active === false ? 'Inativo' : 'Ativo'],
+    ['ID Asaas', esc(c.id)],
+  ], c.id ? 'Ver cobranças →' : null, c.id ? () => {
+    fecharPainel();
+    navegarPara('cobrancas');
+  } : null);
+}
+
+// ── Assinaturas ──────────────────────────────────────────────────────────────
+
+async function carregarAssinaturasCache() {
+  const data = await asaasAPI('GET', '/subscriptions', null, { limit: 100 });
+  dadosCache.assinaturas = data?.data || [];
+}
+
+async function carregarAssinaturas() {
+  if (!sessao?.asaasApiKey) { setTbody('assinaturas-tbody', 4, 'Configure a chave Asaas.'); return; }
+  setTbody('assinaturas-tbody', 4, null);
+  try {
+    if (!dadosCache.clientes.length) await carregarClientesCache();
+    await carregarAssinaturasCache();
+    renderTbodyAssinaturas();
+  } catch(e) {
+    setTbody('assinaturas-tbody', 4, '⚠️ ' + e.message);
+  }
+}
+
+function renderTbodyAssinaturas() {
+  const tbody = document.getElementById('assinaturas-tbody');
+  const cards = document.getElementById('assinaturas-cards');
+  const lista = dadosCache.assinaturas;
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="no-data">Nenhuma assinatura encontrada.</td></tr>';
+    cards.innerHTML = '<div class="no-data">Nenhuma assinatura encontrada.</div>';
+    return;
+  }
+  tbody.innerHTML = lista.map(a => `
+    <tr onclick="abrirDetalheAssinatura('${a.id}')">
+      <td title="${nomeCliente(a.customer)}">${nomeCliente(a.customer)}</td>
+      <td class="col-hide">${badgeStatus(a.cycle || a.billingType || '')}</td>
+      <td>${fmt(a.value)}</td>
+      <td>${badgeStatus(a.status)}</td>
+    </tr>`).join('');
+  cards.innerHTML = lista.map(a => `
+    <div class="list-card" onclick="abrirDetalheAssinatura('${a.id}')">
+      <div class="list-card-top">
+        <span class="list-card-name">${nomeCliente(a.customer)}</span>
+        ${badgeStatus(a.status)}
+      </div>
+      <div class="list-card-sub">${fmt(a.value)} · ${a.cycle || a.billingType || '—'}</div>
+    </div>`).join('');
+}
+
+function abrirDetalheAssinatura(id) {
+  const a = dadosCache.assinaturas.find(x => x.id === id);
+  if (!a) return;
+  abrirPainel('Assinatura', [
+    ['Cliente', nomeCliente(a.customer)],
+    ['Valor', fmt(a.value)],
+    ['Ciclo', a.cycle || a.billingType || '—'],
+    ['Próx. vencimento', fmtData(a.nextDueDate)],
+    ['Status', a.status || '—'],
+    ['Criada em', fmtData(a.dateCreated)],
+  ]);
+}
+
+// ── Cobranças ────────────────────────────────────────────────────────────────
+
+async function carregarCobrancasCache(filtroStatus) {
+  const qs = { limit: 100 };
+  if (filtroStatus) qs.status = filtroStatus;
+  const data = await asaasAPI('GET', '/payments', null, qs);
+  if (!filtroStatus) {
+    dadosCache.cobrancas = data?.data || [];
+    atualizarBadgesTipo();
+  }
+  return data?.data || [];
+}
+
+function atualizarBadgesTipo() {
+  const todas = dadosCache.cobrancas.length;
+  const recorrentes = dadosCache.cobrancas.filter(c => c.subscription).length;
+  const avulsas = dadosCache.cobrancas.filter(c => !c.subscription).length;
+  const elTodas = document.getElementById('count-todas');
+  const elRec   = document.getElementById('count-recorrentes');
+  const elAvuls = document.getElementById('count-avulsas');
+  if (elTodas)  elTodas.textContent  = todas;
+  if (elRec)    elRec.textContent    = recorrentes;
+  if (elAvuls)  elAvuls.textContent  = avulsas;
+}
+
+async function carregarCobrancas() {
+  if (!sessao?.asaasApiKey) { setTbody('cobrancas-tbody', 5, 'Configure a chave Asaas.'); return; }
+  setTbody('cobrancas-tbody', 5, null);
+  try {
+    if (!dadosCache.clientes.length) await carregarClientesCache();
+    const filtroStatus = document.getElementById('filtro-status').value;
+    const todasCobrancas = await carregarCobrancasCache(filtroStatus);
+    aplicarFiltroTipo(todasCobrancas);
+    if (!filtroStatus) atualizarStats();
+  } catch(e) {
+    setTbody('cobrancas-tbody', 5, '⚠️ ' + e.message);
+  }
+}
+
+function aplicarFiltroTipo(lista) {
+  let filtrada = lista;
+  if (filtroTipoCobranca === 'recorrente') filtrada = lista.filter(c => c.subscription);
+  else if (filtroTipoCobranca === 'avulsa') filtrada = lista.filter(c => !c.subscription);
+  renderTbodyCobrancas('cobrancas-tbody', filtrada);
+  renderCardsCobrancas('cobrancas-cards', filtrada);
+}
+
+function filtrarCobrancas() { carregarCobrancas(); }
+
+function filtrarTipoCobranca(btn) {
+  document.querySelectorAll('.tipo-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  filtroTipoCobranca = btn.dataset.tipo;
+  aplicarFiltroTipo(dadosCache.cobrancas);
+}
+
+function renderTbodyCobrancas(tbodyId, lista) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="no-data">Nenhuma cobrança encontrada.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = lista.map(c => `
+    <tr onclick="abrirDetalheCobranca('${c.id}')">
+      <td title="${nomeCliente(c.customer)}">${nomeCliente(c.customer)}</td>
+      <td class="col-hide">${fmtData(c.dueDate)}</td>
+      <td>${fmt(c.value)}</td>
+      <td>${badgeStatus(c.status)}</td>
+      <td class="col-hide">${c.billingType || '—'}</td>
+    </tr>`).join('');
+}
+
+function renderCardsCobrancas(cardsId, lista) {
+  const cards = document.getElementById(cardsId);
+  if (!cards) return;
+  if (!lista.length) { cards.innerHTML = '<div class="no-data">Nenhuma cobrança encontrada.</div>'; return; }
+  cards.innerHTML = lista.map(c => `
+    <div class="list-card" onclick="abrirDetalheCobranca('${c.id}')">
+      <div class="list-card-top">
+        <span class="list-card-name">${nomeCliente(c.customer)}</span>
+        ${badgeStatus(c.status)}
+      </div>
+      <div class="list-card-sub">${fmt(c.value)} · venc. ${fmtData(c.dueDate)}</div>
+    </div>`).join('');
+}
+
+function abrirDetalheCobranca(id) {
+  const c = dadosCache.cobrancas.find(x => x.id === id);
+  if (!c) return;
+  const linhas = [
+    ['Cliente', nomeCliente(c.customer)],
+    ['Valor', fmt(c.value)],
+    ['Vencimento', fmtData(c.dueDate)],
+    ['Status', esc(c.status) || '—'],
+    ['Tipo', esc(c.billingType) || '—'],
+    ['Descrição', esc(c.description) || '—'],
+  ];
+  if (c.paymentDate) linhas.push(['Pago em', fmtData(c.paymentDate)]);
+  if (c.clientPaymentDate) linhas.push(['Confirmado em', fmtData(c.clientPaymentDate)]);
+  abrirPainel('Cobrança', linhas,
+    c.invoiceUrl ? '🔗 Ver boleto/fatura' : null,
+    c.invoiceUrl ? () => window.open(c.invoiceUrl, '_blank') : null
+  );
+}
+
+// ── Config ───────────────────────────────────────────────────────────────────
+
+function preencherConfig() {
+  if (sessao?.asaasApiKey) document.getElementById('cfg-apikey').value = sessao.asaasApiKey;
+  const env = sessao?.env || 'sandbox';
+  selecionarEnv(env);
+  document.querySelector(`input[name="cfg-env"][value="${env}"]`).checked = true;
+}
+
+function selecionarEnv(env) {
+  document.getElementById('radio-sandbox').classList.toggle('selected', env === 'sandbox');
+  document.getElementById('radio-production').classList.toggle('selected', env === 'production');
+}
+
+async function salvarConfig() {
+  const apiKey = document.getElementById('cfg-apikey').value.trim();
+  const env = document.querySelector('input[name="cfg-env"]:checked')?.value || 'sandbox';
+  if (!apiKey) { toast('Informe a chave de API.', 'error'); return; }
+  sessao.asaasApiKey = apiKey;
+  sessao.env = env;
+  salvarSessao(sessao);
+  const config = { apiKey, env };
+  try {
+    await storageSet('config', config);
+  } catch(e) { console.warn('config save:', e.message); }
+  document.getElementById('alert-no-key').style.display = 'none';
+  toast('Configurações salvas!', 'success');
+}
+
+async function testarConexao() {
+  const label = document.getElementById('conn-status-label');
+  label.className = 'conn-status conn-testing';
+  label.textContent = '⏳ Testando…';
+  try {
+    const apiKey = document.getElementById('cfg-apikey').value.trim() || sessao?.asaasApiKey;
+    const env = document.querySelector('input[name="cfg-env"]:checked')?.value || sessao?.env || 'sandbox';
+    if (!apiKey) throw new Error('Sem chave');
+    const tmpSessao = { ...sessao, asaasApiKey: apiKey, env };
+    const savedSessao = sessao;
+    sessao = tmpSessao;
+    await asaasAPI('GET', '/customers', null, { limit: 1 });
+    sessao = savedSessao;
+    label.className = 'conn-status conn-ok';
+    label.textContent = '✓ Conectado';
+  } catch(e) {
+    label.className = 'conn-status conn-err';
+    label.textContent = '✗ Falhou: ' + e.message.slice(0, 40);
+  }
+}
+
+async function alterarSenha() {
+  const senha = document.getElementById('cfg-nova-senha').value;
+  if (!senha || senha.length < 6) { toast('Senha deve ter pelo menos 6 caracteres.', 'error'); return; }
+  try {
+    await authAPI('change-password', { token: sessao.token, password: senha });
+    document.getElementById('cfg-nova-senha').value = '';
+    toast('Senha alterada com sucesso!', 'success');
+  } catch(e) {
+    toast('Erro: ' + e.message, 'error');
+  }
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+
+function setTbody(id, cols, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (msg === null) {
+    el.innerHTML = `<tr class="loading-row"><td colspan="${cols}"><div class="spinner"></div></td></tr>`;
+  } else {
+    el.innerHTML = `<tr><td colspan="${cols}" class="no-data">${msg}</td></tr>`;
+  }
+}
+
+// ── App boot ─────────────────────────────────────────────────────────────────
+
+(function boot() {
+  const params = new URLSearchParams(location.search);
+  resetToken = params.get('reset');
+  if (resetToken) {
+    trocarTab('reset');
+    return;
+  }
+  const s = carregarSessaoLocal();
+  if (s?.token) {
+    salvarSessao(s);
+    iniciarApp();
+  }
+})();
+</script>
+</body>
+</html>

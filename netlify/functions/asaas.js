@@ -3,7 +3,7 @@ const https = require('https');
 exports.handler = async (event) => {
   const headers = {
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': 'Content-Type, access_token, asaas_env',
+    'Access-Control-Allow-Headers': 'Content-Type, x-asaas-token, x-asaas-env, x-asaas-path',
     'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
     'Content-Type': 'application/json'
   };
@@ -12,21 +12,59 @@ exports.handler = async (event) => {
     return { statusCode: 204, headers, body: '' };
   }
 
-  const apiKey = event.headers['access_token'] || '';
-  const env    = event.headers['asaas_env']    || 'sandbox';
+  // ── Extração de parâmetros internos ─────────────────────────────────────────
+  // Prioridade 1: HTTP headers (mais confiável, sem problemas de encoding)
+  const hdrs = event.headers || {};
+  let apiKey   = hdrs['x-asaas-token'] || hdrs['X-Asaas-Token'] || '';
+  let env      = hdrs['x-asaas-env']   || hdrs['X-Asaas-Env']   || '';
+  let asaasPath = hdrs['x-asaas-path'] || hdrs['X-Asaas-Path']  || '';
 
-  const funcBase  = '/.netlify/functions/asaas';
-  const asaasPath = event.path.startsWith(funcBase)
-    ? event.path.slice(funcBase.length) || '/'
-    : '/';
+  // Prioridade 2: rawQuery (string crua da URL)
+  if (!apiKey) {
+    const raw = event.rawQuery
+      || (event.rawUrl ? (event.rawUrl.split('?')[1] || '') : '')
+      || '';
+    if (raw) {
+      const p = new URLSearchParams(raw);
+      apiKey    = p.get('_token') || '';
+      env       = p.get('_env')   || '';
+      asaasPath = p.get('_path')  || '';
+    }
+  }
 
-  const qsParams = event.queryStringParameters || {};
-  const qsStr    = Object.keys(qsParams).length
-    ? '?' + new URLSearchParams(qsParams).toString()
-    : '';
+  // Prioridade 3: queryStringParameters (fallback)
+  if (!apiKey) {
+    const qsp = event.queryStringParameters || {};
+    apiKey    = qsp._token || '';
+    env       = qsp._env   || '';
+    asaasPath = qsp._path  || '';
+  }
 
-  const host       = env === 'production' ? 'api.asaas.com' : 'sandbox.asaas.com';
-  const targetPath = '/api/v3' + asaasPath + qsStr;
+  env       = env       || 'sandbox';
+  asaasPath = asaasPath || '/';
+
+  // ── Query string a passar para o Asaas (sem os params internos) ─────────────
+  let extraQs = '';
+  const raw = event.rawQuery
+    || (event.rawUrl ? (event.rawUrl.split('?')[1] || '') : '')
+    || '';
+  if (raw) {
+    const p = new URLSearchParams(raw);
+    p.delete('_token'); p.delete('_env'); p.delete('_path');
+    extraQs = p.toString();
+  } else {
+    const qsp = event.queryStringParameters || {};
+    const rest = Object.fromEntries(
+      Object.entries(qsp).filter(([k]) => !['_token','_env','_path'].includes(k))
+    );
+    extraQs = new URLSearchParams(rest).toString();
+  }
+
+  const host = env === 'production' ? 'api.asaas.com' : 'sandbox.asaas.com';
+  const targetPath = '/api/v3' + asaasPath + (extraQs ? '?' + extraQs : '');
+
+  console.log('[asaas] path:', asaasPath, '| host:', host, '| apiKey.len:', apiKey.length);
+  console.log('[asaas] target:', targetPath);
 
   let bodyStr = '';
   if (event.body) {
@@ -34,9 +72,6 @@ exports.handler = async (event) => {
       ? Buffer.from(event.body, 'base64').toString('utf8')
       : event.body;
   }
-
-  console.log('[asaas] path:', asaasPath, '| target:', targetPath);
-  console.log('[asaas] apiKey length:', apiKey.length);
 
   return new Promise((resolve) => {
     const reqHeaders = {
@@ -50,17 +85,23 @@ exports.handler = async (event) => {
       { hostname: host, port: 443, path: targetPath, method: event.httpMethod, headers: reqHeaders },
       (res) => {
         let data = '';
-        res.on('data', c => data += c);
+        res.on('data', chunk => data += chunk);
         res.on('end', () => {
           console.log('[asaas] status:', res.statusCode);
           resolve({ statusCode: res.statusCode, headers, body: data || '{}' });
         });
       }
     );
+
     req.on('error', (e) => {
       console.error('[asaas] erro:', e.message);
-      resolve({ statusCode: 500, headers, body: JSON.stringify({ errors: [{ description: e.message }] }) });
+      resolve({
+        statusCode: 500,
+        headers,
+        body: JSON.stringify({ errors: [{ code: 'proxy_error', description: e.message }] })
+      });
     });
+
     if (bodyStr) req.write(bodyStr);
     req.end();
   });
