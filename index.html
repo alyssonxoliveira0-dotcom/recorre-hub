@@ -354,6 +354,7 @@ tbody tr:hover { background: var(--surface2); }
 
       <!-- ── Dashboard ── -->
       <div class="page active" id="page-dashboard">
+        <div id="dash-erros" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#FCA5A5;word-break:break-all;"></div>
         <div class="stats-grid">
           <div class="stat-card accent">
             <div class="stat-label">MRR</div>
@@ -677,7 +678,8 @@ async function asaasAPI(method, path, body, qs) {
   let data;
   try { data = JSON.parse(text); } catch { throw new Error('Resposta inválida: ' + text.slice(0, 80)); }
   if (!res.ok) {
-    const err = data?.errors?.[0]?.description || data?.error || 'Erro Asaas ' + res.status;
+    const desc = data?.errors?.[0]?.description || data?.errors?.[0]?.code || data?.error || data?.message || '';
+    const err = desc ? `${desc} (${res.status} ${path})` : `Erro ${res.status} em ${path}`;
     throw new Error(err);
   }
   return data;
@@ -869,6 +871,9 @@ async function fazerLogout() {
 // ── Dashboard ────────────────────────────────────────────────────────────────
 
 async function renderDashboard() {
+  const errEl = document.getElementById('dash-erros');
+  if (errEl) errEl.style.display = 'none';
+
   if (!sessao?.asaasApiKey) {
     setTbody('dash-cobrancas-tbody', 4, '<em>Configure a chave Asaas primeiro.</em>');
     const dc = document.getElementById('dash-cobrancas-cards');
@@ -876,21 +881,32 @@ async function renderDashboard() {
     return;
   }
   setTbody('dash-cobrancas-tbody', 4, null);
-  try {
-    await Promise.all([
-      carregarClientesCache(),
-      carregarAssinaturasCache(),
-      carregarCobrancasCache()
-    ]);
-    atualizarStats();
-    // Dashboard mostra cobranças de assinaturas primeiro, depois avulsas
-    const assinatura = dadosCache.cobrancas.filter(c => c.subscription);
-    const preview = [...assinatura, ...dadosCache.cobrancas.filter(c => !c.subscription)].slice(0, 8);
-    renderTbodyCobrancas('dash-cobrancas-tbody', preview);
-    renderCardsCobrancas('dash-cobrancas-cards', preview);
-  } catch(e) {
-    setTbody('dash-cobrancas-tbody', 4, 'Erro ao carregar: ' + e.message);
+
+  // Carrega cada endpoint de forma independente para isolar falhas
+  const falhas = [];
+  await Promise.all([
+    carregarClientesCache().catch(e => falhas.push('Clientes → ' + e.message)),
+    carregarAssinaturasCache().catch(e => falhas.push('Assinaturas → ' + e.message)),
+    carregarCobrancasCache().catch(e => falhas.push('Cobranças → ' + e.message))
+  ]);
+
+  // Mostra erros visíveis e permanentes (sem depender do console)
+  if (falhas.length > 0 && errEl) {
+    errEl.style.display = '';
+    errEl.innerHTML = '⚠️ Falha ao carregar:<br>' + falhas.map(f => `• ${f}`).join('<br>');
   }
+
+  // Se todos falharam, para aqui
+  if (falhas.length === 3) {
+    setTbody('dash-cobrancas-tbody', 4, 'Todos os endpoints falharam. Verifique o banner acima.');
+    return;
+  }
+
+  atualizarStats();
+  const assinatura = dadosCache.cobrancas.filter(c => c.subscription);
+  const preview = [...assinatura, ...dadosCache.cobrancas.filter(c => !c.subscription)].slice(0, 8);
+  renderTbodyCobrancas('dash-cobrancas-tbody', preview);
+  renderCardsCobrancas('dash-cobrancas-cards', preview);
 }
 
 function atualizarStats() {
@@ -931,7 +947,7 @@ async function carregarClientes() {
     await carregarClientesCache();
     renderTbodyClientes();
   } catch(e) {
-    setTbody('clientes-tbody', 4, 'Erro: ' + e.message);
+    setTbody('clientes-tbody', 4, '⚠️ ' + e.message);
   }
 }
 
@@ -992,7 +1008,7 @@ async function carregarAssinaturas() {
     await carregarAssinaturasCache();
     renderTbodyAssinaturas();
   } catch(e) {
-    setTbody('assinaturas-tbody', 4, 'Erro: ' + e.message);
+    setTbody('assinaturas-tbody', 4, '⚠️ ' + e.message);
   }
 }
 
@@ -1070,7 +1086,7 @@ async function carregarCobrancas() {
     aplicarFiltroTipo(todasCobrancas);
     if (!filtroStatus) atualizarStats();
   } catch(e) {
-    setTbody('cobrancas-tbody', 5, 'Erro: ' + e.message);
+    setTbody('cobrancas-tbody', 5, '⚠️ ' + e.message);
   }
 }
 
