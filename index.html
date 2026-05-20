@@ -51,7 +51,6 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 
 /* ── App layout ── */
 #app-screen { display: none; min-height: 100vh; }
-.layout { display: flex; min-height: 100vh; }
 
 /* ── Sidebar ── */
 #sidebar {
@@ -571,6 +570,11 @@ let paginaAtual = 'dashboard';
 
 // ── Utils ────────────────────────────────────────────────────────────────────
 
+function esc(s) {
+  if (s == null) return '';
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
 function fmt(val) {
   if (val == null) return '—';
   return 'R$ ' + Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
@@ -586,7 +590,7 @@ function nomeCliente(customerId) {
   if (!customerId) return '—';
   const id = typeof customerId === 'object' ? customerId.id : customerId;
   const c = dadosCache.clientes.find(x => x.id === id);
-  return c?.name || id?.slice(0, 12) + '…' || '—';
+  return esc(c?.name) || esc(id?.slice(0, 12)) + '…' || '—';
 }
 
 function badgeStatus(status) {
@@ -641,16 +645,6 @@ async function authAPI(action, body) {
 }
 
 // ── Storage API ──────────────────────────────────────────────────────────────
-
-async function storageGet(tipo) {
-  if (!sessao?.token) return null;
-  try {
-    const res = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`);
-    if (res.status === 401) { fazerLogout(); return null; }
-    if (res.ok) return await res.json();
-  } catch(e) { console.warn('[storage] GET:', e.message); }
-  return null;
-}
 
 async function storageSet(tipo, dados) {
   if (!sessao?.token) return;
@@ -853,7 +847,7 @@ function fecharPainel(e) {
 
 function iniciarApp() {
   document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-screen').style.display = '';
+  document.getElementById('app-screen').style.display = 'block';
   const av = sessao.email?.[0]?.toUpperCase() || '?';
   document.getElementById('user-avatar').textContent = av;
   document.getElementById('user-email-label').textContent = sessao.email || '';
@@ -952,31 +946,31 @@ function renderTbodyClientes() {
   }
   tbody.innerHTML = lista.map(c => `
     <tr onclick="abrirDetalheCliente('${c.id}')">
-      <td title="${c.name || ''}">${c.name || '—'}</td>
-      <td class="col-hide" title="${c.email || ''}">${c.email || '—'}</td>
-      <td class="col-hide">${c.cpfCnpj || '—'}</td>
+      <td title="${esc(c.name)}">${esc(c.name) || '—'}</td>
+      <td class="col-hide" title="${esc(c.email)}">${esc(c.email) || '—'}</td>
+      <td class="col-hide">${esc(c.cpfCnpj) || '—'}</td>
       <td>${badgeStatus(c.active === false ? 'INACTIVE' : 'ACTIVE')}</td>
     </tr>`).join('');
   cards.innerHTML = lista.map(c => `
     <div class="list-card" onclick="abrirDetalheCliente('${c.id}')">
       <div class="list-card-top">
-        <span class="list-card-name">${c.name || '—'}</span>
+        <span class="list-card-name">${esc(c.name) || '—'}</span>
         ${badgeStatus(c.active === false ? 'INACTIVE' : 'ACTIVE')}
       </div>
-      <div class="list-card-sub">${c.email || c.cpfCnpj || '—'}</div>
+      <div class="list-card-sub">${esc(c.email) || esc(c.cpfCnpj) || '—'}</div>
     </div>`).join('');
 }
 
 function abrirDetalheCliente(id) {
   const c = dadosCache.clientes.find(x => x.id === id);
   if (!c) return;
-  abrirPainel(c.name || 'Cliente', [
-    ['Nome', c.name || '—'],
-    ['E-mail', c.email || '—'],
-    ['CPF/CNPJ', c.cpfCnpj || '—'],
-    ['Telefone', c.mobilePhone || c.phone || '—'],
+  abrirPainel(esc(c.name) || 'Cliente', [
+    ['Nome', esc(c.name) || '—'],
+    ['E-mail', esc(c.email) || '—'],
+    ['CPF/CNPJ', esc(c.cpfCnpj) || '—'],
+    ['Telefone', esc(c.mobilePhone || c.phone) || '—'],
     ['Status', c.active === false ? 'Inativo' : 'Ativo'],
-    ['ID Asaas', c.id],
+    ['ID Asaas', esc(c.id)],
   ], c.id ? 'Ver cobranças →' : null, c.id ? () => {
     fecharPainel();
     navegarPara('cobrancas');
@@ -1135,9 +1129,9 @@ function abrirDetalheCobranca(id) {
     ['Cliente', nomeCliente(c.customer)],
     ['Valor', fmt(c.value)],
     ['Vencimento', fmtData(c.dueDate)],
-    ['Status', c.status || '—'],
-    ['Tipo', c.billingType || '—'],
-    ['Descrição', c.description || '—'],
+    ['Status', esc(c.status) || '—'],
+    ['Tipo', esc(c.billingType) || '—'],
+    ['Descrição', esc(c.description) || '—'],
   ];
   if (c.paymentDate) linhas.push(['Pago em', fmtData(c.paymentDate)]);
   if (c.clientPaymentDate) linhas.push(['Confirmado em', fmtData(c.clientPaymentDate)]);
