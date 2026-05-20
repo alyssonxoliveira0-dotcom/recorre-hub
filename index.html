@@ -8,712 +8,550 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
-  --blue: #1E40AF; --blue-light: #DBEAFE; --blue-mid: #3B82F6;
-  --green: #065F46; --green-light: #D1FAE5; --green-mid: #10B981;
-  --red: #991B1B; --red-light: #FEE2E2; --red-mid: #EF4444;
-  --yellow: #92400E; --yellow-light: #FEF3C7; --yellow-mid: #F59E0B;
-  --gray-50: #F8FAFC; --gray-100: #F1F5F9; --gray-200: #E2E8F0;
-  --gray-300: #CBD5E1; --gray-400: #94A3B8; --gray-500: #64748B;
-  --gray-600: #475569; --gray-700: #334155; --gray-800: #1E293B;
-  --gray-900: #0F172A; --white: #FFFFFF;
-  --shadow: 0 1px 3px rgba(0,0,0,0.1); --shadow-lg: 0 10px 40px rgba(0,0,0,0.12);
+  --bg: #0F1117;
+  --surface: #1A1D27;
+  --surface2: #22263A;
+  --border: #2E3250;
+  --accent: #6C63FF;
+  --accent2: #8B85FF;
+  --success: #22C55E;
+  --warning: #F59E0B;
+  --danger: #EF4444;
+  --text: #E8EAFF;
+  --muted: #8890B5;
+  --white: #FFFFFF;
+  --shadow: 0 4px 24px rgba(0,0,0,0.4);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { font-family: 'Inter', sans-serif; background: var(--gray-50); color: var(--gray-800); min-height: 100vh; }
+body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
 
-/* ── AUTH ── */
-#auth-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%); }
-.auth-card { background: var(--white); border-radius: 20px; padding: 44px 40px; width: 100%; max-width: 420px; box-shadow: var(--shadow-lg); }
-.auth-brand { text-align: center; margin-bottom: 32px; }
-.auth-brand-icon { width: 56px; height: 56px; background: var(--blue); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 24px; }
-.auth-brand h1 { font-size: 26px; font-weight: 700; color: var(--gray-900); }
-.auth-brand p { font-size: 13px; color: var(--gray-500); margin-top: 4px; }
-.form-group { margin-bottom: 16px; }
-.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
-.form-group input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--gray-200); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--gray-800); background: var(--gray-50); outline: none; transition: border-color .2s; }
-.form-group input:focus { border-color: var(--blue-mid); background: var(--white); }
-.btn { width: 100%; padding: 13px; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 15px; font-weight: 600; cursor: pointer; transition: all .2s; }
-.btn-blue { background: var(--blue); color: var(--white); }
-.btn-blue:hover { background: #1d3a9e; }
-.btn-blue:disabled { opacity: .6; cursor: not-allowed; }
-.auth-link { text-align: center; margin-top: 16px; font-size: 13px; color: var(--gray-500); }
-.auth-link a { color: var(--blue-mid); text-decoration: none; font-weight: 600; }
-.auth-alert { border-radius: 10px; padding: 11px 14px; font-size: 13px; margin-bottom: 16px; display: none; }
-.auth-alert.show { display: block; }
-.auth-alert-error { background: var(--red-light); color: var(--red); border: 1px solid #FCA5A5; }
-.auth-alert-success { background: var(--green-light); color: var(--green); border: 1px solid #6EE7B7; }
+/* ── Login ── */
+#login-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+.login-card { background: var(--surface); border: 1px solid var(--border); border-radius: 20px; padding: 40px 36px; width: 100%; max-width: 400px; box-shadow: var(--shadow); }
+.brand { text-align: center; margin-bottom: 32px; }
+.brand-icon { width: 48px; height: 48px; background: var(--accent); border-radius: 14px; display: flex; align-items: center; justify-content: center; margin: 0 auto 14px; font-size: 20px; }
+.brand h1 { font-size: 22px; font-weight: 700; color: var(--white); }
+.brand p { font-size: 13px; color: var(--muted); margin-top: 4px; }
+.login-tabs { display: flex; background: var(--bg); border-radius: 10px; padding: 4px; margin-bottom: 24px; }
+.login-tab { flex: 1; text-align: center; padding: 8px; border-radius: 8px; font-size: 13px; font-weight: 500; color: var(--muted); cursor: pointer; transition: all .2s; }
+.login-tab.active { background: var(--accent); color: var(--white); }
+.form-group { margin-bottom: 14px; }
+.form-group label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
+.form-group input { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--text); background: var(--bg); transition: border-color .2s; outline: none; }
+.form-group input:focus { border-color: var(--accent); }
+.btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-family: 'Inter', sans-serif; font-size: 14px; font-weight: 600; cursor: pointer; transition: all .2s; }
+.btn-primary { background: var(--accent); color: var(--white); }
+.btn-primary:hover { background: var(--accent2); }
+.btn-primary:disabled { opacity: .5; cursor: not-allowed; }
+.auth-link { text-align: center; margin-top: 14px; font-size: 13px; color: var(--muted); }
+.auth-link a { color: var(--accent); text-decoration: none; font-weight: 600; cursor: pointer; }
+.auth-link a:hover { text-decoration: underline; }
+.msg-error { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #FCA5A5; margin-bottom: 14px; display: none; }
+.msg-success { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); border-radius: 8px; padding: 10px 14px; font-size: 13px; color: #86EFAC; margin-bottom: 14px; display: none; }
 
-/* ── ONBOARDING ── */
-#onboarding-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #0F172A 0%, #1E3A5F 100%); display: none; }
-.onboarding-card { background: var(--white); border-radius: 20px; padding: 44px 40px; width: 100%; max-width: 480px; box-shadow: var(--shadow-lg); }
-.onboarding-steps { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 32px; }
-.step-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gray-200); transition: all .3s; }
-.step-dot.active { background: var(--blue); width: 28px; border-radius: 5px; }
-.step-dot.done { background: var(--green-mid); }
-.onboarding-title { font-size: 22px; font-weight: 700; color: var(--gray-900); margin-bottom: 8px; }
-.onboarding-sub { font-size: 14px; color: var(--gray-500); margin-bottom: 28px; line-height: 1.6; }
+/* ── App layout ── */
+#app-screen { display: none; min-height: 100vh; }
 
-/* ── APP ── */
-#app { display: none; min-height: 100vh; }
-.sidebar { position: fixed; left: 0; top: 0; bottom: 0; width: 240px; background: var(--gray-900); display: flex; flex-direction: column; z-index: 100; }
-.sidebar-brand { padding: 24px 20px; border-bottom: 1px solid rgba(255,255,255,0.08); }
-.sidebar-brand h2 { font-size: 18px; font-weight: 700; color: var(--white); }
-.sidebar-brand p { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
-.sidebar-nav { flex: 1; padding: 16px 12px; overflow-y: auto; }
-.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; color: var(--gray-400); font-size: 14px; font-weight: 500; cursor: pointer; transition: all .2s; margin-bottom: 2px; text-decoration: none; border: none; background: none; width: 100%; text-align: left; font-family: 'Inter', sans-serif; }
-.nav-item:hover { background: rgba(255,255,255,0.06); color: var(--white); }
-.nav-item.active { background: var(--blue); color: var(--white); }
-.nav-badge { background: var(--red-mid); color: var(--white); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 10px; margin-left: auto; }
-.sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
-.sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; }
-.sidebar-user:hover { background: rgba(255,255,255,0.06); }
-.user-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--blue); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--white); flex-shrink: 0; }
-.user-info { flex: 1; min-width: 0; }
-.user-email { font-size: 11px; color: var(--gray-400); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.user-perfil { font-size: 10px; color: var(--gray-500); text-transform: capitalize; }
-.main { margin-left: 240px; min-height: 100vh; }
-.topbar { background: var(--white); border-bottom: 1px solid var(--gray-200); padding: 0 32px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
-.topbar-title { font-size: 18px; font-weight: 700; color: var(--gray-900); }
-.topbar-right { display: flex; align-items: center; gap: 12px; }
-.env-badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; text-transform: uppercase; }
-.env-sandbox { background: var(--yellow-light); color: var(--yellow); }
-.env-prod { background: var(--green-light); color: var(--green); }
-.page { padding: 32px; display: none; }
+/* ── Sidebar ── */
+#sidebar {
+  width: 240px; min-width: 240px; background: var(--surface); border-right: 1px solid var(--border);
+  display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh;
+  z-index: 100; transition: transform .25s ease;
+}
+.sidebar-brand { padding: 20px 20px 16px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.sidebar-brand-icon { width: 36px; height: 36px; background: var(--accent); border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.sidebar-brand-name { font-size: 16px; font-weight: 700; color: var(--white); }
+.sidebar-nav { flex: 1; padding: 12px 10px; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all .2s; color: var(--muted); font-size: 14px; font-weight: 500; margin-bottom: 2px; }
+.nav-item:hover { background: var(--surface2); color: var(--text); }
+.nav-item.active { background: rgba(108,99,255,.18); color: var(--accent2); }
+.nav-item .nav-icon { font-size: 17px; width: 22px; text-align: center; flex-shrink: 0; }
+.sidebar-footer { padding: 14px 10px; border-top: 1px solid var(--border); }
+.sidebar-user { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 10px; }
+.user-avatar { width: 32px; height: 32px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 700; color: var(--white); flex-shrink: 0; }
+.user-email { font-size: 12px; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn-logout { width: 100%; margin-top: 8px; padding: 8px; background: transparent; border: 1px solid var(--border); border-radius: 8px; color: var(--muted); font-size: 13px; cursor: pointer; transition: all .2s; font-family: 'Inter', sans-serif; }
+.btn-logout:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── Main area ── */
+.main { flex: 1; margin-left: 240px; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar { background: var(--surface); border-bottom: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 50; }
+#menu-btn { display: none; background: transparent; border: none; color: var(--text); font-size: 22px; cursor: pointer; padding: 4px; line-height: 1; }
+.topbar-title { font-size: 16px; font-weight: 600; color: var(--white); }
+.content { padding: 24px; flex: 1; }
+
+/* ── Pages ── */
+.page { display: none; }
 .page.active { display: block; }
+.page-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; flex-wrap: wrap; gap: 12px; }
+.page-header h2 { font-size: 20px; font-weight: 700; color: var(--white); }
 
-/* ── CARDS ── */
-.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-bottom: 24px; }
-.stat-card { background: var(--white); border-radius: 14px; padding: 20px 24px; box-shadow: var(--shadow); }
-.stat-label { font-size: 12px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
-.stat-value { font-size: 28px; font-weight: 700; color: var(--gray-900); }
-.stat-sub { font-size: 12px; color: var(--gray-400); margin-top: 4px; }
-.stat-trend-up { color: var(--green-mid); font-size: 12px; font-weight: 600; }
-.stat-trend-down { color: var(--red-mid); font-size: 12px; font-weight: 600; }
-.card { background: var(--white); border-radius: 14px; padding: 24px; box-shadow: var(--shadow); margin-bottom: 20px; }
-.card-title { font-size: 16px; font-weight: 700; color: var(--gray-900); margin-bottom: 4px; }
-.card-sub { font-size: 13px; color: var(--gray-500); margin-bottom: 20px; }
+/* ── Stats ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
+.stat-label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
+.stat-value { font-size: 26px; font-weight: 700; color: var(--white); line-height: 1; }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+.stat-card.accent { border-color: rgba(108,99,255,.4); background: rgba(108,99,255,.08); }
+.stat-card.success { border-color: rgba(34,197,94,.3); background: rgba(34,197,94,.06); }
+.stat-card.warning { border-color: rgba(245,158,11,.3); background: rgba(245,158,11,.06); }
+.stat-card.danger { border-color: rgba(239,68,68,.3); background: rgba(239,68,68,.06); }
 
-/* ── CONSELHEIRO ── */
-.conselheiro-card { background: linear-gradient(135deg, #1E40AF 0%, #1d3a9e 100%); border-radius: 14px; padding: 24px; margin-bottom: 24px; color: var(--white); }
-.conselheiro-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
-.conselheiro-icon { font-size: 20px; }
-.conselheiro-label { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; opacity: .7; }
-.conselheiro-hero { font-size: 18px; font-weight: 700; line-height: 1.4; margin-bottom: 10px; }
-.conselheiro-insight { font-size: 14px; opacity: .85; line-height: 1.6; }
+/* ── Badges ── */
+.badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; }
+.badge-success { background: rgba(34,197,94,.15); color: #86EFAC; }
+.badge-warning { background: rgba(245,158,11,.15); color: #FCD34D; }
+.badge-danger  { background: rgba(239,68,68,.15); color: #FCA5A5; }
+.badge-muted   { background: rgba(136,144,181,.15); color: var(--muted); }
+.badge-accent  { background: rgba(108,99,255,.15); color: var(--accent2); }
 
-/* ── TABELAS ── */
+/* ── Table ── */
+.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.table-card-header { padding: 16px 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.table-card-header h3 { font-size: 14px; font-weight: 600; color: var(--white); }
 .table-wrap { overflow-x: auto; }
 table { width: 100%; border-collapse: collapse; }
-th { text-align: left; font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: .05em; padding: 10px 16px; border-bottom: 1px solid var(--gray-200); }
-td { padding: 14px 16px; border-bottom: 1px solid var(--gray-100); font-size: 14px; color: var(--gray-700); }
+th { padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid var(--border); background: var(--bg); white-space: nowrap; }
+td { padding: 13px 16px; font-size: 13px; color: var(--text); border-bottom: 1px solid rgba(46,50,80,.5); max-width: 200px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 tr:last-child td { border-bottom: none; }
-tr:hover td { background: var(--gray-50); }
+tbody tr { cursor: pointer; transition: background .15s; }
+tbody tr:hover { background: var(--surface2); }
+.no-data { padding: 48px 20px; text-align: center; color: var(--muted); font-size: 14px; }
 
-/* ── BADGES ── */
-.badge { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; white-space: nowrap; }
-.badge-green { background: var(--green-light); color: var(--green); }
-.badge-red { background: var(--red-light); color: var(--red); }
-.badge-yellow { background: var(--yellow-light); color: var(--yellow); }
-.badge-blue { background: var(--blue-light); color: var(--blue); }
-.badge-gray { background: var(--gray-100); color: var(--gray-500); }
+/* ── Cards list (mobile) ── */
+.card-list { display: none; }
+.list-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; margin-bottom: 10px; cursor: pointer; transition: background .15s; }
+.list-card:hover { background: var(--surface2); }
+.list-card-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 6px; }
+.list-card-name { font-size: 14px; font-weight: 600; color: var(--white); }
+.list-card-sub { font-size: 12px; color: var(--muted); }
 
-/* ── BOTÕES ── */
-.btn-sm { padding: 7px 14px; border: none; border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; transition: all .2s; }
-.btn-primary { background: var(--blue); color: var(--white); }
-.btn-primary:hover { background: #1d3a9e; }
-.btn-success { background: var(--green-mid); color: var(--white); }
-.btn-danger { background: var(--red-mid); color: var(--white); }
-.btn-ghost { background: none; border: 1.5px solid var(--gray-200); color: var(--gray-600); }
-.btn-ghost:hover { border-color: var(--gray-400); color: var(--gray-800); }
-.btn-whatsapp { background: #25D366; color: var(--white); display: inline-flex; align-items: center; gap: 6px; }
+/* ── Buttons ── */
+.btn-sm { padding: 7px 14px; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; }
+.btn-accent { background: var(--accent); color: var(--white); }
+.btn-accent:hover { background: var(--accent2); }
+.btn-outline { background: transparent; border: 1px solid var(--border); color: var(--muted); }
+.btn-outline:hover { border-color: var(--accent); color: var(--accent2); }
 
-/* ── FORMS ── */
-.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-.form-field { margin-bottom: 16px; }
-.form-field label { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 6px; }
-.form-field input, .form-field select, .form-field textarea { width: 100%; padding: 10px 14px; border: 1.5px solid var(--gray-200); border-radius: 8px; font-family: 'Inter', sans-serif; font-size: 14px; color: var(--gray-800); background: var(--white); outline: none; transition: border-color .2s; }
-.form-field input:focus, .form-field select:focus { border-color: var(--blue-mid); }
+/* ── Config ── */
+.config-section { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 22px 24px; margin-bottom: 20px; }
+.config-section h3 { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 18px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
+.radio-group { display: flex; gap: 12px; flex-wrap: wrap; }
+.radio-opt { display: flex; align-items: center; gap: 8px; padding: 10px 16px; background: var(--bg); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; font-size: 13px; color: var(--muted); transition: all .2s; }
+.radio-opt input[type=radio] { accent-color: var(--accent); width: 15px; height: 15px; }
+.radio-opt.selected { border-color: var(--accent); color: var(--accent2); }
+.conn-status { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
+.conn-ok { background: rgba(34,197,94,.15); color: #86EFAC; }
+.conn-err { background: rgba(239,68,68,.15); color: #FCA5A5; }
+.conn-testing { background: rgba(245,158,11,.15); color: #FCD34D; }
 
-/* ── MODAL ── */
-.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 1000; display: none; align-items: center; justify-content: center; }
-.modal-overlay.show { display: flex; }
-.modal { background: var(--white); border-radius: 16px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow-lg); }
-.modal-title { font-size: 18px; font-weight: 700; color: var(--gray-900); margin-bottom: 20px; }
+/* ── Spinner ── */
+.spinner { display: inline-block; width: 18px; height: 18px; border: 2px solid rgba(108,99,255,.3); border-top-color: var(--accent); border-radius: 50%; animation: spin .7s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.loading-row td { text-align: center; padding: 40px; }
 
-/* ── TOAST ── */
-.toast-container { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 10px; }
-.toast { background: var(--gray-900); color: var(--white); border-radius: 10px; padding: 12px 16px; font-size: 13px; max-width: 320px; box-shadow: var(--shadow-lg); display: flex; align-items: center; gap: 10px; animation: toastIn .3s ease; }
-.toast-success { border-left: 4px solid var(--green-mid); }
-.toast-error { border-left: 4px solid var(--red-mid); }
-@keyframes toastIn { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+/* ── Toast ── */
+.toast-container { position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+.toast { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 18px; font-size: 13px; color: var(--text); box-shadow: var(--shadow); animation: slideIn .25s ease; max-width: 320px; }
+.toast.success { border-color: rgba(34,197,94,.4); color: #86EFAC; }
+.toast.error { border-color: rgba(239,68,68,.4); color: #FCA5A5; }
+@keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
 
-/* ── SKELETON ── */
-.skeleton { background: linear-gradient(90deg, var(--gray-100) 25%, var(--gray-200) 50%, var(--gray-100) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
-@keyframes shimmer { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+/* ── Alert banner ── */
+.alert-banner { background: rgba(245,158,11,.1); border: 1px solid rgba(245,158,11,.3); border-radius: 12px; padding: 14px 18px; margin-bottom: 20px; font-size: 13px; color: #FCD34D; display: none; }
+.alert-banner a { color: #FCD34D; font-weight: 600; cursor: pointer; text-decoration: underline; }
 
-/* ── EMPTY STATE ── */
-.empty-state { text-align: center; padding: 60px 20px; color: var(--gray-400); }
-.empty-state-icon { font-size: 48px; margin-bottom: 16px; }
-.empty-state h3 { font-size: 16px; font-weight: 600; color: var(--gray-600); margin-bottom: 8px; }
-.empty-state p { font-size: 14px; }
+/* ── Detail panel ── */
+.panel-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.6); z-index: 200; display: none; }
+.panel-overlay.open { display: block; }
+.detail-panel { position: fixed; right: 0; top: 0; height: 100vh; width: 100%; max-width: 420px; background: var(--surface); border-left: 1px solid var(--border); z-index: 201; padding: 24px; overflow-y: auto; transform: translateX(100%); transition: transform .25s ease; }
+.panel-overlay.open .detail-panel { transform: translateX(0); }
+.panel-close { position: absolute; top: 18px; right: 18px; background: transparent; border: none; color: var(--muted); font-size: 22px; cursor: pointer; line-height: 1; }
+.panel-title { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 20px; padding-right: 40px; }
+.detail-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.detail-row:last-child { border-bottom: none; }
+.detail-label { color: var(--muted); font-weight: 500; }
+.detail-value { color: var(--text); font-weight: 600; text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.btn-full { width: 100%; margin-top: 16px; padding: 11px; border: none; border-radius: 10px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif; transition: all .2s; }
+.btn-accent-full { background: var(--accent); color: var(--white); }
+.btn-accent-full:hover { background: var(--accent2); }
 
-/* ── RESPONSIVO ── */
-@media (max-width: 768px) {
-  .sidebar { transform: translateX(-100%); transition: transform .3s; }
-  .sidebar.open { transform: translateX(0); }
-  .main { margin-left: 0; }
-  .page { padding: 20px 16px; }
+/* ── Responsive ── */
+@media (max-width: 900px) {
   .stats-grid { grid-template-columns: 1fr 1fr; }
-  .form-row { grid-template-columns: 1fr; }
 }
-
-/* ── PROGRESS BAR ── */
-.progress-bar { height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden; }
-.progress-fill { height: 100%; border-radius: 4px; transition: width .5s ease; }
-
-/* ── APIKEY BANNER ── */
-.apikey-banner { background: var(--yellow-light); color: var(--yellow); font-size: 13px; font-weight: 500; padding: 10px 20px; text-align: center; border-bottom: 1px solid #FDE68A; }
-.apikey-banner a { color: var(--yellow); text-decoration: underline; cursor: pointer; font-weight: 600; }
+@media (max-width: 768px) {
+  #sidebar { transform: translateX(-100%); width: 260px; min-width: 260px; }
+  #sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  #menu-btn { display: block; }
+  .stats-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+  .stat-card { padding: 14px 16px; }
+  .stat-value { font-size: 20px; }
+  .content { padding: 16px; }
+  .page-header h2 { font-size: 17px; }
+  .table-wrap table { display: none; }
+  .card-list { display: block; }
+  .col-hide { display: none; }
+  .detail-panel { max-width: 100%; }
+}
+@media (max-width: 480px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .login-card { padding: 28px 20px; }
+}
 </style>
 </head>
 <body>
 
-<!-- ── AUTH SCREEN ── -->
-<div id="auth-screen">
-  <div class="auth-card">
-    <div class="auth-brand">
-      <div class="auth-brand-icon">📊</div>
+<div id="login-screen">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-icon">🔄</div>
       <h1>Recorre Hub</h1>
-      <p>Conselheiro de assinaturas</p>
+      <p>CRM de Assinaturas Asaas</p>
     </div>
-
-    <!-- Login -->
-    <div id="ls-login">
-      <div class="auth-alert auth-alert-error" id="login-error"></div>
+    <div class="login-tabs">
+      <div class="login-tab active" id="tab-login" onclick="trocarTab('login')">Entrar</div>
+      <div class="login-tab" id="tab-cadastro" onclick="trocarTab('cadastro')">Cadastrar</div>
+    </div>
+    <div id="form-login">
+      <div class="msg-error" id="login-err"></div>
+      <div class="msg-success" id="login-ok"></div>
       <div class="form-group">
         <label>E-mail</label>
-        <input type="email" id="login-email" placeholder="seu@email.com" autocomplete="email">
+        <input type="email" id="login-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerLogin()">
       </div>
       <div class="form-group">
         <label>Senha</label>
-        <input type="password" id="login-senha" placeholder="Sua senha" onkeydown="if(event.key==='Enter')fazerLogin()">
+        <input type="password" id="login-senha" placeholder="••••••••" onkeydown="if(event.key==='Enter')fazerLogin()">
       </div>
-      <button class="btn btn-blue" id="btn-login" onclick="fazerLogin()">Entrar</button>
-      <div class="auth-link" style="margin-top:10px">
-        <a href="#" onclick="mostrarAuth('esqueceu');return false">Esqueceu a senha?</a>
-      </div>
-      <div class="auth-link">
-        Não tem conta? <a href="#" onclick="mostrarAuth('cadastro');return false">Criar conta</a>
+      <button class="btn btn-primary" id="btn-login" onclick="fazerLogin()">Entrar</button>
+      <div class="auth-link" style="margin-top:12px">
+        <a onclick="trocarTab('forgot')">Esqueci minha senha</a>
       </div>
     </div>
-
-    <!-- Cadastro -->
-    <div id="ls-cadastro" style="display:none">
-      <div class="auth-alert auth-alert-error" id="cad-error"></div>
-      <div class="auth-alert auth-alert-success" id="cad-ok"></div>
+    <div id="form-cadastro" style="display:none">
+      <div class="msg-error" id="cad-err"></div>
+      <div class="msg-success" id="cad-ok"></div>
       <div class="form-group">
         <label>E-mail</label>
-        <input type="email" id="cad-email" placeholder="seu@email.com">
+        <input type="email" id="cad-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')fazerCadastro()">
       </div>
       <div class="form-group">
-        <label>Senha <span style="font-weight:400;text-transform:none">(mín. 8 caracteres)</span></label>
-        <input type="password" id="cad-senha" placeholder="Crie uma senha">
-      </div>
-      <div class="form-group">
-        <label>Confirmar senha</label>
-        <input type="password" id="cad-senha2" placeholder="Repita a senha">
+        <label>Senha</label>
+        <input type="password" id="cad-senha" placeholder="mín. 6 caracteres" onkeydown="if(event.key==='Enter')fazerCadastro()">
       </div>
       <div class="form-group">
         <label>Código de acesso</label>
-        <input type="text" id="cad-invite" placeholder="Código fornecido pelo Recorre Hub" onkeydown="if(event.key==='Enter')fazerCadastro()">
+        <input type="text" id="cad-invite" placeholder="Código fornecido pela equipe" onkeydown="if(event.key==='Enter')fazerCadastro()">
       </div>
-      <button class="btn btn-blue" id="btn-cadastro" onclick="fazerCadastro()">Criar conta</button>
-      <div class="auth-link">
-        Já tem conta? <a href="#" onclick="mostrarAuth('login');return false">Entrar</a>
-      </div>
+      <button class="btn btn-primary" id="btn-cad" onclick="fazerCadastro()">Criar conta</button>
     </div>
-
-    <!-- Esqueceu -->
-    <div id="ls-esqueceu" style="display:none">
-      <div class="auth-alert auth-alert-error" id="esq-error"></div>
-      <div class="auth-alert auth-alert-success" id="esq-ok"></div>
-      <p style="font-size:13px;color:var(--gray-500);margin-bottom:18px;line-height:1.6">Informe seu e-mail para receber o link de redefinição de senha.</p>
+    <div id="form-forgot" style="display:none">
+      <div class="msg-error" id="forgot-err"></div>
+      <div class="msg-success" id="forgot-ok"></div>
       <div class="form-group">
         <label>E-mail</label>
-        <input type="email" id="esq-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')enviarReset()">
+        <input type="email" id="forgot-email" placeholder="seu@email.com" onkeydown="if(event.key==='Enter')enviarReset()">
       </div>
-      <button class="btn btn-blue" id="btn-esq" onclick="enviarReset()">Enviar link</button>
-      <div class="auth-link">
-        <a href="#" onclick="mostrarAuth('login');return false">← Voltar ao login</a>
+      <button class="btn btn-primary" id="btn-forgot" onclick="enviarReset()">Enviar link de recuperação</button>
+      <div class="auth-link" style="margin-top:12px">
+        <a onclick="trocarTab('login')">← Voltar para login</a>
       </div>
     </div>
-
-    <!-- Reset senha -->
-    <div id="ls-reset" style="display:none">
-      <div class="auth-alert auth-alert-error" id="reset-error"></div>
-      <div class="auth-alert auth-alert-success" id="reset-ok"></div>
-      <p style="font-size:13px;color:var(--gray-500);margin-bottom:18px">Crie uma nova senha para sua conta.</p>
+    <div id="form-reset" style="display:none">
+      <div class="msg-error" id="reset-err"></div>
+      <div class="msg-success" id="reset-ok"></div>
       <div class="form-group">
         <label>Nova senha</label>
-        <input type="password" id="reset-senha" placeholder="Nova senha">
+        <input type="password" id="reset-senha" placeholder="mín. 6 caracteres" onkeydown="if(event.key==='Enter')resetarSenha()">
       </div>
-      <div class="form-group">
-        <label>Confirmar nova senha</label>
-        <input type="password" id="reset-senha2" placeholder="Repita a senha" onkeydown="if(event.key==='Enter')redefinirSenha()">
-      </div>
-      <button class="btn btn-blue" id="btn-reset" onclick="redefinirSenha()">Salvar nova senha</button>
-    </div>
-
-    <!-- Loading -->
-    <div id="ls-loading" style="display:none;text-align:center;padding:20px 0">
-      <div style="width:24px;height:24px;border:2px solid var(--gray-200);border-top-color:var(--blue-mid);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 10px"></div>
-      <p style="font-size:13px;color:var(--gray-500)">Verificando sessão...</p>
+      <button class="btn btn-primary" id="btn-reset" onclick="resetarSenha()">Redefinir senha</button>
     </div>
   </div>
 </div>
 
-<!-- ── ONBOARDING ── -->
-<div id="onboarding-screen">
-  <div class="onboarding-card">
-    <div class="onboarding-steps">
-      <div class="step-dot active" id="sdot-1"></div>
-      <div class="step-dot" id="sdot-2"></div>
-      <div class="step-dot" id="sdot-3"></div>
-    </div>
-
-    <!-- Step 1: API Key -->
-    <div id="ob-step1">
-      <div style="font-size:32px;margin-bottom:16px">🔑</div>
-      <div class="onboarding-title">Conectar ao Asaas</div>
-      <div class="onboarding-sub">Cole sua chave de API do Asaas para importar seus clientes e assinaturas automaticamente.</div>
-      <div class="auth-alert auth-alert-error" id="ob-error"></div>
-      <div class="form-group">
-        <label>Chave API Asaas</label>
-        <input type="text" id="ob-apikey" placeholder="$aact_..." style="font-family:monospace;font-size:13px">
-      </div>
-      <div class="form-group">
-        <label>Ambiente</label>
-        <select id="ob-env">
-          <option value="sandbox">Sandbox (testes)</option>
-          <option value="production">Produção</option>
-        </select>
-      </div>
-      <button class="btn btn-blue" id="btn-ob1" onclick="obStep1()">Conectar e importar →</button>
-    </div>
-
-    <!-- Step 2: Importando -->
-    <div id="ob-step2" style="display:none;text-align:center">
-      <div style="font-size:48px;margin-bottom:20px">⚡</div>
-      <div class="onboarding-title">Importando seus dados</div>
-      <div class="onboarding-sub">Estamos buscando seus clientes e assinaturas no Asaas. Isso leva alguns segundos.</div>
-      <div class="progress-bar" style="margin:24px 0">
-        <div class="progress-fill" id="ob-progress" style="width:0%;background:var(--blue)"></div>
-      </div>
-      <p id="ob-progress-label" style="font-size:13px;color:var(--gray-500)">Conectando...</p>
-    </div>
-
-    <!-- Step 3: Pronto -->
-    <div id="ob-step3" style="display:none;text-align:center">
-      <div style="font-size:48px;margin-bottom:20px">🎉</div>
-      <div class="onboarding-title">Tudo pronto!</div>
-      <div class="onboarding-sub" id="ob-resumo">Seus dados foram importados com sucesso.</div>
-      <div class="card" id="ob-insight-card" style="text-align:left;margin:20px 0">
-        <div style="font-size:13px;font-weight:600;color:var(--gray-500);margin-bottom:8px">PRIMEIRO INSIGHT</div>
-        <div id="ob-insight-text" style="font-size:14px;color:var(--gray-700);line-height:1.6"></div>
-      </div>
-      <button class="btn btn-blue" onclick="abrirApp()">Ir para o dashboard →</button>
-    </div>
-  </div>
-</div>
-
-<!-- ── APP ── -->
-<div id="app">
-  <div id="apikey-banner" class="apikey-banner" style="display:none">
-    ⚠️ Configure sua chave de API Asaas em <a onclick="navegarPara('configuracoes')">Configurações</a> para começar.
-  </div>
-
-  <div class="sidebar" id="sidebar">
+<div id="app-screen">
+  <div id="sidebar">
     <div class="sidebar-brand">
-      <h2>📊 Recorre Hub</h2>
-      <p id="sidebar-env-label">Sandbox</p>
+      <div class="sidebar-brand-icon">🔄</div>
+      <span class="sidebar-brand-name">Recorre Hub</span>
     </div>
     <nav class="sidebar-nav">
-      <button class="nav-item active" onclick="navegarPara('dashboard')" id="nav-dashboard">
-        <span>📈</span> Dashboard
-      </button>
-      <button class="nav-item" onclick="navegarPara('clientes')" id="nav-clientes">
-        <span>👥</span> Clientes
-      </button>
-      <button class="nav-item" onclick="navegarPara('assinaturas')" id="nav-assinaturas">
-        <span>🔄</span> Assinaturas
-      </button>
-      <button class="nav-item" onclick="navegarPara('tarefas')" id="nav-tarefas">
-        <span>✅</span> Tarefas
-        <span class="nav-badge" id="badge-tarefas" style="display:none">0</span>
-      </button>
-      <button class="nav-item" onclick="navegarPara('comissoes')" id="nav-comissoes">
-        <span>💰</span> Comissões
-      </button>
-      <button class="nav-item" onclick="navegarPara('configuracoes')" id="nav-configuracoes">
-        <span>⚙️</span> Configurações
-      </button>
+      <div class="nav-item active" data-page="dashboard" onclick="navegarPara('dashboard')">
+        <span class="nav-icon">📊</span> Dashboard
+      </div>
+      <div class="nav-item" data-page="clientes" onclick="navegarPara('clientes')">
+        <span class="nav-icon">👥</span> Clientes
+      </div>
+      <div class="nav-item" data-page="assinaturas" onclick="navegarPara('assinaturas')">
+        <span class="nav-icon">🔁</span> Assinaturas
+      </div>
+      <div class="nav-item" data-page="cobrancas" onclick="navegarPara('cobrancas')">
+        <span class="nav-icon">💳</span> Cobranças
+      </div>
+      <div class="nav-item" data-page="config" onclick="navegarPara('config')">
+        <span class="nav-icon">⚙️</span> Configurações
+      </div>
     </nav>
     <div class="sidebar-footer">
-      <div class="sidebar-user" onclick="fazerLogout()">
-        <div class="user-avatar" id="user-avatar">A</div>
-        <div class="user-info">
-          <div class="user-email" id="user-email-display"></div>
-          <div class="user-perfil" id="user-perfil-display"></div>
-        </div>
-        <span style="color:var(--gray-500);font-size:12px">Sair</span>
+      <div class="sidebar-user">
+        <div class="user-avatar" id="user-avatar">?</div>
+        <div class="user-email" id="user-email-label">—</div>
       </div>
+      <button class="btn-logout" onclick="fazerLogout()">Sair da conta</button>
     </div>
   </div>
+
+  <div id="sidebar-overlay" onclick="fecharSidebar()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:99;"></div>
 
   <div class="main">
     <div class="topbar">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button onclick="toggleSidebar()" style="display:none;background:none;border:none;cursor:pointer;font-size:20px" id="menu-btn">☰</button>
-        <div class="topbar-title" id="topbar-title">Dashboard</div>
-      </div>
-      <div class="topbar-right">
-        <span class="env-badge env-sandbox" id="env-badge">Sandbox</span>
-        <button onclick="sincronizarDados()" class="btn-sm btn-ghost" id="btn-sync">🔄 Atualizar</button>
-      </div>
+      <button id="menu-btn" onclick="toggleSidebar()">☰</button>
+      <span class="topbar-title" id="topbar-title">Dashboard</span>
     </div>
-
-    <!-- DASHBOARD -->
-    <div class="page active" id="page-dashboard">
-      <div class="conselheiro-card" id="conselheiro-dash">
-        <div class="conselheiro-header">
-          <span class="conselheiro-icon">💡</span>
-          <span class="conselheiro-label">Conselheiro</span>
-        </div>
-        <div class="conselheiro-hero" id="dash-hero">Carregando seus dados...</div>
-        <div class="conselheiro-insight" id="dash-insight"></div>
+    <div class="content">
+      <div class="alert-banner" id="alert-no-key">
+        ⚠️ Configure sua chave Asaas em <a onclick="navegarPara('config')">Configurações</a> para começar.
       </div>
 
-      <div class="stats-grid" id="stats-grid">
-        <div class="stat-card">
-          <div class="stat-label">Já recebido</div>
-          <div class="stat-value skeleton" id="stat-recebido" style="height:36px;width:120px"> </div>
-          <div class="stat-sub">este mês (líquido)</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Previsto para entrar</div>
-          <div class="stat-value skeleton" id="stat-previsto" style="height:36px;width:120px"> </div>
-          <div class="stat-sub">cobranças a vencer</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Atrasado</div>
-          <div class="stat-value skeleton" id="stat-atrasado" style="height:36px;width:120px"> </div>
-          <div class="stat-sub" id="stat-atrasado-qtd"></div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-label">Clientes ativos</div>
-          <div class="stat-value skeleton" id="stat-clientes" style="height:36px;width:80px"> </div>
-          <div class="stat-sub" id="stat-clientes-risco"></div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Cobranças recentes</div>
-        <div class="card-sub">Últimas movimentações da sua base</div>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Valor</th>
-                <th>Vencimento</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="dash-cobrancas"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- CLIENTES -->
-    <div class="page" id="page-clientes">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-        <input type="text" id="clientes-busca" placeholder="🔍 Buscar por nome, CPF ou e-mail..." style="padding:10px 14px;border:1.5px solid var(--gray-200);border-radius:10px;font-size:14px;width:300px;outline:none" oninput="filtrarClientes()">
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <button class="btn-sm btn-ghost active-filter" onclick="filtroClientes('todos',this)">Todos</button>
-          <button class="btn-sm btn-ghost" onclick="filtroClientes('em_dia',this)">Em dia</button>
-          <button class="btn-sm btn-ghost" onclick="filtroClientes('atrasado',this)">Atrasados</button>
-          <button class="btn-sm btn-ghost" onclick="filtroClientes('risco',this)">Em risco</button>
-        </div>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Plano</th>
-                <th>Mensalidade</th>
-                <th>Pontualidade</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="clientes-lista"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- ASSINATURAS -->
-    <div class="page" id="page-assinaturas">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-        <div></div>
-        <button class="btn-sm btn-primary" onclick="abrirModalAssinatura()">+ Nova assinatura</button>
-      </div>
-      <div class="stats-grid" style="grid-template-columns:repeat(4,1fr)">
-        <div class="stat-card"><div class="stat-label">Ativas</div><div class="stat-value" id="ass-ativas">—</div></div>
-        <div class="stat-card"><div class="stat-label">Receita mensal</div><div class="stat-value" id="ass-mrr">—</div></div>
-        <div class="stat-card"><div class="stat-label">Pausadas</div><div class="stat-value" id="ass-pausadas">—</div></div>
-        <div class="stat-card"><div class="stat-label">Canceladas no mês</div><div class="stat-value" id="ass-canceladas">—</div></div>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Cliente</th>
-                <th>Plano</th>
-                <th>Valor</th>
-                <th>Próx. vencimento</th>
-                <th>Status</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="assinaturas-lista"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- TAREFAS -->
-    <div class="page" id="page-tarefas">
-      <div style="display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap">
-        <button class="btn-sm btn-ghost active-filter" onclick="filtroTarefas('todas',this)">Todas</button>
-        <button class="btn-sm btn-ghost" onclick="filtroTarefas('urgente',this)">🔴 Urgente</button>
-        <button class="btn-sm btn-ghost" onclick="filtroTarefas('esta_semana',this)">🟡 Esta semana</button>
-        <button class="btn-sm btn-ghost" onclick="filtroTarefas('monitore',this)">🟢 Monitore</button>
-      </div>
-      <div id="tarefas-lista"></div>
-    </div>
-
-    <!-- COMISSÕES -->
-    <div class="page" id="page-comissoes">
-      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr)">
-        <div class="stat-card"><div class="stat-label">Total repassado</div><div class="stat-value" id="com-total">—</div></div>
-        <div class="stat-card"><div class="stat-label">Confirmadas</div><div class="stat-value" id="com-confirmadas">—</div></div>
-        <div class="stat-card"><div class="stat-label">Previsto</div><div class="stat-value" id="com-previsto">—</div></div>
-      </div>
-      <div class="card">
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr>
-                <th>Data</th>
-                <th>Cliente</th>
-                <th>Valor pago</th>
-                <th>Comissão</th>
-                <th>Parceiro</th>
-                <th>Status</th>
-              </tr>
-            </thead>
-            <tbody id="comissoes-lista"></tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-
-    <!-- CONFIGURAÇÕES -->
-    <div class="page" id="page-configuracoes">
-      <div class="card">
-        <div class="card-title">Conexão Asaas</div>
-        <div class="card-sub">Configure sua chave de API para sincronizar dados</div>
-        <div class="auth-alert auth-alert-error" id="cfg-error"></div>
-        <div class="auth-alert auth-alert-success" id="cfg-ok"></div>
-        <div class="form-field">
-          <label>Chave API Asaas</label>
-          <input type="text" id="cfg-apikey" placeholder="$aact_..." style="font-family:monospace;font-size:13px">
-        </div>
-        <div class="form-field">
-          <label>Ambiente</label>
-          <select id="cfg-env">
-            <option value="sandbox">Sandbox (testes)</option>
-            <option value="production">Produção</option>
-          </select>
-        </div>
-        <button class="btn-sm btn-ghost" onclick="testarConexao()" style="margin-right:8px">Testar conexão</button>
-        <button class="btn-sm btn-primary" onclick="salvarConfig()">Salvar</button>
-      </div>
-
-      <div class="card">
-        <div class="card-title">Dados de acesso</div>
-        <div class="card-sub">Altere sua senha de acesso</div>
-        <div class="auth-alert auth-alert-error" id="pwd-error"></div>
-        <div class="auth-alert auth-alert-success" id="pwd-ok"></div>
-        <div class="form-field">
-          <label>E-mail</label>
-          <input type="text" id="cfg-email-display" readonly style="background:var(--gray-100);color:var(--gray-500)">
-        </div>
-        <div class="form-field">
-          <label>Senha atual</label>
-          <input type="password" id="pwd-atual" placeholder="Senha atual">
-        </div>
-        <div class="form-field">
-          <label>Nova senha</label>
-          <input type="password" id="pwd-nova" placeholder="Nova senha (mín. 8 caracteres)">
-        </div>
-        <div class="form-field">
-          <label>Confirmar nova senha</label>
-          <input type="password" id="pwd-nova2" placeholder="Repita a nova senha">
-        </div>
-        <button class="btn-sm btn-primary" onclick="alterarSenha()">Alterar senha</button>
-      </div>
-
-      <div class="card" id="card-usuarios">
-        <div class="card-title">Usuários</div>
-        <div class="card-sub">Convide pessoas para acessar o CRM</div>
-        <div class="form-row" style="margin-bottom:12px">
-          <div class="form-field">
-            <label>E-mail do convidado</label>
-            <input type="email" id="inv-email" placeholder="email@dominio.com">
+      <div class="page active" id="page-dashboard">
+        <div class="stats-grid">
+          <div class="stat-card accent">
+            <div class="stat-label">Clientes</div>
+            <div class="stat-value" id="stat-clientes">—</div>
+            <div class="stat-sub">Total cadastrados</div>
           </div>
-          <div class="form-field">
-            <label>Perfil</label>
-            <select id="inv-perfil">
-              <option value="operacional">Operacional</option>
-              <option value="visualizacao">Visualização</option>
-              <option value="admin">Admin</option>
+          <div class="stat-card success">
+            <div class="stat-label">Assinaturas ativas</div>
+            <div class="stat-value" id="stat-ativas">—</div>
+            <div class="stat-sub">Status ACTIVE</div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-label">Cobranças pendentes</div>
+            <div class="stat-value" id="stat-pendentes">—</div>
+            <div class="stat-sub">Aguardando pagamento</div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-label">Vencidas</div>
+            <div class="stat-value" id="stat-vencidas">—</div>
+            <div class="stat-sub">Cobranças em atraso</div>
+          </div>
+        </div>
+        <div class="table-card">
+          <div class="table-card-header">
+            <h3>Cobranças recentes</h3>
+            <button class="btn-sm btn-outline" onclick="navegarPara('cobrancas')">Ver todas →</button>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Cliente</th>
+                <th class="col-hide">Vencimento</th>
+                <th>Valor</th>
+                <th>Status</th>
+              </tr></thead>
+              <tbody id="dash-cobrancas-tbody">
+                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-list" id="dash-cobrancas-cards"></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-clientes">
+        <div class="page-header">
+          <h2>Clientes</h2>
+          <button class="btn-sm btn-outline" onclick="carregarClientes()">↻ Atualizar</button>
+        </div>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Nome</th>
+                <th class="col-hide">E-mail</th>
+                <th class="col-hide">CPF/CNPJ</th>
+                <th>Status</th>
+              </tr></thead>
+              <tbody id="clientes-tbody">
+                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-list" id="clientes-cards"></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-assinaturas">
+        <div class="page-header">
+          <h2>Assinaturas</h2>
+          <button class="btn-sm btn-outline" onclick="carregarAssinaturas()">↻ Atualizar</button>
+        </div>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Cliente</th>
+                <th class="col-hide">Ciclo</th>
+                <th>Valor</th>
+                <th>Status</th>
+              </tr></thead>
+              <tbody id="assinaturas-tbody">
+                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-list" id="assinaturas-cards"></div>
+        </div>
+      </div>
+
+      <div class="page" id="page-cobrancas">
+        <div class="page-header">
+          <h2>Cobranças</h2>
+          <div style="display:flex;gap:8px;flex-wrap:wrap">
+            <select id="filtro-status" onchange="filtrarCobrancas()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;">
+              <option value="">Todos os status</option>
+              <option value="PENDING">Pendentes</option>
+              <option value="RECEIVED">Recebidas</option>
+              <option value="OVERDUE">Vencidas</option>
+              <option value="REFUNDED">Estornadas</option>
             </select>
+            <button class="btn-sm btn-outline" onclick="carregarCobrancas()">↻ Atualizar</button>
           </div>
         </div>
-        <button class="btn-sm btn-primary" onclick="convidarUsuario()">Enviar convite</button>
+        <div class="table-card">
+          <div class="table-wrap">
+            <table>
+              <thead><tr>
+                <th>Cliente</th>
+                <th class="col-hide">Vencimento</th>
+                <th>Valor</th>
+                <th>Status</th>
+                <th class="col-hide">Tipo</th>
+              </tr></thead>
+              <tbody id="cobrancas-tbody">
+                <tr class="loading-row"><td colspan="5"><div class="spinner"></div></td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="card-list" id="cobrancas-cards"></div>
+        </div>
       </div>
+
+      <div class="page" id="page-config">
+        <div class="page-header"><h2>Configurações</h2></div>
+        <div class="config-section">
+          <h3>🔑 Chave de API Asaas</h3>
+          <div class="form-group">
+            <label>Chave de API</label>
+            <input type="password" id="cfg-apikey" placeholder="$aact_...">
+          </div>
+          <div class="form-group">
+            <label>Ambiente</label>
+            <div class="radio-group">
+              <label class="radio-opt selected" id="radio-sandbox">
+                <input type="radio" name="cfg-env" value="sandbox" checked onchange="selecionarEnv('sandbox')">
+                Sandbox (testes)
+              </label>
+              <label class="radio-opt" id="radio-production">
+                <input type="radio" name="cfg-env" value="production" onchange="selecionarEnv('production')">
+                Produção
+              </label>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px">
+            <button class="btn-sm btn-accent" onclick="salvarConfig()">Salvar configurações</button>
+            <button class="btn-sm btn-outline" onclick="testarConexao()">Testar conexão</button>
+            <span id="conn-status-label"></span>
+          </div>
+        </div>
+        <div class="config-section">
+          <h3>🔒 Alterar senha</h3>
+          <div class="form-group">
+            <label>Nova senha</label>
+            <input type="password" id="cfg-nova-senha" placeholder="mín. 6 caracteres">
+          </div>
+          <button class="btn-sm btn-accent" onclick="alterarSenha()">Atualizar senha</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </div>
 
-<!-- MODAL ASSINATURA -->
-<div class="modal-overlay" id="modal-assinatura">
-  <div class="modal">
-    <div class="modal-title">Nova assinatura</div>
-    <div class="auth-alert auth-alert-error" id="ass-error"></div>
-    <div class="form-row">
-      <div class="form-field"><label>Nome</label><input type="text" id="ass-nome" placeholder="Nome do cliente"></div>
-      <div class="form-field"><label>CPF/CNPJ</label><input type="text" id="ass-cpf" placeholder="000.000.000-00"></div>
-    </div>
-    <div class="form-row">
-      <div class="form-field"><label>E-mail</label><input type="email" id="ass-email" placeholder="email@dominio.com"></div>
-      <div class="form-field"><label>Telefone</label><input type="text" id="ass-tel" placeholder="(11) 99999-9999"></div>
-    </div>
-    <div class="form-field"><label>Descrição do plano</label><input type="text" id="ass-plano" placeholder="Ex: Plano Mensal Academia"></div>
-    <div class="form-row">
-      <div class="form-field"><label>Valor (R$)</label><input type="number" id="ass-valor" placeholder="0,00" step="0.01"></div>
-      <div class="form-field">
-        <label>Frequência</label>
-        <select id="ass-freq">
-          <option value="MONTHLY">Mensal</option>
-          <option value="WEEKLY">Semanal</option>
-          <option value="BIMONTHLY">Bimestral</option>
-          <option value="QUARTERLY">Trimestral</option>
-          <option value="SEMIANNUALLY">Semestral</option>
-          <option value="YEARLY">Anual</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-field">
-        <label>Forma de pagamento</label>
-        <select id="ass-billing">
-          <option value="PIX">PIX</option>
-          <option value="BOLETO">Boleto</option>
-          <option value="CREDIT_CARD">Cartão de crédito</option>
-        </select>
-      </div>
-      <div class="form-field"><label>Primeiro vencimento</label><input type="date" id="ass-venc"></div>
-    </div>
-    <div style="display:flex;gap:12px;margin-top:8px">
-      <button class="btn-sm btn-ghost" onclick="fecharModal('modal-assinatura')" style="flex:1">Cancelar</button>
-      <button class="btn-sm btn-primary" onclick="criarAssinatura()" style="flex:2" id="btn-criar-ass">Criar assinatura</button>
-    </div>
+<div class="panel-overlay" id="panel-overlay" onclick="fecharPainel(event)">
+  <div class="detail-panel" id="detail-panel">
+    <button class="panel-close" onclick="fecharPainel()">✕</button>
+    <div class="panel-title" id="panel-title">Detalhes</div>
+    <div id="panel-body"></div>
   </div>
 </div>
 
-<!-- TOAST -->
 <div class="toast-container" id="toast-container"></div>
 
-<style>
-@keyframes spin { to { transform: rotate(360deg); } }
-.active-filter { background: var(--blue-light) !important; color: var(--blue) !important; border-color: var(--blue-mid) !important; }
-</style>
-
 <script>
-const AUTH_URL = '/.netlify/functions/auth';
+const AUTH_URL    = '/.netlify/functions/auth';
 const STORAGE_URL = '/.netlify/functions/storage';
-const ASAAS_URL = '/.netlify/functions/asaas';
+const ASAAS_URL   = '/.netlify/functions/asaas';
 
 let sessao = null;
-let dadosCache = { clientes: [], assinaturas: [], cobrancas: [], tarefas: [] };
-let filtroClienteAtual = 'todos';
-let filtroTarefaAtual = 'todas';
-
-// ── UTILS ──────────────────────────────────────────────────────────────────
+let dadosCache = { clientes: [], assinaturas: [], cobrancas: [] };
+let resetToken = null;
+let paginaAtual = 'dashboard';
 
 function fmt(val) {
-  return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(val || 0);
+  if (val == null) return '—';
+  return 'R$ ' + Number(val).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 }
 
 function fmtData(d) {
   if (!d) return '—';
-  const [y, m, day] = d.split('-');
+  const [y, m, day] = d.split('T')[0].split('-');
   return `${day}/${m}/${y}`;
 }
+
 function nomeCliente(customerId) {
   if (!customerId) return '—';
   const id = typeof customerId === 'object' ? customerId.id : customerId;
   const c = dadosCache.clientes.find(x => x.id === id);
-  return c?.name || '—';
+  return c?.name || id?.slice(0, 12) + '…' || '—';
 }
 
-function toast(msg, tipo = 'success') {
-  const c = document.getElementById('toast-container');
-  const t = document.createElement('div');
-  t.className = `toast toast-${tipo}`;
-  t.innerHTML = `<span>${msg}</span>`;
-  c.appendChild(t);
-  setTimeout(() => t.remove(), 4000);
+function badgeStatus(status) {
+  const mapa = {
+    ACTIVE: ['badge-success', 'Ativa'],
+    INACTIVE: ['badge-muted', 'Inativa'],
+    RECEIVED: ['badge-success', 'Recebida'],
+    CONFIRMED: ['badge-success', 'Confirmada'],
+    PENDING: ['badge-warning', 'Pendente'],
+    OVERDUE: ['badge-danger', 'Vencida'],
+    REFUNDED: ['badge-muted', 'Estornada'],
+    CANCELED: ['badge-muted', 'Cancelada'],
+    MONTHLY: ['badge-accent', 'Mensal'],
+    YEARLY: ['badge-accent', 'Anual'],
+    WEEKLY: ['badge-accent', 'Semanal'],
+  };
+  const [cls, label] = mapa[status] || ['badge-muted', status || '—'];
+  return `<span class="badge ${cls}">${label}</span>`;
 }
 
-function mostrarAlerta(id, msg) {
-  const el = document.getElementById(id);
-  if (!el) return;
+function toast(msg, tipo = 'info') {
+  const el = document.createElement('div');
+  el.className = 'toast' + (tipo === 'success' ? ' success' : tipo === 'error' ? ' error' : '');
   el.textContent = msg;
-  el.classList.add('show');
-  setTimeout(() => el.classList.remove('show'), 5000);
+  document.getElementById('toast-container').appendChild(el);
+  setTimeout(() => el.remove(), 3500);
 }
 
-function setSessao(s) {
+function salvarSessao(s) {
   sessao = s;
-  if (s) localStorage.setItem('rh_session', JSON.stringify(s));
-  else localStorage.removeItem('rh_session');
+  if (s) localStorage.setItem('rh_sessao', JSON.stringify(s));
+  else localStorage.removeItem('rh_sessao');
 }
 
-// ── AUTH ───────────────────────────────────────────────────────────────────
-
-function mostrarAuth(tela) {
-  ['login','cadastro','esqueceu','reset','loading'].forEach(t => {
-    document.getElementById('ls-' + t).style.display = 'none';
-  });
-  document.getElementById('ls-' + tela).style.display = 'block';
+function carregarSessaoLocal() {
+  try { return JSON.parse(localStorage.getItem('rh_sessao') || 'null'); } catch { return null; }
 }
 
 async function authAPI(action, body) {
@@ -727,20 +565,94 @@ async function authAPI(action, body) {
   return data;
 }
 
+async function storageGet(tipo) {
+  if (!sessao?.token) return null;
+  try {
+    const res = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`);
+    if (res.status === 401) { fazerLogout(); return null; }
+    if (res.ok) return await res.json();
+  } catch(e) { console.warn('[storage] GET:', e.message); }
+  return null;
+}
+
+async function storageSet(tipo, dados) {
+  if (!sessao?.token) return;
+  try {
+    const res = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(dados)
+    });
+    if (res.status === 401) fazerLogout();
+  } catch(e) { console.warn('[storage] SET:', e.message); }
+}
+
+async function asaasAPI(method, path, body, qs) {
+  if (!sessao?.asaasApiKey) throw new Error('Configure sua chave Asaas em Configurações.');
+  let url = `${ASAAS_URL}?_path=${encodeURIComponent(path)}&_token=${encodeURIComponent(sessao.asaasApiKey)}&_env=${sessao.env || 'sandbox'}`;
+  if (qs) {
+    for (const [k, v] of Object.entries(qs)) {
+      if (v != null) url += `&${encodeURIComponent(k)}=${encodeURIComponent(v)}`;
+    }
+  }
+  const res = await fetch(url, {
+    method,
+    headers: { 'Content-Type': 'application/json' },
+    body: body ? JSON.stringify(body) : undefined
+  });
+  const text = await res.text();
+  let data;
+  try { data = JSON.parse(text); } catch { throw new Error('Resposta inválida: ' + text.slice(0, 80)); }
+  if (!res.ok) {
+    const err = data?.errors?.[0]?.description || data?.error || 'Erro Asaas ' + res.status;
+    throw new Error(err);
+  }
+  return data;
+}
+
+function trocarTab(tab) {
+  ['login','cadastro','forgot','reset'].forEach(t => {
+    document.getElementById('form-' + t).style.display = t === tab ? '' : 'none';
+  });
+  ['tab-login','tab-cadastro'].forEach(id => {
+    document.getElementById(id)?.classList.toggle('active',
+      (id === 'tab-login' && tab === 'login') ||
+      (id === 'tab-cadastro' && tab === 'cadastro'));
+  });
+}
+
+function mostrarErro(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
+
+function mostrarOk(id, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.style.display = msg ? '' : 'none';
+}
+
 async function fazerLogin() {
   const email = document.getElementById('login-email').value.trim();
   const senha = document.getElementById('login-senha').value;
-  const errEl = document.getElementById('login-error');
-  errEl.classList.remove('show');
-  if (!email || !senha) { mostrarAlerta('login-error', 'Preencha todos os campos.'); return; }
+  mostrarErro('login-err', '');
+  if (!email || !senha) { mostrarErro('login-err', 'Preencha e-mail e senha.'); return; }
   const btn = document.getElementById('btn-login');
-  btn.disabled = true; btn.textContent = 'Entrando...';
+  btn.disabled = true; btn.textContent = 'Entrando…';
   try {
     const data = await authAPI('login', { email, password: senha });
-    setSessao(data);
-    verificarOnboarding(data);
+    const s = { email: data.email, token: data.token, asaasApiKey: '', env: 'sandbox' };
+    if (data.config) {
+      s.asaasApiKey = data.config.apiKey || '';
+      s.env = data.config.env || 'sandbox';
+    }
+    salvarSessao(s);
+    iniciarApp();
   } catch(e) {
-    mostrarAlerta('login-error', e.message);
+    mostrarErro('login-err', e.message);
   } finally {
     btn.disabled = false; btn.textContent = 'Entrar';
   }
@@ -749,720 +661,389 @@ async function fazerLogin() {
 async function fazerCadastro() {
   const email = document.getElementById('cad-email').value.trim();
   const senha = document.getElementById('cad-senha').value;
-  const senha2 = document.getElementById('cad-senha2').value;
   const invite = document.getElementById('cad-invite').value.trim();
-  if (!email || !senha || !invite) { mostrarAlerta('cad-error', 'Preencha todos os campos.'); return; }
-  if (senha !== senha2) { mostrarAlerta('cad-error', 'As senhas não conferem.'); return; }
-  const btn = document.getElementById('btn-cadastro');
-  btn.disabled = true; btn.textContent = 'Criando conta...';
+  mostrarErro('cad-err', ''); mostrarOk('cad-ok', '');
+  if (!email || !senha) { mostrarErro('cad-err', 'Preencha todos os campos.'); return; }
+  const btn = document.getElementById('btn-cad');
+  btn.disabled = true; btn.textContent = 'Criando…';
   try {
     await authAPI('register', { email, password: senha, inviteCode: invite });
-    document.getElementById('cad-ok').textContent = '✅ Conta criada! Faça login para continuar.';
-    document.getElementById('cad-ok').classList.add('show');
-    setTimeout(() => { mostrarAuth('login'); document.getElementById('login-email').value = email; }, 2500);
+    mostrarOk('cad-ok', 'Conta criada! Faça login para continuar.');
+    trocarTab('login');
+    document.getElementById('login-email').value = email;
   } catch(e) {
-    mostrarAlerta('cad-error', e.message);
+    mostrarErro('cad-err', e.message);
   } finally {
     btn.disabled = false; btn.textContent = 'Criar conta';
   }
 }
 
 async function enviarReset() {
-  const email = document.getElementById('esq-email').value.trim();
-  if (!email) { mostrarAlerta('esq-error', 'Informe seu e-mail.'); return; }
-  const btn = document.getElementById('btn-esq');
-  btn.disabled = true; btn.textContent = 'Enviando...';
+  const email = document.getElementById('forgot-email').value.trim();
+  mostrarErro('forgot-err', '');
+  if (!email) { mostrarErro('forgot-err', 'Informe seu e-mail.'); return; }
+  const btn = document.getElementById('btn-forgot');
+  btn.disabled = true; btn.textContent = 'Enviando…';
   try {
     await authAPI('forgot', { email });
-    document.getElementById('esq-ok').textContent = '✅ Se este e-mail estiver cadastrado, você receberá o link em breve.';
-    document.getElementById('esq-ok').classList.add('show');
+    mostrarOk('forgot-ok', 'Se o e-mail estiver cadastrado, você receberá o link em breve.');
   } catch(e) {
-    mostrarAlerta('esq-error', e.message);
+    mostrarErro('forgot-err', e.message);
   } finally {
-    btn.disabled = false; btn.textContent = 'Enviar link';
+    btn.disabled = false; btn.textContent = 'Enviar link de recuperação';
   }
 }
 
-async function redefinirSenha() {
-  const tok = new URLSearchParams(window.location.search).get('reset');
+async function resetarSenha() {
   const senha = document.getElementById('reset-senha').value;
-  const senha2 = document.getElementById('reset-senha2').value;
-  if (senha !== senha2) { mostrarAlerta('reset-error', 'As senhas não conferem.'); return; }
+  mostrarErro('reset-err', '');
+  if (!senha || senha.length < 6) { mostrarErro('reset-err', 'A senha deve ter pelo menos 6 caracteres.'); return; }
   const btn = document.getElementById('btn-reset');
-  btn.disabled = true; btn.textContent = 'Salvando...';
+  btn.disabled = true; btn.textContent = 'Redefinindo…';
   try {
-    await authAPI('reset', { token: tok, password: senha });
-    document.getElementById('reset-ok').textContent = '✅ Senha alterada! Faça login.';
-    document.getElementById('reset-ok').classList.add('show');
-    setTimeout(() => { window.history.replaceState({}, '', '/'); mostrarAuth('login'); }, 2500);
+    await authAPI('reset', { token: resetToken, password: senha });
+    mostrarOk('reset-ok', 'Senha redefinida! Faça login.');
+    setTimeout(() => trocarTab('login'), 1500);
   } catch(e) {
-    mostrarAlerta('reset-error', e.message);
+    mostrarErro('reset-err', e.message);
   } finally {
-    btn.disabled = false; btn.textContent = 'Salvar nova senha';
+    btn.disabled = false; btn.textContent = 'Redefinir senha';
   }
 }
 
-async function fazerLogout() {
-  if (sessao?.token) await authAPI('logout', { token: sessao.token }).catch(() => {});
-  setSessao(null);
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
-  mostrarAuth('login');
-}
-
-// ── ASAAS API ──────────────────────────────────────────────────────────────
-
-async function asaasGet(path, params = {}) {
-  if (!sessao?.asaasApiKey) throw new Error('Chave API não configurada.');
-  const qs = new URLSearchParams(params).toString();
-  const res = await fetch(`${ASAAS_URL}${path}${qs ? '?' + qs : ''}`, {
-    headers: { 'access_token': sessao.asaasApiKey, 'asaas_env': sessao.env || 'sandbox' }
+function navegarPara(pagina) {
+  paginaAtual = pagina;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + pagina);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === pagina);
   });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.errors?.[0]?.description || 'Erro na API Asaas.');
-  return data;
-}
-
-async function asaasPost(path, body) {
-  if (!sessao?.asaasApiKey) throw new Error('Chave API não configurada.');
-  const res = await fetch(`${ASAAS_URL}${path}`, {
-    method: 'POST',
-    headers: { 'access_token': sessao.asaasApiKey, 'asaas_env': sessao.env || 'sandbox', 'Content-Type': 'application/json' },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-  if (!res.ok) throw new Error(data.errors?.[0]?.description || 'Erro na API Asaas.');
-  return data;
-}
-
-// ── STORAGE ────────────────────────────────────────────────────────────────
-
-async function storageGet(tipo) {
-  if (!sessao?.token) return null;
-  try {
-    const res = await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`);
-    if (res.status === 401) { fazerLogout(); return null; }
-    if (res.ok) return await res.json();
-  } catch(e) {}
-  return null;
-}
-
-async function storageSet(tipo, dados) {
-  if (!sessao?.token) return;
-  try {
-    await fetch(`${STORAGE_URL}?_session=${encodeURIComponent(sessao.token)}&tipo=${tipo}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(dados)
-    });
-  } catch(e) {}
-}
-
-// ── ONBOARDING ─────────────────────────────────────────────────────────────
-
-async function verificarOnboarding(s) {
-  const config = await storageGet('config');
-  if (config?.asaasApiKey) {
-    sessao = { ...s, asaasApiKey: config.asaasApiKey, env: config.env || 'sandbox' };
-    setSessao(sessao);
-    abrirApp();
-  } else {
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('onboarding-screen').style.display = 'flex';
-  }
-}
-
-async function obStep1() {
-  const apiKey = document.getElementById('ob-apikey').value.trim();
-  const env = document.getElementById('ob-env').value;
-  if (!apiKey) { mostrarAlerta('ob-error', 'Cole sua chave de API.'); return; }
-  const btn = document.getElementById('btn-ob1');
-  btn.disabled = true; btn.textContent = 'Verificando...';
-  try {
-    sessao = { ...sessao, asaasApiKey: apiKey, env };
-    await asaasGet('/myAccount');
-    obAvancarStep(2);
-    await obImportar(apiKey, env);
-  } catch(e) {
-    mostrarAlerta('ob-error', 'Chave inválida ou sem conexão. Verifique e tente novamente.');
-    btn.disabled = false; btn.textContent = 'Conectar e importar →';
-  }
-}
-
-function obAvancarStep(step) {
-  [1,2,3].forEach(s => {
-    document.getElementById('ob-step' + s).style.display = s === step ? 'block' : 'none';
-    const dot = document.getElementById('sdot-' + s);
-    dot.className = 'step-dot' + (s === step ? ' active' : s < step ? ' done' : '');
-  });
-}
-
-async function obImportar(apiKey, env) {
-  const prog = document.getElementById('ob-progress');
-  const label = document.getElementById('ob-progress-label');
-
-  label.textContent = 'Buscando clientes...';
-  prog.style.width = '20%';
-
-  let clientes = [], assinaturas = [], cobrancas = [];
-
-  try {
-    label.textContent = 'Buscando clientes...';
-    prog.style.width = '30%';
-    const r = await asaasGet('/customers', { limit: 100 });
-    clientes = r.data || [];
-  } catch(e) {}
-
-  try {
-    label.textContent = 'Buscando assinaturas...';
-    prog.style.width = '55%';
-    const r = await asaasGet('/subscriptions', { limit: 100 });
-    assinaturas = r.data || [];
-  } catch(e) {}
-
-  try {
-    label.textContent = 'Buscando cobranças...';
-    prog.style.width = '75%';
-    const r = await asaasGet('/payments', { limit: 100 });
-    cobrancas = r.data || [];
-  } catch(e) {}
-
-  label.textContent = 'Salvando...';
-  prog.style.width = '90%';
-
-  const config = { asaasApiKey: apiKey, env, onboardingFeito: true };
-  await storageSet('config', config);
-  sessao = { ...sessao, asaasApiKey: apiKey, env };
-  setSessao(sessao);
-
-  dadosCache = { clientes, assinaturas, cobrancas, tarefas: gerarTarefas(clientes, cobrancas) };
-
-  prog.style.width = '100%';
-  label.textContent = 'Concluído!';
-
-  const atrasados = cobrancas.filter(c => c.status === 'OVERDUE').length;
-  const recebido = cobrancas.filter(c => ['RECEIVED','CONFIRMED'].includes(c.status)).reduce((s,c) => s + (c.netValue||0), 0);
-
-  document.getElementById('ob-resumo').textContent =
-    `${clientes.length} clientes · ${assinaturas.length} assinaturas · ${fmt(recebido)} já recebido`;
-
-  document.getElementById('ob-insight-text').textContent = atrasados > 0
-    ? `Você tem ${atrasados} cobrança${atrasados>1?'s':''} atrasada${atrasados>1?'s':''}. Acesse a aba Tarefas para ver quem contatar primeiro.`
-    : `Sua base está saudável! Nenhuma cobrança atrasada encontrada. Continue assim.`;
-
-  obAvancarStep(3);
-}
-
-// ── APP ────────────────────────────────────────────────────────────────────
-
-async function abrirApp() {
-  document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('onboarding-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-
-  document.getElementById('user-email-display').textContent = sessao.email || '';
-  document.getElementById('user-perfil-display').textContent = sessao.perfil || 'admin';
-  document.getElementById('user-avatar').textContent = (sessao.email || 'U')[0].toUpperCase();
-  document.getElementById('cfg-email-display').value = sessao.email || '';
-
-  const isProd = sessao.env === 'production';
-  document.getElementById('env-badge').textContent = isProd ? 'Produção' : 'Sandbox';
-  document.getElementById('env-badge').className = 'env-badge ' + (isProd ? 'env-prod' : 'env-sandbox');
-  document.getElementById('sidebar-env-label').textContent = isProd ? 'Produção' : 'Sandbox';
-
-  if (!sessao.asaasApiKey) {
-    document.getElementById('apikey-banner').style.display = 'block';
-  }
-
-  if (sessao.perfil !== 'admin') {
-    document.getElementById('card-usuarios').style.display = 'none';
-  }
-
-  const config = await storageGet('config');
-  if (config) {
-    document.getElementById('cfg-apikey').value = config.asaasApiKey || '';
-    document.getElementById('cfg-env').value = config.env || 'sandbox';
-  }
-
-  await sincronizarDados();
-  navegarPara('dashboard');
-
-  setInterval(sincronizarDados, 5 * 60 * 1000);
-}
-
-async function sincronizarDados() {
-  if (!sessao?.asaasApiKey) return;
-  const btn = document.getElementById('btn-sync');
-  if (btn) { btn.textContent = '🔄 Atualizando...'; btn.disabled = true; }
-
-  try {
-    const [rc, ra, rp] = await Promise.all([
-      asaasGet('/customers', { limit: 100 }),
-      asaasGet('/subscriptions', { limit: 100 }),
-      asaasGet('/payments', { limit: 100 })
-    ]);
-    dadosCache.clientes = rc.data || [];
-    dadosCache.assinaturas = ra.data || [];
-    dadosCache.cobrancas = rp.data || [];
-    dadosCache.tarefas = gerarTarefas(dadosCache.clientes, dadosCache.cobrancas);
-    renderizarTudo();
-  } catch(e) {
-    toast('Erro ao sincronizar. Tentando novamente em breve.', 'error');
-  } finally {
-    if (btn) { btn.textContent = '🔄 Atualizar'; btn.disabled = false; }
-  }
-}
-
-function renderizarTudo() {
-  renderDashboard();
-  renderClientes();
-  renderAssinaturas();
-  renderTarefas();
-  renderComissoes();
-  atualizarBadgeTarefas();
-}
-
-// ── NAVEGAÇÃO ──────────────────────────────────────────────────────────────
-
-function fmtData(d) {
-  if (!d) return '—';
-  const [y, m, day] = d.split('-');
-  return `${day}/${m}/${y}`;
-}
-
-function nomeCliente(customerId) {
-  if (!customerId) return '—';
-  const id = typeof customerId === 'object' ? customerId.id : customerId;
-  const c = dadosCache.clientes.find(x => x.id === id);
-  return c?.name || '—';
+  const titulos = { dashboard: 'Dashboard', clientes: 'Clientes', assinaturas: 'Assinaturas', cobrancas: 'Cobranças', config: 'Configurações' };
+  document.getElementById('topbar-title').textContent = titulos[pagina] || pagina;
+  fecharSidebar();
+  if (pagina === 'dashboard') renderDashboard();
+  if (pagina === 'clientes') carregarClientes();
+  if (pagina === 'assinaturas') carregarAssinaturas();
+  if (pagina === 'cobrancas') carregarCobrancas();
+  if (pagina === 'config') preencherConfig();
 }
 
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('open');
+  const sb = document.getElementById('sidebar');
+  const ov = document.getElementById('sidebar-overlay');
+  const open = sb.classList.toggle('open');
+  ov.style.display = open ? '' : 'none';
 }
 
-// ── DASHBOARD ──────────────────────────────────────────────────────────────
-
-function renderDashboard() {
-  const cobs = dadosCache.cobrancas;
-  const recebido = cobs.filter(c => ['RECEIVED','CONFIRMED'].includes(c.status)).reduce((s,c) => s+(c.netValue||0), 0);
-  const previsto = cobs.filter(c => c.status === 'PENDING').reduce((s,c) => s+(c.value||0), 0);
-  const atrasadas = cobs.filter(c => c.status === 'OVERDUE');
-  const totalAtrasado = atrasadas.reduce((s,c) => s+(c.value||0), 0);
-
-  document.getElementById('stat-recebido').textContent = fmt(recebido);
-  document.getElementById('stat-recebido').className = 'stat-value';
-  document.getElementById('stat-previsto').textContent = fmt(previsto);
-  document.getElementById('stat-previsto').className = 'stat-value';
-  document.getElementById('stat-atrasado').textContent = fmt(totalAtrasado);
-  document.getElementById('stat-atrasado').className = 'stat-value';
-  document.getElementById('stat-atrasado-qtd').textContent = `${atrasadas.length} cobrança${atrasadas.length !== 1 ? 's' : ''}`;
-  document.getElementById('stat-clientes').textContent = dadosCache.clientes.length;
-  document.getElementById('stat-clientes').className = 'stat-value';
-
-  const emRisco = dadosCache.tarefas.filter(t => t.prioridade === 'urgente').length;
-  document.getElementById('stat-clientes-risco').textContent = emRisco > 0 ? `${emRisco} em atenção` : 'base saudável';
-
-  const hero = atrasadas.length > 0
-    ? `${atrasadas.length} cobrança${atrasadas.length>1?'s':''} atrasada${atrasadas.length>1?'s':''}. Veja as tarefas.`
-    : recebido > 0 ? `${fmt(recebido)} já recebido este mês. Boa performance!`
-    : 'Sincronize seus dados para ver os insights.';
-  document.getElementById('dash-hero').textContent = hero;
-  document.getElementById('dash-insight').textContent = previsto > 0
-    ? `Mais ${fmt(previsto)} previsto para entrar. Total esperado: ${fmt(recebido + previsto)}.` : '';
-
-  const recentes = [...cobs].sort((a,b) => new Date(b.dateCreated||b.dueDate) - new Date(a.dateCreated||a.dueDate)).slice(0, 8);
-  document.getElementById('dash-cobrancas').innerHTML = recentes.length
-    ? recentes.map(c => `<tr>
-        <td><strong>${nomeCliente(c.customer)}</strong></td>
-        <td>${fmt(c.value)}</td>
-        <td>${fmtData(c.dueDate)}</td>
-        <td>${badgeStatus(c.status, c.dueDate)}</td>
-      </tr>`).join('')
-    : '<tr><td colspan="4" style="text-align:center;color:var(--gray-400);padding:40px">Nenhuma cobrança encontrada</td></tr>';
+function fecharSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sidebar-overlay').style.display = 'none';
 }
 
-// ── CLIENTES ───────────────────────────────────────────────────────────────
-
-function renderClientes() {
-  const busca = document.getElementById('clientes-busca')?.value?.toLowerCase() || '';
-  let lista = dadosCache.clientes;
-
-  if (busca) lista = lista.filter(c =>
-    (c.name||'').toLowerCase().includes(busca) ||
-    (c.email||'').toLowerCase().includes(busca) ||
-    (c.cpfCnpj||'').includes(busca)
-  );
-
-  if (filtroClienteAtual === 'em_dia') lista = lista.filter(c => scoreCliente(c) === 0);
-  if (filtroClienteAtual === 'atrasado') lista = lista.filter(c => cobAtrasadasCliente(c).length > 0);
-  if (filtroClienteAtual === 'risco') lista = lista.filter(c => scoreCliente(c) >= 2);
-
-  document.getElementById('clientes-lista').innerHTML = lista.length
-    ? lista.map(c => {
-        const score = scoreCliente(c);
-        const atrasadas = cobAtrasadasCliente(c);
-        return `<tr onclick="verCliente('${c.id}')" style="cursor:pointer">
-          <td><strong>${c.name}</strong><br><span style="font-size:12px;color:var(--gray-400)">${c.email||''}</span></td>
-          <td>${assinaturaCliente(c.id)?.description || '—'}</td>
-          <td>${fmt(assinaturaCliente(c.id)?.value)}</td>
-          <td>${baraPontualidade(score)}</td>
-          <td>${atrasadas.length > 0 ? `<span class="badge badge-red">Atrasado</span>` : `<span class="badge badge-green">Em dia</span>`}</td>
-          <td><button class="btn-sm btn-ghost" onclick="event.stopPropagation();abrirWhatsApp('${c.mobilePhone||c.phone||''}','${c.name}')">💬</button></td>
-        </tr>`;
-      }).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:40px">Nenhum cliente encontrado</td></tr>';
+function abrirPainel(titulo, linhas, btnLabel, btnFn) {
+  document.getElementById('panel-title').textContent = titulo;
+  const body = document.getElementById('panel-body');
+  body.innerHTML = linhas.map(([l, v]) =>
+    `<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value">${v}</span></div>`
+  ).join('');
+  if (btnLabel && btnFn) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-full btn-accent-full';
+    btn.textContent = btnLabel;
+    btn.onclick = btnFn;
+    body.appendChild(btn);
+  }
+  document.getElementById('panel-overlay').classList.add('open');
 }
 
-function filtrarClientes() { renderClientes(); }
-
-function filtroClientes(f, btn) {
-  filtroClienteAtual = f;
-  document.querySelectorAll('#page-clientes .btn-sm').forEach(b => b.classList.remove('active-filter'));
-  btn.classList.add('active-filter');
-  renderClientes();
-}
-
-function scoreCliente(c) {
-  const cobs = dadosCache.cobrancas.filter(p => p.customer?.id === c.id || p.customer === c.id);
-  const recentes = cobs.sort((a,b) => new Date(b.dueDate)-new Date(a.dueDate)).slice(0,6);
-  return recentes.filter(p => p.status === 'OVERDUE').length;
-}
-
-function cobAtrasadasCliente(c) {
-  return dadosCache.cobrancas.filter(p =>
-    (p.customer?.id === c.id || p.customer === c.id) && p.status === 'OVERDUE'
-  );
-}
-
-function assinaturaCliente(clienteId) {
-  return dadosCache.assinaturas.find(a => a.customer === clienteId || a.customer?.id === clienteId);
-}
-
-function baraPontualidade(score) {
-  const pct = Math.max(0, 100 - score * 25);
-  const cor = score === 0 ? 'var(--green-mid)' : score === 1 ? 'var(--yellow-mid)' : 'var(--red-mid)';
-  return `<div style="display:flex;align-items:center;gap:8px">
-    <div class="progress-bar" style="width:80px">
-      <div class="progress-fill" style="width:${pct}%;background:${cor}"></div>
-    </div>
-    <span style="font-size:12px;color:var(--gray-500)">${score===0?'Ótima':score===1?'Boa':'Atenção'}</span>
-  </div>`;
-}
-
-function verCliente(id) {
-  const c = dadosCache.clientes.find(x => x.id === id);
-  if (!c) return;
-  toast(`Cliente: ${c.name}`, 'success');
-}
-
-// ── ASSINATURAS ────────────────────────────────────────────────────────────
-
-function renderAssinaturas() {
-  const ass = dadosCache.assinaturas;
-  const ativas = ass.filter(a => a.status === 'ACTIVE');
-  const mrr = ativas.reduce((s,a) => s+(a.value||0), 0);
-  const pausadas = ass.filter(a => a.status === 'PAUSED').length;
-  const canceladas = ass.filter(a => a.status === 'CANCELLED').length;
-
-  document.getElementById('ass-ativas').textContent = ativas.length;
-  document.getElementById('ass-mrr').textContent = fmt(mrr);
-  document.getElementById('ass-pausadas').textContent = pausadas;
-  document.getElementById('ass-canceladas').textContent = canceladas;
-
-  document.getElementById('assinaturas-lista').innerHTML = ass.length
-    ? ass.map(a => {
-        const cliente = dadosCache.clientes.find(c => c.id === a.customer || c.id === a.customer?.id);
-        return `<tr>
-          <td><strong>${cliente?.name || a.customer || '—'}</strong></td>
-          <td>${a.description || '—'}</td>
-          <td>${fmt(a.value)}</td>
-          <td>${fmtData(a.nextDueDate)}</td>
-          <td>${badgeAssinatura(a.status)}</td>
-          <td><button class="btn-sm btn-ghost">Ver</button></td>
-        </tr>`;
-      }).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:40px">Nenhuma assinatura</td></tr>';
-}
-
-function badgeAssinatura(status) {
-  const map = { ACTIVE:'badge-green', INACTIVE:'badge-gray', PAUSED:'badge-yellow', CANCELLED:'badge-red', OVERDUE:'badge-red' };
-  const label = { ACTIVE:'Ativa', INACTIVE:'Inativa', PAUSED:'Pausada', CANCELLED:'Cancelada', OVERDUE:'Inadimplente' };
-  return `<span class="badge ${map[status]||'badge-gray'}">${label[status]||status}</span>`;
-}
-
-function abrirModalAssinatura() {
-  document.getElementById('modal-assinatura').classList.add('show');
-  const hoje = new Date().toISOString().split('T')[0];
-  document.getElementById('ass-venc').value = hoje;
-}
-
-function fecharModal(id) {
-  document.getElementById(id).classList.remove('show');
-}
-
-async function criarAssinatura() {
-  const nome = document.getElementById('ass-nome').value.trim();
-  const cpf = document.getElementById('ass-cpf').value.trim();
-  const email = document.getElementById('ass-email').value.trim();
-  const tel = document.getElementById('ass-tel').value.trim();
-  const plano = document.getElementById('ass-plano').value.trim();
-  const valor = parseFloat(document.getElementById('ass-valor').value);
-  const freq = document.getElementById('ass-freq').value;
-  const billing = document.getElementById('ass-billing').value;
-  const venc = document.getElementById('ass-venc').value;
-
-  if (!nome || !cpf || !valor || !venc) { mostrarAlerta('ass-error', 'Preencha os campos obrigatórios.'); return; }
-
-  const btn = document.getElementById('btn-criar-ass');
-  btn.disabled = true; btn.textContent = 'Criando...';
-
-  try {
-    const cliente = await asaasPost('/customers', { name: nome, cpfCnpj: cpf.replace(/\D/g,''), email, mobilePhone: tel.replace(/\D/g,'') });
-    await asaasPost('/subscriptions', {
-      customer: cliente.id, billingType: billing, value: valor,
-      nextDueDate: venc, cycle: freq, description: plano
-    });
-    fecharModal('modal-assinatura');
-    toast('Assinatura criada com sucesso!', 'success');
-    await sincronizarDados();
-  } catch(e) {
-    mostrarAlerta('ass-error', e.message);
-  } finally {
-    btn.disabled = false; btn.textContent = 'Criar assinatura';
+function fecharPainel(e) {
+  if (!e || e.target === document.getElementById('panel-overlay')) {
+    document.getElementById('panel-overlay').classList.remove('open');
   }
 }
 
-// ── TAREFAS ────────────────────────────────────────────────────────────────
-
-function gerarTarefas(clientes, cobrancas) {
-  const tarefas = [];
-  const hoje = new Date();
-
-  cobrancas.filter(c => c.status === 'OVERDUE').forEach(c => {
-    const venc = new Date(c.dueDate);
-    const dias = Math.floor((hoje - venc) / 86400000);
-    const cliente = clientes.find(x => x.id === c.customer?.id || x.id === c.customer);
-    tarefas.push({
-      id: c.id,
-      titulo: `${cliente?.name || 'Cliente'} — ${dias} dia${dias!==1?'s':''} de atraso`,
-      descricao: `Cobrança de ${fmt(c.value)} venceu em ${fmtData(c.dueDate)}`,
-      prioridade: dias >= 7 ? 'urgente' : dias >= 4 ? 'esta_semana' : 'monitore',
-      impacto: c.value * 12,
-      telefone: cliente?.mobilePhone || cliente?.phone || '',
-      nomeCliente: cliente?.name || '',
-      linkPagamento: c.invoiceUrl || '',
-      diasAtraso: dias
-    });
-  });
-
-  return tarefas.sort((a,b) => b.diasAtraso - a.diasAtraso);
+function iniciarApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = '';
+  document.getElementById('user-avatar').textContent = sessao.email?.[0]?.toUpperCase() || '?';
+  document.getElementById('user-email-label').textContent = sessao.email || '';
+  if (!sessao.asaasApiKey) document.getElementById('alert-no-key').style.display = '';
+  navegarPara('dashboard');
 }
 
-function renderTarefas() {
-  let tarefas = dadosCache.tarefas;
-  if (filtroTarefaAtual !== 'todas') tarefas = tarefas.filter(t => t.prioridade === filtroTarefaAtual);
+async function fazerLogout() {
+  if (sessao?.token) authAPI('logout', { token: sessao.token }).catch(() => {});
+  salvarSessao(null);
+  dadosCache = { clientes: [], assinaturas: [], cobrancas: [] };
+  document.getElementById('login-screen').style.display = '';
+  document.getElementById('app-screen').style.display = 'none';
+  trocarTab('login');
+}
 
-  const el = document.getElementById('tarefas-lista');
-  if (!tarefas.length) {
-    el.innerHTML = `<div class="empty-state"><div class="empty-state-icon">🎉</div><h3>Nada pendente hoje</h3><p>Sua base está saudável.</p></div>`;
+async function renderDashboard() {
+  if (!sessao?.asaasApiKey) {
+    setTbody('dash-cobrancas-tbody', 4, '<em>Configure a chave Asaas primeiro.</em>');
     return;
   }
-
-  el.innerHTML = tarefas.map(t => {
-    const corPrioridade = { urgente:'var(--red-mid)', esta_semana:'var(--yellow-mid)', monitore:'var(--green-mid)' };
-    const labelPrioridade = { urgente:'🔴 Urgente', esta_semana:'🟡 Esta semana', monitore:'🟢 Monitore' };
-    return `<div class="card" style="border-left:4px solid ${corPrioridade[t.prioridade]};margin-bottom:12px">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px">
-        <div style="flex:1">
-          <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
-            <span class="badge ${t.prioridade==='urgente'?'badge-red':t.prioridade==='esta_semana'?'badge-yellow':'badge-green'}">${labelPrioridade[t.prioridade]}</span>
-          </div>
-          <div style="font-size:15px;font-weight:600;color:var(--gray-900);margin-bottom:4px">${t.titulo}</div>
-          <div style="font-size:13px;color:var(--gray-500)">${t.descricao}</div>
-          <div style="font-size:12px;color:var(--gray-400);margin-top:6px">Impacto anual estimado: <strong style="color:var(--gray-700)">${fmt(t.impacto)}</strong></div>
-        </div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          ${t.telefone ? `<a href="https://wa.me/55${t.telefone.replace(/\D/g,'')}?text=${encodeURIComponent(gerarMensagem(t))}" target="_blank" class="btn-sm btn-whatsapp">💬 WhatsApp</a>` : ''}
-          <button class="btn-sm btn-ghost" onclick="resolverTarefa('${t.id}')">✓ Resolver</button>
-        </div>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function gerarMensagem(t) {
-  if (t.diasAtraso <= 3) return `Olá ${t.nomeCliente}! Tudo bem? Passando pra lembrar que temos uma mensalidade em aberto. Segue o link para regularizar: ${t.linkPagamento}`;
-  if (t.diasAtraso <= 7) return `Olá ${t.nomeCliente}, sua mensalidade está em atraso há ${t.diasAtraso} dias. Por favor, regularize para manter seu acesso: ${t.linkPagamento}`;
-  return `${t.nomeCliente}, sua mensalidade está em atraso há ${t.diasAtraso} dias. Para evitar a suspensão do serviço, acesse o link: ${t.linkPagamento}`;
-}
-
-function resolverTarefa(id) {
-  dadosCache.tarefas = dadosCache.tarefas.filter(t => t.id !== id);
-  renderTarefas();
-  atualizarBadgeTarefas();
-  toast('Tarefa marcada como resolvida.', 'success');
-}
-
-function filtroTarefas(f, btn) {
-  filtroTarefaAtual = f;
-  document.querySelectorAll('#page-tarefas .btn-sm').forEach(b => b.classList.remove('active-filter'));
-  btn.classList.add('active-filter');
-  renderTarefas();
-}
-
-function atualizarBadgeTarefas() {
-  const urgentes = dadosCache.tarefas.filter(t => t.prioridade === 'urgente').length;
-  const badge = document.getElementById('badge-tarefas');
-  if (urgentes > 0) { badge.textContent = urgentes; badge.style.display = 'inline'; }
-  else badge.style.display = 'none';
-}
-
-// ── COMISSÕES ──────────────────────────────────────────────────────────────
-
-function renderComissoes() {
-  const cobs = dadosCache.cobrancas.filter(c => c.splits?.length > 0);
-  const confirmadas = cobs.filter(c => ['RECEIVED','CONFIRMED'].includes(c.status));
-  const totalCom = confirmadas.reduce((s,c) => {
-    const pct = c.splits[0]?.percentualValue || 0;
-    return s + (c.netValue || 0) * pct / 100;
-  }, 0);
-  const previstoCom = cobs.filter(c => c.status === 'PENDING').reduce((s,c) => {
-    const pct = c.splits[0]?.percentualValue || 0;
-    return s + (c.value || 0) * pct / 100;
-  }, 0);
-
-  document.getElementById('com-total').textContent = fmt(totalCom);
-  document.getElementById('com-confirmadas').textContent = confirmadas.length;
-  document.getElementById('com-previsto').textContent = fmt(previstoCom);
-
-  document.getElementById('comissoes-lista').innerHTML = confirmadas.length
-    ? confirmadas.map(c => {
-        const pct = c.splits[0]?.percentualValue || 0;
-        const comissao = (c.netValue || 0) * pct / 100;
-        return `<tr>
-          <td>${fmtData(c.confirmedDate || c.dueDate)}</td>
-          <td>${nomeCliente(c.customer)}</td>
-          <td>${fmt(c.value)}</td>
-          <td><strong>${fmt(comissao)}</strong> <span style="font-size:11px;color:var(--gray-400)">(${pct}%)</span></td>
-          <td>${c.splits[0]?.walletId?.slice(-8) || '—'}</td>
-          <td><span class="badge badge-green">Confirmado</span></td>
-        </tr>`;
-      }).join('')
-    : '<tr><td colspan="6" style="text-align:center;color:var(--gray-400);padding:40px">Nenhuma comissão encontrada</td></tr>';
-}
-
-// ── CONFIGURAÇÕES ──────────────────────────────────────────────────────────
-
-async function testarConexao() {
-  const apiKey = document.getElementById('cfg-apikey').value.trim();
-  const env = document.getElementById('cfg-env').value;
-  if (!apiKey) { mostrarAlerta('cfg-error', 'Cole sua chave de API.'); return; }
-  sessao = { ...sessao, asaasApiKey: apiKey, env };
+  setTbody('dash-cobrancas-tbody', 4, null);
   try {
-    await asaasGet('/myAccount');
-    mostrarAlerta('cfg-ok', '✅ Conexão bem-sucedida!');
+    await Promise.all([carregarClientesCache(), carregarAssinaturasCache(), carregarCobrancasCache()]);
+    atualizarStats();
+    renderTbodyCobrancas('dash-cobrancas-tbody', dadosCache.cobrancas.slice(0, 8));
+    renderCardsCobrancas('dash-cobrancas-cards', dadosCache.cobrancas.slice(0, 8));
   } catch(e) {
-    mostrarAlerta('cfg-error', 'Chave inválida ou sem conexão.');
+    setTbody('dash-cobrancas-tbody', 4, 'Erro ao carregar: ' + e.message);
   }
+}
+
+function atualizarStats() {
+  document.getElementById('stat-clientes').textContent = dadosCache.clientes.length || '0';
+  document.getElementById('stat-ativas').textContent = dadosCache.assinaturas.filter(a => a.status === 'ACTIVE').length;
+  document.getElementById('stat-pendentes').textContent = dadosCache.cobrancas.filter(c => c.status === 'PENDING').length;
+  document.getElementById('stat-vencidas').textContent = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE').length;
+}
+
+async function carregarClientesCache() {
+  const data = await asaasAPI('GET', '/customers', null, { limit: 100 });
+  dadosCache.clientes = data?.data || [];
+}
+
+async function carregarClientes() {
+  if (!sessao?.asaasApiKey) { setTbody('clientes-tbody', 4, 'Configure a chave Asaas.'); return; }
+  setTbody('clientes-tbody', 4, null);
+  try { await carregarClientesCache(); renderTbodyClientes(); }
+  catch(e) { setTbody('clientes-tbody', 4, 'Erro: ' + e.message); }
+}
+
+function renderTbodyClientes() {
+  const tbody = document.getElementById('clientes-tbody');
+  const cards = document.getElementById('clientes-cards');
+  const lista = dadosCache.clientes;
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="no-data">Nenhum cliente encontrado.</td></tr>';
+    cards.innerHTML = '<div class="no-data">Nenhum cliente encontrado.</div>';
+    return;
+  }
+  tbody.innerHTML = lista.map(c => `
+    <tr onclick="abrirDetalheCliente('${c.id}')">
+      <td title="${c.name||''}">${c.name||'—'}</td>
+      <td class="col-hide" title="${c.email||''}">${c.email||'—'}</td>
+      <td class="col-hide">${c.cpfCnpj||'—'}</td>
+      <td>${badgeStatus(c.active===false?'INACTIVE':'ACTIVE')}</td>
+    </tr>`).join('');
+  cards.innerHTML = lista.map(c => `
+    <div class="list-card" onclick="abrirDetalheCliente('${c.id}')">
+      <div class="list-card-top">
+        <span class="list-card-name">${c.name||'—'}</span>
+        ${badgeStatus(c.active===false?'INACTIVE':'ACTIVE')}
+      </div>
+      <div class="list-card-sub">${c.email||c.cpfCnpj||'—'}</div>
+    </div>`).join('');
+}
+
+function abrirDetalheCliente(id) {
+  const c = dadosCache.clientes.find(x => x.id === id);
+  if (!c) return;
+  abrirPainel(c.name||'Cliente', [
+    ['Nome', c.name||'—'], ['E-mail', c.email||'—'], ['CPF/CNPJ', c.cpfCnpj||'—'],
+    ['Telefone', c.mobilePhone||c.phone||'—'],
+    ['Status', c.active===false?'Inativo':'Ativo'], ['ID Asaas', c.id],
+  ], 'Ver cobranças →', () => { fecharPainel(); navegarPara('cobrancas'); });
+}
+
+async function carregarAssinaturasCache() {
+  const data = await asaasAPI('GET', '/subscriptions', null, { limit: 100 });
+  dadosCache.assinaturas = data?.data || [];
+}
+
+async function carregarAssinaturas() {
+  if (!sessao?.asaasApiKey) { setTbody('assinaturas-tbody', 4, 'Configure a chave Asaas.'); return; }
+  setTbody('assinaturas-tbody', 4, null);
+  try {
+    if (!dadosCache.clientes.length) await carregarClientesCache();
+    await carregarAssinaturasCache();
+    renderTbodyAssinaturas();
+  } catch(e) { setTbody('assinaturas-tbody', 4, 'Erro: ' + e.message); }
+}
+
+function renderTbodyAssinaturas() {
+  const tbody = document.getElementById('assinaturas-tbody');
+  const cards = document.getElementById('assinaturas-cards');
+  const lista = dadosCache.assinaturas;
+  if (!lista.length) {
+    tbody.innerHTML = '<tr><td colspan="4" class="no-data">Nenhuma assinatura encontrada.</td></tr>';
+    cards.innerHTML = '<div class="no-data">Nenhuma assinatura encontrada.</div>';
+    return;
+  }
+  tbody.innerHTML = lista.map(a => `
+    <tr onclick="abrirDetalheAssinatura('${a.id}')">
+      <td title="${nomeCliente(a.customer)}">${nomeCliente(a.customer)}</td>
+      <td class="col-hide">${badgeStatus(a.cycle||a.billingType||'')}</td>
+      <td>${fmt(a.value)}</td>
+      <td>${badgeStatus(a.status)}</td>
+    </tr>`).join('');
+  cards.innerHTML = lista.map(a => `
+    <div class="list-card" onclick="abrirDetalheAssinatura('${a.id}')">
+      <div class="list-card-top">
+        <span class="list-card-name">${nomeCliente(a.customer)}</span>
+        ${badgeStatus(a.status)}
+      </div>
+      <div class="list-card-sub">${fmt(a.value)} · ${a.cycle||a.billingType||'—'}</div>
+    </div>`).join('');
+}
+
+function abrirDetalheAssinatura(id) {
+  const a = dadosCache.assinaturas.find(x => x.id === id);
+  if (!a) return;
+  abrirPainel('Assinatura', [
+    ['Cliente', nomeCliente(a.customer)], ['Valor', fmt(a.value)],
+    ['Ciclo', a.cycle||a.billingType||'—'], ['Próx. vencimento', fmtData(a.nextDueDate)],
+    ['Status', a.status||'—'], ['Criada em', fmtData(a.dateCreated)],
+  ]);
+}
+
+async function carregarCobrancasCache(filtroStatus) {
+  const qs = { limit: 100 };
+  if (filtroStatus) qs.status = filtroStatus;
+  const data = await asaasAPI('GET', '/payments', null, qs);
+  if (!filtroStatus) dadosCache.cobrancas = data?.data || [];
+  return data?.data || [];
+}
+
+async function carregarCobrancas() {
+  if (!sessao?.asaasApiKey) { setTbody('cobrancas-tbody', 5, 'Configure a chave Asaas.'); return; }
+  setTbody('cobrancas-tbody', 5, null);
+  try {
+    if (!dadosCache.clientes.length) await carregarClientesCache();
+    const filtro = document.getElementById('filtro-status').value;
+    const lista = await carregarCobrancasCache(filtro);
+    renderTbodyCobrancas('cobrancas-tbody', lista);
+    renderCardsCobrancas('cobrancas-cards', lista);
+    if (!filtro) atualizarStats();
+  } catch(e) { setTbody('cobrancas-tbody', 5, 'Erro: ' + e.message); }
+}
+
+function filtrarCobrancas() { carregarCobrancas(); }
+
+function renderTbodyCobrancas(tbodyId, lista) {
+  const tbody = document.getElementById(tbodyId);
+  if (!tbody) return;
+  if (!lista.length) {
+    tbody.innerHTML = `<tr><td colspan="5" class="no-data">Nenhuma cobrança encontrada.</td></tr>`;
+    return;
+  }
+  tbody.innerHTML = lista.map(c => `
+    <tr onclick="abrirDetalheCobranca('${c.id}')">
+      <td title="${nomeCliente(c.customer)}">${nomeCliente(c.customer)}</td>
+      <td class="col-hide">${fmtData(c.dueDate)}</td>
+      <td>${fmt(c.value)}</td>
+      <td>${badgeStatus(c.status)}</td>
+      <td class="col-hide">${c.billingType||'—'}</td>
+    </tr>`).join('');
+}
+
+function renderCardsCobrancas(cardsId, lista) {
+  const cards = document.getElementById(cardsId);
+  if (!cards) return;
+  if (!lista.length) { cards.innerHTML = '<div class="no-data">Nenhuma cobrança encontrada.</div>'; return; }
+  cards.innerHTML = lista.map(c => `
+    <div class="list-card" onclick="abrirDetalheCobranca('${c.id}')">
+      <div class="list-card-top">
+        <span class="list-card-name">${nomeCliente(c.customer)}</span>
+        ${badgeStatus(c.status)}
+      </div>
+      <div class="list-card-sub">${fmt(c.value)} · venc. ${fmtData(c.dueDate)}</div>
+    </div>`).join('');
+}
+
+function abrirDetalheCobranca(id) {
+  const c = dadosCache.cobrancas.find(x => x.id === id);
+  if (!c) return;
+  const linhas = [
+    ['Cliente', nomeCliente(c.customer)], ['Valor', fmt(c.value)],
+    ['Vencimento', fmtData(c.dueDate)], ['Status', c.status||'—'],
+    ['Tipo', c.billingType||'—'], ['Descrição', c.description||'—'],
+  ];
+  if (c.paymentDate) linhas.push(['Pago em', fmtData(c.paymentDate)]);
+  if (c.clientPaymentDate) linhas.push(['Confirmado em', fmtData(c.clientPaymentDate)]);
+  abrirPainel('Cobrança', linhas,
+    c.invoiceUrl ? '🔗 Ver boleto/fatura' : null,
+    c.invoiceUrl ? () => window.open(c.invoiceUrl, '_blank') : null
+  );
+}
+
+function preencherConfig() {
+  if (sessao?.asaasApiKey) document.getElementById('cfg-apikey').value = sessao.asaasApiKey;
+  const env = sessao?.env || 'sandbox';
+  selecionarEnv(env);
+  document.querySelector(`input[name="cfg-env"][value="${env}"]`).checked = true;
+}
+
+function selecionarEnv(env) {
+  document.getElementById('radio-sandbox').classList.toggle('selected', env === 'sandbox');
+  document.getElementById('radio-production').classList.toggle('selected', env === 'production');
 }
 
 async function salvarConfig() {
   const apiKey = document.getElementById('cfg-apikey').value.trim();
-  const env = document.getElementById('cfg-env').value;
-  if (!apiKey) { mostrarAlerta('cfg-error', 'Cole sua chave de API.'); return; }
-  const config = { asaasApiKey: apiKey, env, onboardingFeito: true };
-  await storageSet('config', config);
-  sessao = { ...sessao, asaasApiKey: apiKey, env };
-  setSessao(sessao);
-  document.getElementById('apikey-banner').style.display = 'none';
-  document.getElementById('env-badge').textContent = env === 'production' ? 'Produção' : 'Sandbox';
-  document.getElementById('env-badge').className = 'env-badge ' + (env === 'production' ? 'env-prod' : 'env-sandbox');
-  mostrarAlerta('cfg-ok', '✅ Configurações salvas!');
+  const env = document.querySelector('input[name="cfg-env"]:checked')?.value || 'sandbox';
+  if (!apiKey) { toast('Informe a chave de API.', 'error'); return; }
+  sessao.asaasApiKey = apiKey;
+  sessao.env = env;
+  salvarSessao(sessao);
+  try { await storageSet('config', { apiKey, env }); } catch(e) {}
+  document.getElementById('alert-no-key').style.display = 'none';
   toast('Configurações salvas!', 'success');
-  await sincronizarDados();
+}
+
+async function testarConexao() {
+  const label = document.getElementById('conn-status-label');
+  label.className = 'conn-status conn-testing';
+  label.textContent = '⏳ Testando…';
+  try {
+    const apiKey = document.getElementById('cfg-apikey').value.trim() || sessao?.asaasApiKey;
+    const env = document.querySelector('input[name="cfg-env"]:checked')?.value || sessao?.env || 'sandbox';
+    if (!apiKey) throw new Error('Sem chave');
+    const saved = sessao;
+    sessao = { ...sessao, asaasApiKey: apiKey, env };
+    await asaasAPI('GET', '/customers', null, { limit: 1 });
+    sessao = saved;
+    label.className = 'conn-status conn-ok';
+    label.textContent = '✓ Conectado';
+  } catch(e) {
+    label.className = 'conn-status conn-err';
+    label.textContent = '✗ Falhou: ' + e.message.slice(0, 40);
+  }
 }
 
 async function alterarSenha() {
-  const atual = document.getElementById('pwd-atual').value;
-  const nova = document.getElementById('pwd-nova').value;
-  const nova2 = document.getElementById('pwd-nova2').value;
-  if (!atual || !nova) { mostrarAlerta('pwd-error', 'Preencha todos os campos.'); return; }
-  if (nova !== nova2) { mostrarAlerta('pwd-error', 'As senhas não conferem.'); return; }
+  const senha = document.getElementById('cfg-nova-senha').value;
+  if (!senha || senha.length < 6) { toast('Senha deve ter pelo menos 6 caracteres.', 'error'); return; }
   try {
-    await authAPI('change-password', { token: sessao.token, senhaAtual: atual, novaSenha: nova });
-    mostrarAlerta('pwd-ok', '✅ Senha alterada com sucesso!');
-    document.getElementById('pwd-atual').value = '';
-    document.getElementById('pwd-nova').value = '';
-    document.getElementById('pwd-nova2').value = '';
-  } catch(e) {
-    mostrarAlerta('pwd-error', e.message);
+    await authAPI('change-password', { token: sessao.token, password: senha });
+    document.getElementById('cfg-nova-senha').value = '';
+    toast('Senha alterada com sucesso!', 'success');
+  } catch(e) { toast('Erro: ' + e.message, 'error'); }
+}
+
+function setTbody(id, cols, msg) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  if (msg === null) {
+    el.innerHTML = `<tr class="loading-row"><td colspan="${cols}"><div class="spinner"></div></td></tr>`;
+  } else {
+    el.innerHTML = `<tr><td colspan="${cols}" class="no-data">${msg}</td></tr>`;
   }
 }
 
-async function convidarUsuario() {
-  const email = document.getElementById('inv-email').value.trim();
-  const perfil = document.getElementById('inv-perfil').value;
-  if (!email) { toast('Informe o e-mail do convidado.', 'error'); return; }
-  try {
-    await authAPI('invite', { token: sessao.token, emailConvidado: email, perfil });
-    toast(`Convite enviado para ${email}`, 'success');
-    document.getElementById('inv-email').value = '';
-  } catch(e) {
-    toast(e.message, 'error');
-  }
-}
-
-// ── HELPERS ────────────────────────────────────────────────────────────────
-
-function badgeStatus(status, dueDate) {
-  const hoje = new Date().toISOString().split('T')[0];
-  if (status === 'RECEIVED' || status === 'CONFIRMED') return '<span class="badge badge-green">Recebido</span>';
-  if (status === 'OVERDUE') {
-    const dias = Math.floor((new Date() - new Date(dueDate)) / 86400000);
-    return `<span class="badge badge-red">Atrasado ${dias}d</span>`;
-  }
-  if (status === 'PENDING') {
-    if (dueDate === hoje) return '<span class="badge badge-yellow">Vence hoje</span>';
-    return '<span class="badge badge-blue">A receber</span>';
-  }
-  if (status === 'REFUNDED') return '<span class="badge badge-gray">Estornado</span>';
-  return `<span class="badge badge-gray">${status}</span>`;
-}
-
-function abrirWhatsApp(tel, nome) {
-  if (!tel) { toast('Telefone não cadastrado.', 'error'); return; }
-  window.open(`https://wa.me/55${tel.replace(/\D/g,'')}`, '_blank');
-}
-
-// ── INIT ───────────────────────────────────────────────────────────────────
-
-window.onload = async () => {
-  const params = new URLSearchParams(window.location.search);
-
-  if (params.get('reset')) {
-    mostrarAuth('reset');
-    return;
-  }
-
-  if (params.get('invite')) {
-    mostrarAuth('cadastro');
-    return;
-  }
-
-  mostrarAuth('loading');
-  const saved = localStorage.getItem('rh_session');
-  if (!saved) { mostrarAuth('login'); return; }
-
-  try {
-    sessao = JSON.parse(saved);
-    await authAPI('session', { token: sessao.token });
-    await verificarOnboarding(sessao);
-  } catch(e) {
-    setSessao(null);
-    mostrarAuth('login');
-  }
-};
+(function boot() {
+  const params = new URLSearchParams(location.search);
+  resetToken = params.get('reset');
+  if (resetToken) { trocarTab('reset'); return; }
+  const s = carregarSessaoLocal();
+  if (s?.token) { salvarSessao(s); iniciarApp(); }
+})();
 </script>
 </body>
 </html>
