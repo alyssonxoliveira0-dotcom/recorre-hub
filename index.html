@@ -262,6 +262,13 @@ tbody tr:hover { background: var(--surface2); }
 .resumo-box { background: var(--surface2); border-radius: 10px; padding: 14px; font-size: 13px; margin-top: 14px; }
 .resumo-row { display: flex; justify-content: space-between; padding: 5px 0; color: var(--muted); }
 .resumo-row strong { color: var(--white); }
+.confirm-box { background: var(--surface2); border: 1.5px solid var(--accent); border-radius: 12px; padding: 18px; margin-top: 14px; }
+.confirm-row { display: flex; flex-direction: column; gap: 3px; padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 13px; }
+.confirm-row:last-child { border-bottom: none; }
+.confirm-row .cr-label { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+.confirm-row .cr-value { color: var(--text); font-weight: 600; }
+.confirm-account-ok { background: rgba(34,197,94,.12); border: 1px solid rgba(34,197,94,.3); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #86EFAC; margin-bottom: 10px; }
+.confirm-account-warn { background: rgba(245,158,11,.12); border: 1px solid rgba(245,158,11,.4); border-radius: 8px; padding: 10px 14px; font-size: 12px; color: #FCD34D; margin-bottom: 10px; }
 
 /* ── Nav badge ── */
 .nav-badge { background: var(--danger); color: #fff; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 6px; margin-left: auto; }
@@ -917,7 +924,17 @@ tbody tr:hover { background: var(--surface2); }
     <div id="m-resumo" class="resumo-box" style="display:none"></div>
     <div id="m-link-box" class="checkout-link-box" style="display:none"></div>
 
-    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+    <!-- Painel de confirmação — aparece após clicar Criar Assinatura -->
+    <div id="m-confirm" class="confirm-box" style="display:none">
+      <h4 style="margin:0 0 12px;font-size:14px;color:var(--accent2)">⚠️ Confirme antes de criar</h4>
+      <div id="m-confirm-body"></div>
+      <div style="display:flex;gap:10px;margin-top:16px;flex-wrap:wrap">
+        <button class="btn btn-primary" id="m-btn-confirm" onclick="executarCriacaoAssinatura()" style="flex:1;min-width:160px">✅ Confirmar e Criar</button>
+        <button class="btn-sm btn-outline" onclick="cancelarConfirmacao()" style="flex:1;min-width:120px;padding:12px">← Voltar</button>
+      </div>
+    </div>
+
+    <div id="m-form-btns" style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
       <button class="btn btn-primary" id="m-btn" onclick="criarAssinatura()" style="flex:1;min-width:160px">Criar Assinatura →</button>
       <button class="btn-sm btn-outline" id="m-btn-link" onclick="gerarLinkPagamento()" style="flex:1;min-width:140px;padding:12px">🔗 Gerar Link</button>
     </div>
@@ -2464,6 +2481,9 @@ function abrirModalCriarAssinatura() {
   document.getElementById('m-venc').value = new Date().toISOString().split('T')[0];
   document.getElementById('m-btn').disabled = false;
   document.getElementById('m-btn').textContent = 'Criar Assinatura →';
+  document.getElementById('m-confirm').style.display = 'none';
+  document.getElementById('m-form-btns').style.display = 'flex';
+  _pendingAssinatura = null;
 
   // Populate partner select
   const sel = document.getElementById('m-parceiro-select');
@@ -2511,11 +2531,14 @@ function atualizarResumo() {
     ${splitVal ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">* Estimativa — taxas Asaas descontadas na confirmação</div>` : ''}`;
 }
 
+// Armazena dados do formulário enquanto o usuário confirma
+let _pendingAssinatura = null;
+
+// ETAPA 1 — valida formulário, busca conta Asaas, exibe painel de confirmação
 async function criarAssinatura() {
-  // ── Captura dos campos do formulário ────────────────────────────────────────
   const nome    = document.getElementById('m-nome').value.trim();
   const cpfRaw  = document.getElementById('m-cpf').value.trim();
-  const cpf     = cpfRaw.replace(/\D/g, '');           // somente dígitos para comparação/envio
+  const cpf     = cpfRaw.replace(/\D/g, '');
   const tel     = document.getElementById('m-tel').value.trim();
   const email   = document.getElementById('m-email').value.trim().toLowerCase();
   const desc    = document.getElementById('m-desc').value.trim();
@@ -2523,14 +2546,8 @@ async function criarAssinatura() {
   const ciclo   = document.getElementById('m-ciclo').value;
   const billing = document.getElementById('m-billing').value;
   const venc    = document.getElementById('m-venc').value;
-  // walletId pertence ao PARCEIRO COMISSIONADO — nunca vai no campo customer
   const wallet  = document.getElementById('m-wallet').value.trim();
   const pct     = parseFloat(document.getElementById('m-pct').value) || 0;
-
-  console.log('════════ [criarAssinatura] INÍCIO ════════');
-  console.log('[FORM] CLIENTE: nome=' + nome + ' | cpf=' + cpf + ' | email=' + email + ' | tel=' + tel);
-  console.log('[FORM] ASSINATURA: valor=' + val + ' | ciclo=' + ciclo + ' | billing=' + billing + ' | venc=' + venc);
-  console.log('[FORM] PARCEIRO (split only): walletId=' + (wallet || '(nenhum)') + ' | pct=' + pct);
 
   const errEl = document.getElementById('modal-err');
   errEl.style.display = 'none';
@@ -2538,24 +2555,128 @@ async function criarAssinatura() {
   if (!nome) { errEl.textContent = 'Informe o nome do cliente.'; errEl.style.display = ''; return; }
   if (!val || val <= 0) { errEl.textContent = 'Informe um valor válido.'; errEl.style.display = ''; return; }
   if (!venc) { errEl.textContent = 'Informe o primeiro vencimento.'; errEl.style.display = ''; return; }
-
-  // Proteção: walletId nunca deve ser um ID de cliente (cus_...)
   if (wallet && wallet.startsWith('cus_')) {
-    errEl.textContent = '⚠️ O campo WalletId do parceiro contém um ID de cliente (cus_...). Corrija antes de continuar.';
+    errEl.textContent = '⚠️ WalletId do parceiro contém um ID de cliente (cus_...). Corrija antes de continuar.';
+    errEl.style.display = ''; return;
+  }
+  // walletId deve ser UUID (formato: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
+  if (wallet && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(wallet)) {
+    errEl.textContent = '⚠️ WalletId do parceiro inválido — deve ter formato UUID (ex: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).';
     errEl.style.display = ''; return;
   }
 
   const btn = document.getElementById('m-btn');
-  btn.disabled = true; btn.textContent = 'Criando…';
+  btn.disabled = true; btn.textContent = 'Verificando conta…';
+
+  // ── Consulta GET /myAccount para identificar QUAL conta Asaas receberá o dinheiro ──
+  let contaNome = '—';
+  let contaCpf  = '—';
+  let contaWalletId = '';
+  let contaEnv  = (sessao.env || 'sandbox').toUpperCase();
+  let minhaConta_ok = false;
+
+  try {
+    const acc = await asaasAPI('GET', '/myAccount');
+    contaNome     = acc?.personName || acc?.name || acc?.tradingName || '—';
+    contaCpf      = acc?.cpfCnpj   || '—';
+    contaWalletId = acc?.walletId  || '';
+    minhaConta_ok = true;
+    console.log('════ [GET /myAccount] conta que receberá os pagamentos ════');
+    console.log('Nome:', contaNome, '| CPF/CNPJ:', contaCpf, '| walletId:', contaWalletId);
+    console.log('Env:', contaEnv);
+  } catch(e) {
+    console.warn('[GET /myAccount] falhou:', e.message);
+    contaNome = '(não foi possível verificar — ' + e.message + ')';
+  }
+
+  // ── Detecta conflito: walletId informado é o da PRÓPRIA conta? ──
+  const walletIgualContaPrincipal = wallet && contaWalletId && wallet === contaWalletId;
+
+  // ── Armazena dados para a etapa 2 ──
+  _pendingAssinatura = { nome, cpf, tel, email, desc, val, ciclo, billing, venc, wallet, pct };
+
+  // ── Monta o painel de confirmação ──
+  const billingLabel = { PIX: 'Pix', BOLETO: 'Boleto', CREDIT_CARD: 'Cartão de crédito' };
+  const cicloLabel = { WEEKLY:'Semanal', BIWEEKLY:'Quinzenal', MONTHLY:'Mensal', QUARTERLY:'Trimestral', SEMIANNUALLY:'Semestral', YEARLY:'Anual' };
+
+  let accountBox = '';
+  if (minhaConta_ok) {
+    accountBox = `<div class="confirm-account-ok">
+      ✅ Conta Asaas autenticada (${esc(contaEnv)}): <strong>${esc(contaNome)}</strong> — CPF/CNPJ: <strong>${esc(contaCpf)}</strong><br>
+      <span style="font-size:11px;color:inherit;opacity:.8">É nesta conta que a assinatura será criada e o dinheiro será recebido.</span>
+    </div>`;
+  } else {
+    accountBox = `<div class="confirm-account-warn">⚠️ Não foi possível verificar a conta Asaas: ${esc(contaNome)}</div>`;
+  }
+
+  let conflictWarn = '';
+  if (walletIgualContaPrincipal) {
+    conflictWarn = `<div class="confirm-account-warn" style="margin-top:8px">
+      ⚠️ <strong>ATENÇÃO:</strong> O WalletId informado é o da <strong>própria conta Asaas</strong> autenticada!
+      O split enviará dinheiro de volta para a mesma conta — isso não faz sentido.
+      Verifique se o WalletId do parceiro está correto.
+    </div>`;
+  }
+
+  document.getElementById('m-confirm-body').innerHTML = `
+    ${accountBox}
+    ${conflictWarn}
+    <div class="confirm-row">
+      <span class="cr-label">👤 Cliente pagador (quem será cobrado)</span>
+      <span class="cr-value">${esc(nome)}${cpf ? ' — CPF: ' + esc(cpf) : ''}${email ? ' — ' + esc(email) : ''}</span>
+    </div>
+    <div class="confirm-row">
+      <span class="cr-label">💵 Valor / Frequência / Forma de pagamento</span>
+      <span class="cr-value">R$ ${val.toFixed(2)} / ${esc(cicloLabel[ciclo] || ciclo)} / ${esc(billingLabel[billing] || billing)}</span>
+    </div>
+    <div class="confirm-row">
+      <span class="cr-label">📅 Primeiro vencimento</span>
+      <span class="cr-value">${esc(venc)}</span>
+    </div>
+    ${wallet && pct > 0 ? `
+    <div class="confirm-row">
+      <span class="cr-label">🤝 Comissão do parceiro (split) — vai para outra conta</span>
+      <span class="cr-value" style="color:#FCA5A5">${pct}% → WalletId: ${esc(wallet)}</span>
+    </div>
+    <div class="confirm-row">
+      <span class="cr-label">💰 Você recebe aprox.</span>
+      <span class="cr-value" style="color:#86EFAC">R$ ${(val * (1 - pct/100)).toFixed(2)} (${100-pct}%)</span>
+    </div>` : `
+    <div class="confirm-row">
+      <span class="cr-label">🤝 Split</span>
+      <span class="cr-value">Sem split — 100% fica na sua conta</span>
+    </div>`}
+    <div style="font-size:11px;color:var(--muted);margin-top:10px">
+      Verifique se a conta acima é <strong style="color:var(--text)">sua conta</strong> (não a do parceiro).<br>
+      Se estiver errado, vá em Configurações e corrija a Chave de API.
+    </div>`;
+
+  document.getElementById('m-confirm').style.display = '';
+  document.getElementById('m-form-btns').style.display = 'none';
+  btn.disabled = false; btn.textContent = 'Criar Assinatura →';
+}
+
+function cancelarConfirmacao() {
+  document.getElementById('m-confirm').style.display = 'none';
+  document.getElementById('m-form-btns').style.display = 'flex';
+  _pendingAssinatura = null;
+}
+
+// ETAPA 2 — executa a criação após o usuário confirmar
+async function executarCriacaoAssinatura() {
+  if (!_pendingAssinatura) return;
+  const { nome, cpf, tel, email, desc, val, ciclo, billing, venc, wallet, pct } = _pendingAssinatura;
+
+  const errEl = document.getElementById('modal-err');
+  errEl.style.display = 'none';
+  const btnConfirm = document.getElementById('m-btn-confirm');
+  btnConfirm.disabled = true; btnConfirm.textContent = 'Criando…';
 
   try {
     // ── PASSO 1: Encontrar ou criar o CLIENTE PAGADOR ────────────────────────
-    // customerId = cus_xxx → representa quem vai PAGAR a assinatura
-    // wallet     = UUID    → representa quem vai receber COMISSÃO (split)
     let customerId   = null;
     let customerNome = null;
 
-    // 1a. Busca no cache (normaliza CPF para comparação)
     const existente = dadosCache.clientes.find(c =>
       (cpf   && c.cpfCnpj && c.cpfCnpj.replace(/\D/g,'') === cpf) ||
       (email && c.email   && c.email.toLowerCase() === email)
@@ -2566,10 +2687,9 @@ async function criarAssinatura() {
       customerNome = existente.name;
       console.log('[PASSO 1] Cache hit → customerId=' + customerId + ' | nome=' + customerNome);
     } else {
-      // 1b. Criar novo cliente via POST /customers
       const cliPayload = { name: nome };
-      if (cpf)   cliPayload.cpfCnpj    = cpf;
-      if (email) cliPayload.email      = email;
+      if (cpf)   cliPayload.cpfCnpj     = cpf;
+      if (email) cliPayload.email       = email;
       if (tel)   cliPayload.mobilePhone = tel.replace(/\D/g,'');
       console.log('[PASSO 1] POST /customers payload:', JSON.stringify(cliPayload));
 
@@ -2580,22 +2700,19 @@ async function criarAssinatura() {
         if (cli?.id) {
           customerId   = cli.id;
           customerNome = cli.name || nome;
-          dadosCache.clientes.push(cli); // mantém cache atualizado
+          dadosCache.clientes.push(cli);
         }
       } catch (cliErr) {
-        // 1c. Fallback: cliente já existe no Asaas mas não está no cache local
-        console.warn('[PASSO 1] POST /customers falhou (' + cliErr.message + ') — tentando GET /customers');
+        console.warn('[PASSO 1] POST /customers falhou — tentando GET /customers');
         try {
           let found = null;
           if (cpf) {
             const r = await asaasAPI('GET', '/customers', null, { cpfCnpj: cpf, limit: 1 });
             found = r?.data?.[0] || null;
-            if (found) console.log('[PASSO 1] GET /customers (cpf) encontrou:', found.id, found.name);
           }
           if (!found && email) {
             const r = await asaasAPI('GET', '/customers', null, { email, limit: 1 });
             found = r?.data?.[0] || null;
-            if (found) console.log('[PASSO 1] GET /customers (email) encontrou:', found.id, found.name);
           }
           if (found?.id) {
             customerId   = found.id;
@@ -2605,52 +2722,42 @@ async function criarAssinatura() {
         } catch (getErr) {
           console.error('[PASSO 1] GET /customers falhou:', getErr.message);
         }
-        if (!customerId) throw cliErr; // re-lança erro original se fallback também falhou
+        if (!customerId) throw cliErr;
       }
     }
 
-    // ── PASSO 1 — Validação do customerId ────────────────────────────────────
-    if (!customerId) {
-      throw new Error('Não foi possível obter o ID do cliente. Verifique CPF ou e-mail.');
-    }
-    if (!customerId.startsWith('cus_')) {
-      console.error('[SEGURANÇA] customerId com formato inválido:', customerId);
-      throw new Error('ID de cliente inválido recebido do Asaas: "' + customerId + '". Contate o suporte.');
-    }
-    if (wallet && customerId === wallet) {
-      console.error('[SEGURANÇA] customerId === walletId — bloqueando!', customerId);
-      throw new Error('ERRO: ID do cliente é igual ao walletId do parceiro. Operação bloqueada para evitar cobrança errada.');
-    }
+    if (!customerId) throw new Error('Não foi possível obter o ID do cliente. Verifique CPF ou e-mail.');
+    if (!customerId.startsWith('cus_')) throw new Error('ID de cliente inválido recebido: "' + customerId + '".');
+    if (wallet && customerId === wallet) throw new Error('ERRO CRÍTICO: ID do cliente é igual ao walletId do parceiro — operação bloqueada.');
 
-    console.log('[PASSO 1] OK — customerId=' + customerId + ' (' + customerNome + ') está separado do walletId=' + (wallet || 'nenhum'));
-
-    // ── PASSO 2: Montar e enviar payload da assinatura ───────────────────────
+    // ── PASSO 2: Criar assinatura ────────────────────────────────────────────
     const subPayload = {
-      customer:    customerId,  // ← PAGADOR: cus_xxx — NUNCA o walletId
+      customer:    customerId,   // ← PAGADOR: cus_xxx (nunca o walletId)
       billingType: billing,
       value:       val,
       nextDueDate: venc,
       cycle:       ciclo,
     };
     if (desc) subPayload.description = desc;
-    // walletId do parceiro vai SOMENTE em split[], jamais em customer
     if (wallet && pct > 0) {
       subPayload.split = [{ walletId: wallet, percentualValue: Number(pct) }];
     }
 
     console.log('════════ [PAYLOAD FINAL → POST /subscriptions] ════════');
-    console.log('  customer (quem paga)  :', subPayload.customer, '—', customerNome);
-    console.log('  billingType           :', subPayload.billingType);
-    console.log('  value                 :', subPayload.value);
-    console.log('  cycle / nextDueDate   :', subPayload.cycle, '/', subPayload.nextDueDate);
-    console.log('  split (comissão parc.):', JSON.stringify(subPayload.split || null));
+    console.log('  customer (pagador)    :', subPayload.customer, '—', customerNome);
+    console.log('  value / cycle         :', subPayload.value, '/', subPayload.cycle);
+    console.log('  split                 :', JSON.stringify(subPayload.split || null));
     console.log('  JSON completo         :', JSON.stringify(subPayload));
     console.log('════════════════════════════════════════════════════════');
 
     const sub = await asaasAPI('POST', '/subscriptions', subPayload);
     console.log('[PASSO 2] POST /subscriptions resposta:', JSON.stringify(sub));
 
-    // Busca primeiro link de pagamento
+    // ── Verifica se o Asaas devolveu o customerId correto ──
+    if (sub.customer && sub.customer !== customerId) {
+      console.warn('[ALERTA] Asaas retornou customer diferente do enviado!', 'enviado:', customerId, 'retornado:', sub.customer);
+    }
+
     let link = '';
     try {
       const pags = await asaasAPI('GET', `/subscriptions/${sub.id}/payments`, null, { limit: 1 });
@@ -2659,15 +2766,21 @@ async function criarAssinatura() {
 
     dadosCache.assinaturas.push(sub);
     toast('Assinatura criada com sucesso!', 'success');
+    _pendingAssinatura = null;
+
+    document.getElementById('m-confirm').style.display = 'none';
 
     const okEl = document.getElementById('modal-ok');
     okEl.innerHTML = `✅ Assinatura criada!<br>
       <small style="color:var(--muted)">
-        Pagador: <strong style="color:var(--text)">${esc(customerNome || nome)}</strong> (${esc(customerId)})<br>
-        Assinatura ID: <strong style="color:var(--text)">${esc(sub.id)}</strong><br>
-        ${wallet && pct > 0 ? `Split: <strong style="color:#86EFAC">${pct}% → ${esc(wallet.slice(0,8))}…</strong>` : 'Sem split configurado'}
+        Pagador: <strong style="color:var(--text)">${esc(customerNome || nome)}</strong> — ID: <code style="font-size:11px">${esc(customerId)}</code><br>
+        Assinatura: <code style="font-size:11px">${esc(sub.id)}</code><br>
+        ${wallet && pct > 0 ? `Split: <strong style="color:#86EFAC">${pct}% → ${esc(wallet.slice(0,8))}…</strong>` : 'Sem split'}
+        ${(sub.customer && sub.customer !== customerId) ? `<br><strong style="color:#FCA5A5">⚠️ Asaas retornou customer diferente: ${esc(sub.customer)}</strong>` : ''}
       </small>`;
     okEl.style.display = '';
+
+    document.getElementById('m-form-btns').style.display = 'flex';
 
     const linkBox = document.getElementById('m-link-box');
     if (link) {
@@ -2676,14 +2789,12 @@ async function criarAssinatura() {
           onclick="navigator.clipboard.writeText('${link}').then(()=>toast('Link copiado!','success'))">📋 Copiar link</button>`;
       linkBox.style.display = '';
     }
-
-    btn.textContent = '✓ Criado';
     atualizarBadgeTarefas();
   } catch(e) {
-    console.error('[criarAssinatura] ERRO:', e.message, e);
+    console.error('[executarCriacaoAssinatura] ERRO:', e.message, e);
     errEl.textContent = 'Erro: ' + e.message;
     errEl.style.display = '';
-    btn.disabled = false; btn.textContent = 'Criar Assinatura →';
+    btnConfirm.disabled = false; btnConfirm.textContent = '✅ Confirmar e Criar';
   }
 }
 
