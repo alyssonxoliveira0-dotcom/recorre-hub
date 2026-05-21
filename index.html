@@ -88,7 +88,8 @@ body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--tex
 .page-header h2 { font-size: 20px; font-weight: 700; color: var(--white); }
 
 /* ── Stats ── */
-.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 16px; margin-bottom: 28px; }
+.stat-delta { font-size: 11px; font-weight: 600; margin-top: 4px; }
 .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 18px 20px; }
 .stat-label { font-size: 12px; color: var(--muted); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; margin-bottom: 8px; }
 .stat-value { font-size: 26px; font-weight: 700; color: var(--white); line-height: 1; }
@@ -195,6 +196,10 @@ tbody tr:hover { background: var(--surface2); }
 @media (max-width: 900px) {
   .stats-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* ── Negativar btn (roadmap) ── */
+.btn-roadmap { background: transparent; border: 1.5px dashed rgba(239,68,68,.4); color: rgba(239,68,68,.6); cursor: not-allowed; font-size: 12px; padding: 6px 14px; border-radius: 8px; font-family:'Inter',sans-serif; font-weight:600; position:relative; }
+.btn-roadmap::after { content:'Em breve'; position:absolute; top:-18px; left:50%; transform:translateX(-50%); background:var(--surface2); border:1px solid var(--border); border-radius:4px; font-size:10px; white-space:nowrap; padding:2px 6px; color:var(--muted); }
 
 @media (max-width: 768px) {
   #sidebar {
@@ -487,10 +492,12 @@ tbody tr:hover { background: var(--surface2); }
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px">
           <div class="filter-bar" style="margin-bottom:0">
             <select id="dash-periodo" onchange="renderDashboard()">
-              <option value="mes">Este mês</option>
-              <option value="mes-ant">Mês anterior</option>
+              <option value="semana">Esta semana</option>
+              <option value="mes" selected>Este mês</option>
               <option value="3m">Últimos 3 meses</option>
-              <option value="6m">Últimos 6 meses</option>
+              <option value="6m">Semestre</option>
+              <option value="ano">Este ano</option>
+              <option value="tudo">Desde o início</option>
             </select>
             <select id="dash-tipo" onchange="renderDashboard()">
               <option value="assinaturas">Apenas assinaturas</option>
@@ -509,6 +516,7 @@ tbody tr:hover { background: var(--surface2); }
             <div class="stat-label">Receita recebida</div>
             <div class="stat-value" id="stat-recebido" style="font-size:20px">—</div>
             <div class="stat-sub" id="stat-recebido-sub">Período selecionado</div>
+            <div class="stat-delta" id="stat-recebido-delta"></div>
           </div>
           <div class="stat-card warning">
             <div class="stat-label">A receber</div>
@@ -519,8 +527,17 @@ tbody tr:hover { background: var(--surface2); }
             <div class="stat-label">Inadimplência</div>
             <div class="stat-value" id="stat-vencidas">—</div>
             <div class="stat-sub" id="stat-vencidas-sub">clientes em atraso</div>
+            <div class="stat-delta" id="stat-vencidas-delta"></div>
+          </div>
+          <div class="stat-card" style="border-color:rgba(108,99,255,.25);background:rgba(108,99,255,.05)">
+            <div class="stat-label">Comissões pagas</div>
+            <div class="stat-value" id="stat-comissoes" style="font-size:20px">—</div>
+            <div class="stat-sub" id="stat-comissoes-sub">Split do período</div>
+            <div class="stat-delta" id="stat-comissoes-delta"></div>
           </div>
         </div>
+
+        <div id="dash-insights"></div>
 
         <div class="chart-card">
           <h3>Evolução da receita (6 meses)</h3>
@@ -632,6 +649,8 @@ tbody tr:hover { background: var(--surface2); }
             <option value="avulsa">Avulsas</option>
             <option value="split">Comissionadas</option>
           </select>
+          <input type="date" id="filtro-data-ini" onchange="filtrarCobrancas()" title="Data início" style="color:var(--muted)">
+          <input type="date" id="filtro-data-fim" onchange="filtrarCobrancas()" title="Data fim" style="color:var(--muted)">
         </div>
         <div class="tipo-tabs">
           <button class="tipo-tab active" data-tipo="" onclick="filtrarTipoCobranca(this)">
@@ -711,6 +730,12 @@ tbody tr:hover { background: var(--surface2); }
           </div>
           <button class="btn-sm btn-accent" onclick="alterarSenha()">Atualizar senha</button>
         </div>
+
+        <div class="config-section">
+          <h3>🤝 Parceiros (Split de comissão)</h3>
+          <div id="parceiros-lista" style="margin-bottom:14px"></div>
+          <button class="btn-sm btn-accent" onclick="abrirModalParceiro()">+ Adicionar parceiro</button>
+        </div>
       </div>
 
       <!-- ── Tarefas ── -->
@@ -721,9 +746,9 @@ tbody tr:hover { background: var(--surface2); }
         </div>
         <div class="filter-tabs">
           <button class="filter-tab active" data-filtro="" onclick="filtrarTarefas(this)">Todas</button>
-          <button class="filter-tab" data-filtro="urgente" onclick="filtrarTarefas(this)">🔴 Urgente</button>
-          <button class="filter-tab" data-filtro="esta-semana" onclick="filtrarTarefas(this)">🟡 Esta semana</button>
-          <button class="filter-tab" data-filtro="monitore" onclick="filtrarTarefas(this)">⚪ Monitore</button>
+          <button class="filter-tab" data-filtro="urgente" onclick="filtrarTarefas(this)">🔴 Crítico (30+ dias)</button>
+          <button class="filter-tab" data-filtro="esta-semana" onclick="filtrarTarefas(this)">🟡 Atenção (6–29 dias)</button>
+          <button class="filter-tab" data-filtro="monitore" onclick="filtrarTarefas(this)">⚪ Lembrete (1–5 dias)</button>
         </div>
         <div id="tarefas-list"></div>
       </div>
@@ -736,6 +761,22 @@ tbody tr:hover { background: var(--surface2); }
             <button class="btn-sm btn-outline" onclick="exportarCSV('comissoes')">⬇ Exportar CSV</button>
             <button class="btn-sm btn-outline" onclick="renderComissoes()">↻ Atualizar</button>
           </div>
+        </div>
+        <div class="filter-bar">
+          <select id="com-periodo" onchange="renderComissoes()">
+            <option value="">Todos os períodos</option>
+            <option value="mes">Este mês</option>
+            <option value="mes-ant">Mês anterior</option>
+            <option value="3m">Últimos 3 meses</option>
+            <option value="6m">Semestre</option>
+            <option value="ano">Este ano</option>
+          </select>
+          <select id="com-parceiro" onchange="renderComissoes()">
+            <option value="">Todos os parceiros</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer">
+            <input type="checkbox" id="com-apenas-ass" onchange="renderComissoes()"> Apenas assinaturas
+          </label>
         </div>
         <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
           <div class="stat-card success">
@@ -776,6 +817,21 @@ tbody tr:hover { background: var(--surface2); }
   </div><!-- /main -->
 </div><!-- /app-screen -->
 
+<!-- Modal Parceiro -->
+<div class="modal-overlay" id="modal-parceiro" onclick="fecharModalParceiro(event)">
+  <div class="modal-box" style="max-width:420px">
+    <button class="modal-close" onclick="fecharModalParceiro()">✕</button>
+    <h2 id="parceiro-modal-title">Novo Parceiro</h2>
+    <div class="msg-error" id="parceiro-err"></div>
+    <input type="hidden" id="p-id">
+    <div class="form-group"><label>Nome do parceiro *</label><input type="text" id="p-nome" placeholder="Ex: Parceiro A"></div>
+    <div class="form-group"><label>Contato (e-mail / WhatsApp)</label><input type="text" id="p-contato" placeholder="contato@empresa.com"></div>
+    <div class="form-group"><label>WalletId Asaas *</label><input type="text" id="p-wallet" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
+    <div class="form-group"><label>Comissão padrão (%)</label><input type="number" id="p-pct" min="0" max="100" placeholder="20"></div>
+    <button class="btn btn-primary" onclick="salvarParceiro()">Salvar parceiro</button>
+  </div>
+</div>
+
 <!-- Detail panel -->
 <div class="panel-overlay" id="panel-overlay" onclick="fecharPainel(event)">
   <div class="detail-panel" id="detail-panel">
@@ -805,7 +861,7 @@ tbody tr:hover { background: var(--surface2); }
     <div class="modal-section"><h4>Plano</h4>
       <div class="form-group"><label>Descrição do plano *</label><input type="text" id="m-desc" placeholder="Plano Mensal Premium"></div>
       <div class="form-row">
-        <div class="form-group"><label>Valor (R$) *</label><input type="number" id="m-valor" placeholder="0,00" min="0" step="0.01"></div>
+        <div class="form-group"><label>Valor (R$) *</label><input type="number" id="m-valor" placeholder="0,00" min="0" step="0.01" oninput="atualizarResumo()"></div>
         <div class="form-group"><label>Frequência *</label>
           <select id="m-ciclo"><option value="MONTHLY">Mensal</option><option value="YEARLY">Anual</option><option value="WEEKLY">Semanal</option></select>
         </div>
@@ -819,9 +875,15 @@ tbody tr:hover { background: var(--surface2); }
     </div>
 
     <div class="modal-section"><h4>Comissionamento (opcional)</h4>
+      <div class="form-group">
+        <label>Parceiro cadastrado</label>
+        <select id="m-parceiro-select" onchange="preencherSplitDoParceiro()">
+          <option value="">— Selecionar parceiro —</option>
+        </select>
+      </div>
       <div class="form-row">
-        <div class="form-group"><label>WalletId do parceiro</label><input type="text" id="m-wallet" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
-        <div class="form-group"><label>% de comissão</label><input type="number" id="m-pct" placeholder="20" min="0" max="100"></div>
+        <div class="form-group"><label>WalletId do parceiro</label><input type="text" id="m-wallet" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" oninput="atualizarResumo()"></div>
+        <div class="form-group"><label>% de comissão</label><input type="number" id="m-pct" placeholder="20" min="0" max="100" oninput="atualizarResumo()"></div>
       </div>
     </div>
 
@@ -1223,11 +1285,44 @@ function getPeriodoFiltro() {
   const v = document.getElementById('dash-periodo')?.value || 'mes';
   const agora = new Date();
   const y = agora.getFullYear(), m = agora.getMonth();
+  if (v === 'semana') {
+    const ini = new Date(agora); ini.setDate(agora.getDate() - agora.getDay()); ini.setHours(0,0,0,0);
+    return { ini, fim: agora };
+  }
   if (v === 'mes') return { ini: new Date(y, m, 1), fim: new Date(y, m+1, 0) };
-  if (v === 'mes-ant') return { ini: new Date(y, m-1, 1), fim: new Date(y, m, 0) };
   if (v === '3m') return { ini: new Date(y, m-2, 1), fim: new Date(y, m+1, 0) };
   if (v === '6m') return { ini: new Date(y, m-5, 1), fim: new Date(y, m+1, 0) };
+  if (v === 'ano') return { ini: new Date(y, 0, 1), fim: new Date(y, 11, 31) };
+  if (v === 'tudo') return { ini: new Date(2000, 0, 1), fim: new Date(y+1, 0, 1) };
   return { ini: new Date(y, m, 1), fim: new Date(y, m+1, 0) };
+}
+
+function getPeriodoAnterior() {
+  const v = document.getElementById('dash-periodo')?.value || 'mes';
+  const agora = new Date();
+  const y = agora.getFullYear(), m = agora.getMonth();
+  if (v === 'semana') {
+    const fim = new Date(agora); fim.setDate(agora.getDate() - agora.getDay() - 1);
+    const ini = new Date(fim); ini.setDate(fim.getDate() - 6);
+    return { ini, fim };
+  }
+  if (v === 'mes') return { ini: new Date(y, m-1, 1), fim: new Date(y, m, 0) };
+  if (v === '3m') return { ini: new Date(y, m-5, 1), fim: new Date(y, m-2, 0) };
+  if (v === '6m') return { ini: new Date(y, m-11, 1), fim: new Date(y, m-5, 0) };
+  if (v === 'ano') return { ini: new Date(y-1, 0, 1), fim: new Date(y-1, 11, 31) };
+  return null;
+}
+
+function calcDelta(atual, anterior) {
+  if (anterior == null || anterior === 0) return null;
+  return Math.round(((atual - anterior) / anterior) * 100);
+}
+
+function deltaBadge(delta) {
+  if (delta === null) return '';
+  const sign = delta >= 0 ? '+' : '';
+  const color = delta >= 0 ? '#86EFAC' : '#FCA5A5';
+  return `<span style="color:${color}">${sign}${delta}% vs período anterior</span>`;
 }
 
 async function renderDashboard() {
@@ -1257,6 +1352,7 @@ async function renderDashboard() {
   }
 
   atualizarStats();
+  renderInsights();
   renderGraficoMrr();
 
   const apenasAss = (document.getElementById('dash-tipo')?.value || 'assinaturas') === 'assinaturas';
@@ -1277,18 +1373,84 @@ function atualizarStats() {
   document.getElementById('stat-ativas').textContent = ativas.length;
 
   const { ini, fim } = getPeriodoFiltro();
+  const periodoAnt = getPeriodoAnterior();
   const apenasAss = (document.getElementById('dash-tipo')?.value || 'assinaturas') === 'assinaturas';
-  const recebido = dadosCache.cobrancas
-    .filter(c => (c.status === 'RECEIVED' || c.status === 'CONFIRMED') && (!apenasAss || c.subscription))
+
+  const cobFiltro = dadosCache.cobrancas.filter(c => !apenasAss || c.subscription);
+
+  const recebido = cobFiltro
+    .filter(c => (c.status === 'RECEIVED' || c.status === 'CONFIRMED'))
     .filter(c => { const d = new Date(c.paymentDate || c.dueDate); return d >= ini && d <= fim; })
     .reduce((s, c) => s + (c.value || 0), 0);
   document.getElementById('stat-recebido').textContent = fmt(recebido);
+
+  const recebidoAnt = periodoAnt ? cobFiltro
+    .filter(c => (c.status === 'RECEIVED' || c.status === 'CONFIRMED'))
+    .filter(c => { const d = new Date(c.paymentDate || c.dueDate); return d >= periodoAnt.ini && d <= periodoAnt.fim; })
+    .reduce((s, c) => s + (c.value || 0), 0) : null;
+  const deltaEl = document.getElementById('stat-recebido-delta');
+  if (deltaEl) deltaEl.innerHTML = deltaBadge(calcDelta(recebido, recebidoAnt));
 
   const pendentes = dadosCache.cobrancas.filter(c => c.subscription && c.status === 'PENDING').reduce((s, c) => s + (c.value || 0), 0);
   document.getElementById('stat-pendentes').textContent = fmt(pendentes);
 
   const vencidasClientes = new Set(dadosCache.cobrancas.filter(c => c.status === 'OVERDUE').map(c => typeof c.customer === 'object' ? c.customer?.id : c.customer)).size;
   document.getElementById('stat-vencidas').textContent = vencidasClientes;
+
+  const vencidasAnt = periodoAnt ? new Set(dadosCache.cobrancas.filter(c => {
+    if (c.status !== 'OVERDUE') return false;
+    const d = new Date(c.dueDate); return d >= periodoAnt.ini && d <= periodoAnt.fim;
+  }).map(c => typeof c.customer === 'object' ? c.customer?.id : c.customer)).size : null;
+  const vdEl = document.getElementById('stat-vencidas-delta');
+  if (vdEl) vdEl.innerHTML = deltaBadge(calcDelta(vencidasClientes, vencidasAnt));
+
+  // Comissões card
+  const comissoes = dadosCache.cobrancas
+    .filter(c => c.split?.length && (c.status === 'RECEIVED' || c.status === 'CONFIRMED'))
+    .filter(c => { const d = new Date(c.paymentDate || c.dueDate); return d >= ini && d <= fim; })
+    .reduce((s, c) => s + c.split.reduce((ss, sp) => ss + (sp.fixedValue || (c.value * (sp.percentualValue||0) / 100) || 0), 0), 0);
+  const comEl = document.getElementById('stat-comissoes');
+  if (comEl) comEl.textContent = fmt(comissoes);
+
+  const comissAnt = periodoAnt ? dadosCache.cobrancas
+    .filter(c => c.split?.length && (c.status === 'RECEIVED' || c.status === 'CONFIRMED'))
+    .filter(c => { const d = new Date(c.paymentDate || c.dueDate); return d >= periodoAnt.ini && d <= periodoAnt.fim; })
+    .reduce((s, c) => s + c.split.reduce((ss, sp) => ss + (sp.fixedValue || (c.value * (sp.percentualValue||0) / 100) || 0), 0), 0) : null;
+  const cdEl = document.getElementById('stat-comissoes-delta');
+  if (cdEl) cdEl.innerHTML = deltaBadge(calcDelta(comissoes, comissAnt));
+}
+
+function renderInsights() {
+  const container = document.getElementById('dash-insights');
+  if (!container) return;
+  const insights = [];
+
+  const overdue = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE');
+  const overdueClients = new Set(overdue.map(c => typeof c.customer==='object'?c.customer?.id:c.customer)).size;
+  const totalAtivos = dadosCache.assinaturas.filter(a => a.status === 'ACTIVE').length;
+  if (overdueClients > 0 && totalAtivos > 0) {
+    const pct = Math.round((overdueClients / totalAtivos) * 100);
+    const totalOverdue = overdue.reduce((s,c) => s+(c.value||0), 0);
+    insights.push(`🚨 <strong>${overdueClients} cliente${overdueClients!==1?'s':''}</strong> com pagamentos atrasados (${pct}% da base ativa) — ${fmt(totalOverdue)} em risco`);
+  }
+
+  const canceladas = dadosCache.assinaturas.filter(a => a.status === 'INACTIVE' || a.status === 'CANCELED');
+  if (canceladas.length > 0) {
+    const perdaMensal = canceladas.reduce((s, a) => s + (a.value || 0), 0);
+    insights.push(`📉 <strong>${canceladas.length} assinatura${canceladas.length!==1?'s':''}</strong> canceladas/inativas — ${fmt(perdaMensal)}/mês em receita perdida`);
+  }
+
+  if (totalAtivos > 0) {
+    const ticketMedio = dadosCache.assinaturas.filter(a=>a.status==='ACTIVE').reduce((s,a)=>s+(a.value||0),0) / totalAtivos;
+    if (ticketMedio > 0) {
+      insights.push(`💡 Ticket médio atual: <strong>${fmt(ticketMedio)}/mês</strong> por assinatura ativa`);
+    }
+  }
+
+  if (!insights.length) { container.innerHTML = ''; return; }
+  container.innerHTML = `<div style="display:flex;flex-direction:column;gap:8px;margin-bottom:24px">
+    ${insights.map(i => `<div style="background:rgba(108,99,255,.07);border:1px solid rgba(108,99,255,.2);border-left:3px solid var(--accent);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--text)">${i}</div>`).join('')}
+  </div>`;
 }
 
 function renderGraficoMrr() {
@@ -1441,37 +1603,29 @@ function gerarConselheiro(clienteId, diasAtraso, billingType) {
   const { score, total } = calcScore(clienteId);
   const nome = dadosCache.clientes.find(x => x.id === clienteId)?.name?.split(' ')[0] || 'cliente';
   const isCard = billingType === 'CREDIT_CARD';
-  let texto, mensagem, isInternal = false;
+  let texto, mensagem;
 
-  if (isCard) {
-    // Cartão: Asaas tenta 3x automaticamente (dias 1, 2, 3)
-    if (diasAtraso <= 3) {
-      texto = `O Asaas já está tentando cobrar automaticamente. Aguarde — há ${3 - diasAtraso + 1} tentativa(s) restante(s) antes de intervir. Só acione o cliente se as 3 tentativas falharem.`;
-      mensagem = `Oi ${nome}! Identificamos uma pequena instabilidade no processamento do seu cartão. Estamos resolvendo automaticamente, fique tranquilo!`;
-    } else if (diasAtraso <= 9) {
-      texto = `As 3 tentativas automáticas do Asaas já foram esgotadas. O cartão pode estar vencido, cancelado ou sem limite. Peça ao cliente para atualizar o cartão — é a causa mais comum.`;
-      mensagem = `Olá ${nome}, tudo bem? Tentamos processar seu pagamento algumas vezes mas não conseguimos. Pode verificar se seu cartão está atualizado? Posso te ajudar a atualizar se precisar!`;
-    } else {
-      texto = `URGENTE: Cartão recusado há ${diasAtraso} dias. Risco real de suspensão do serviço. Abordagem direta: informe que o acesso será suspenso se não regularizar. Ofereça troca para Pix/Boleto como alternativa imediata.`;
-      mensagem = `Olá ${nome}, o pagamento do seu plano está em aberto há ${diasAtraso} dias. Para não interromper o serviço, precisamos regularizar hoje. Posso te enviar um Pix/Boleto como alternativa se preferir!`;
-    }
+  if (diasAtraso >= 30) {
+    // CRÍTICO: 30+ dias — sugerir Serasa
+    const scoreInfo = score !== null ? ` Score de pontualidade: ${score}%.` : '';
+    texto = `Atraso crítico de ${diasAtraso} dias.${scoreInfo} Risco muito alto de perda permanente. Recomenda-se considerar negativação no Serasa como última medida antes do cancelamento definitivo. Contato imediato com tom claro e respeitoso.`;
+    mensagem = `Olá ${nome}, seu pagamento está em aberto há ${diasAtraso} dias. Para evitar a negativação do seu CPF e o cancelamento do serviço, precisamos resolver isso hoje. Por favor entre em contato ou regularize pelo link abaixo.`;
+  } else if (diasAtraso >= 6) {
+    // ATENÇÃO: 6–29 dias — suspensão iminente, tom firme
+    texto = `Atraso de ${diasAtraso} dias — serviço em risco de suspensão. Tom firme mas cordial. Deixe claro que há prazo para resolução.${isCard ? ' O cartão pode estar vencido ou sem limite — ofereça troca para Pix/Boleto.' : ''}`;
+    mensagem = `Olá ${nome}, seu plano está com ${diasAtraso} dias de atraso. Para não ter o serviço suspenso, por favor regularize o quanto antes. Posso te ajudar a gerar um Pix ou boleto agora!`;
   } else {
-    // Boleto/Pix: Asaas já notifica o cliente automaticamente
-    // Mensagem é INTERNA (para a empresa), não para o cliente
-    isInternal = true;
-    if (score >= 80 || total === 0) {
-      texto = `ALERTA INTERNO: ${nome} tem bom histórico${total===0?' (cliente novo)':''}. Atraso provavelmente pontual. Asaas já notificou o cliente automaticamente. Sugestão: aguarde mais 2 dias antes de entrar em contato diretamente.`;
-      mensagem = `💡 Ação sugerida: Aguarde — o Asaas já enviou notificações automáticas. Se não pagar em 2 dias, contato amigável oferecendo ajudar a ajustar a data de vencimento.`;
-    } else if (score >= 50) {
-      texto = `ALERTA INTERNO: ${nome} tem padrão de atrasos leves mas sempre regulariza. Asaas já notificou. Abordagem consultiva recomendada: pergunte se algo mudou na rotina financeira e ofereça trocar a data de vencimento.`;
-      mensagem = `💡 Ação sugerida: Contato consultivo. Pergunte se o cliente precisa ajustar a data de vencimento — resolve na maioria dos casos e aumenta retenção.`;
+    // LEMBRETE: 1–5 dias — amigável
+    const historicoInfo = score !== null && score >= 75 ? ` ${nome} tem bom histórico (score ${score}%) — provavelmente regulariza rápido.` : '';
+    if (isCard && diasAtraso <= 3) {
+      texto = `Atraso de ${diasAtraso} dia${diasAtraso!==1?'s':''}. O Asaas ainda está tentando cobrar automaticamente no cartão. Aguarde o processo antes de acionar o cliente.${historicoInfo}`;
     } else {
-      texto = `ALERTA INTERNO: ${nome} tem histórico de inadimplência crônica (score ${score}%). Asaas notificou mas pode não resolver. Contato humano necessário. Seja claro sobre a consequência, mas não agressivo — ofereça solução.`;
-      mensagem = `💡 Ação sugerida: Contato direto necessário. Mencione que o serviço pode ser suspenso e ofereça um acordo ou plano de regularização. Histórico sugere que o cliente precisa de atenção personalizada.`;
+      texto = `Atraso de ${diasAtraso} dia${diasAtraso!==1?'s':''}. Provável esquecimento — um lembrete amigável já resolve na maioria dos casos.${historicoInfo}`;
     }
+    mensagem = `Oi ${nome}! Passando para lembrar que seu pagamento venceu há ${diasAtraso} dia${diasAtraso!==1?'s':''}. Qualquer dúvida é só me chamar!`;
   }
 
-  return { texto, mensagem, score, isInternal };
+  return { texto, mensagem, score, isInternal: false };
 }
 
 function renderDetalheCliente(c) {
@@ -1681,10 +1835,14 @@ function aplicarFiltroTipo(lista) {
   let filtrada = lista;
   const fs = document.getElementById('filtro-status')?.value || '';
   const ft = document.getElementById('filtro-tipo-cob')?.value || filtroTipoCobranca;
+  const dataIni = document.getElementById('filtro-data-ini')?.value;
+  const dataFim = document.getElementById('filtro-data-fim')?.value;
   if (fs) filtrada = filtrada.filter(c => c.status === fs);
   if (ft === 'recorrente') filtrada = filtrada.filter(c => c.subscription);
   else if (ft === 'avulsa') filtrada = filtrada.filter(c => !c.subscription);
   else if (ft === 'split') filtrada = filtrada.filter(c => c.split?.length);
+  if (dataIni) filtrada = filtrada.filter(c => { const d = (c.paymentDate || c.dueDate || '').split('T')[0]; return d >= dataIni; });
+  if (dataFim) filtrada = filtrada.filter(c => { const d = (c.paymentDate || c.dueDate || '').split('T')[0]; return d <= dataFim; });
   renderTbodyCobrancas('cobrancas-tbody', filtrada);
   renderCardsCobrancas('cobrancas-cards', filtrada);
 }
@@ -1832,6 +1990,7 @@ function preencherConfig() {
   const env = sessao?.env || 'sandbox';
   selecionarEnv(env);
   document.querySelector(`input[name="cfg-env"][value="${env}"]`).checked = true;
+  renderParceirosConfig();
 }
 
 function selecionarEnv(env) {
@@ -1934,7 +2093,7 @@ async function renderTarefas() {
   for (const [cid, cobs] of porCliente) {
     if (tarefasResolvidas.has(cid)) continue;
     const maxDias = Math.max(...cobs.map(c => Math.floor((Date.now() - new Date(c.dueDate)) / 86400000)));
-    const urgencia = maxDias >= 8 ? 'urgente' : maxDias >= 4 ? 'esta-semana' : 'monitore';
+    const urgencia = maxDias >= 30 ? 'urgente' : maxDias >= 6 ? 'esta-semana' : 'monitore';
     const billingType = cobs[0]?.billingType || 'BOLETO';
     tarefas.push({ cid, cobs, maxDias, urgencia, billingType });
   }
@@ -1957,24 +2116,26 @@ async function renderTarefas() {
       return aid === cid && a.status === 'ACTIVE';
     });
     const valorAnual = assinatura ? fmt(assinatura.value * 12) : null;
-    const { texto, mensagem, isInternal } = gerarConselheiro(cid, maxDias, billingType);
-    const urgLabel = urgencia === 'urgente' ? '🔴 URGENTE' : urgencia === 'esta-semana' ? '🟡 ESTA SEMANA' : '⚪ MONITORE';
+    const { texto, mensagem } = gerarConselheiro(cid, maxDias, billingType);
+    const urgLabel = urgencia === 'urgente' ? '🔴 CRÍTICO' : urgencia === 'esta-semana' ? '🟡 ATENÇÃO' : '⚪ LEMBRETE';
+    const urgSub = urgencia === 'urgente' ? `${maxDias} dias em atraso` : urgencia === 'esta-semana' ? `${maxDias} dias — risco de suspensão` : `${maxDias} dia${maxDias!==1?'s':''} — lembrete amigável`;
     const btTag = billingType === 'CREDIT_CARD' ? '💳 Cartão' : billingType === 'PIX' ? '⚡ Pix' : '📄 Boleto';
-    const waUrl = !isInternal && telefone ? `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}` : '';
-    const msgLabel = isInternal ? '💡 Ação interna sugerida' : '💬 Mensagem sugerida para o cliente';
+    const waUrl = telefone ? `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}` : '';
+    const negativarBtn = maxDias >= 30 ? `<button class="btn-roadmap" title="Funcionalidade em desenvolvimento">⚖️ Negativar via Asaas</button>` : '';
 
     return `<div class="task-card ${urgencia}" id="task-${cid}">
       <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
         <span class="urgency-tag ${urgencia}">${urgLabel}</span>
         <span class="tag tag-new" style="font-size:10px">${btTag}</span>
+        <span style="font-size:12px;color:var(--muted)">${urgSub}</span>
       </div>
-      <div class="task-title">${nome} — atrasado ${maxDias} dia${maxDias !== 1 ? 's' : ''}</div>
+      <div class="task-title">${nome}</div>
       <div class="task-sub">${cobs.length} cobrança${cobs.length !== 1 ? 's' : ''} em aberto · ${fmt(cobs.reduce((s,c) => s+(c.value||0),0))} total</div>
       ${valorAnual ? `<div class="task-impact">⚠ Se cancelar, você perde ${valorAnual}/ano</div>` : ''}
       <div class="advisor-box" style="margin:14px 0 0">
         <h4>🧠 Conselheiro</h4>
         <div class="advisor-text">${esc(texto)}</div>
-        <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">${msgLabel}</div>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">💬 Mensagem sugerida</div>
         <div class="advisor-msg">${esc(mensagem)}</div>
         <button class="btn-sm btn-outline" style="font-size:12px" onclick="navigator.clipboard.writeText(${JSON.stringify(mensagem)}).then(()=>toast('Copiado!','success'))">📋 Copiar</button>
       </div>
@@ -1982,6 +2143,7 @@ async function renderTarefas() {
         ${waUrl ? `<a href="${waUrl}" target="_blank" class="btn-sm btn-accent">💬 Abrir WhatsApp</a>` : ''}
         <button class="btn-sm btn-outline" onclick="abrirDetalheCliente('${cid}')">Ver histórico</button>
         <button class="btn-sm btn-outline" onclick="marcarTarefaResolvida('${cid}')">✓ Marcar resolvido</button>
+        ${negativarBtn}
       </div>
     </div>`;
   }).join('');
@@ -2013,7 +2175,36 @@ async function renderComissoes() {
     if (!dadosCache.cobrancas.length) await carregarCobrancasCache();
   } catch(e) { setTbody('comissoes-tbody', 5, '⚠️ ' + e.message); return; }
 
-  const comSplit = dadosCache.cobrancas.filter(c => c.split?.length > 0);
+  // Populate partner filter
+  const parceiros = carregarParceiros();
+  const comParceiroSel = document.getElementById('com-parceiro');
+  if (comParceiroSel && comParceiroSel.options.length <= 1) {
+    parceiros.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.walletId;
+      opt.textContent = esc(p.nome);
+      comParceiroSel.appendChild(opt);
+    });
+  }
+
+  const periodoVal = document.getElementById('com-periodo')?.value || '';
+  const parceiroFiltro = document.getElementById('com-parceiro')?.value || '';
+  const apenasAss = document.getElementById('com-apenas-ass')?.checked;
+
+  let comSplit = dadosCache.cobrancas.filter(c => c.split?.length > 0);
+  if (apenasAss) comSplit = comSplit.filter(c => c.subscription);
+  if (parceiroFiltro) comSplit = comSplit.filter(c => c.split?.some(s => s.walletId === parceiroFiltro));
+  if (periodoVal) {
+    const agora = new Date(); const y = agora.getFullYear(), m = agora.getMonth();
+    let ini, fim;
+    if (periodoVal === 'mes') { ini = new Date(y,m,1); fim = new Date(y,m+1,0); }
+    else if (periodoVal === 'mes-ant') { ini = new Date(y,m-1,1); fim = new Date(y,m,0); }
+    else if (periodoVal === '3m') { ini = new Date(y,m-2,1); fim = new Date(y,m+1,0); }
+    else if (periodoVal === '6m') { ini = new Date(y,m-5,1); fim = new Date(y,m+1,0); }
+    else if (periodoVal === 'ano') { ini = new Date(y,0,1); fim = new Date(y,11,31); }
+    if (ini && fim) comSplit = comSplit.filter(c => { const d = new Date(c.paymentDate||c.dueDate); return d>=ini && d<=fim; });
+  }
+
   const confirmadas = comSplit.filter(c => c.status === 'RECEIVED' || c.status === 'CONFIRMED');
   const pendentes = comSplit.filter(c => c.status === 'PENDING');
 
@@ -2055,6 +2246,100 @@ async function renderComissoes() {
   }).join('');
 }
 
+// ── Parceiros ────────────────────────────────────────────────────────────────
+
+function carregarParceiros() {
+  try { return JSON.parse(localStorage.getItem('rh_parceiros') || '[]'); } catch { return []; }
+}
+
+function salvarParceirosStorage(lista) {
+  localStorage.setItem('rh_parceiros', JSON.stringify(lista));
+}
+
+function renderParceirosConfig() {
+  const lista = carregarParceiros();
+  const cont = document.getElementById('parceiros-lista');
+  if (!cont) return;
+  if (!lista.length) {
+    cont.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0">Nenhum parceiro cadastrado ainda.</div>';
+    return;
+  }
+  cont.innerHTML = lista.map(p => `
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);gap:12px;flex-wrap:wrap">
+      <div>
+        <div style="font-size:14px;font-weight:600;color:var(--white)">${esc(p.nome)}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">${esc(p.walletId)} · ${p.pct}% padrão${p.contato ? ' · ' + esc(p.contato) : ''}</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn-sm btn-outline" onclick="editarParceiro('${esc(p.id)}')">Editar</button>
+        <button class="btn-sm btn-outline" style="border-color:rgba(239,68,68,.4);color:#FCA5A5" onclick="removerParceiro('${esc(p.id)}')">Remover</button>
+      </div>
+    </div>`).join('');
+}
+
+function abrirModalParceiro(id) {
+  const errEl = document.getElementById('parceiro-err');
+  if (errEl) errEl.style.display = 'none';
+  document.getElementById('p-id').value = '';
+  document.getElementById('p-nome').value = '';
+  document.getElementById('p-contato').value = '';
+  document.getElementById('p-wallet').value = '';
+  document.getElementById('p-pct').value = '';
+  if (id) {
+    const p = carregarParceiros().find(x => x.id === id);
+    if (p) {
+      document.getElementById('p-id').value = p.id;
+      document.getElementById('p-nome').value = p.nome;
+      document.getElementById('p-contato').value = p.contato || '';
+      document.getElementById('p-wallet').value = p.walletId;
+      document.getElementById('p-pct').value = p.pct;
+      document.getElementById('parceiro-modal-title').textContent = 'Editar Parceiro';
+    }
+  } else {
+    document.getElementById('parceiro-modal-title').textContent = 'Novo Parceiro';
+  }
+  document.getElementById('modal-parceiro').classList.add('open');
+}
+
+function fecharModalParceiro(e) {
+  if (!e || e.target === document.getElementById('modal-parceiro'))
+    document.getElementById('modal-parceiro').classList.remove('open');
+}
+
+function editarParceiro(id) {
+  abrirModalParceiro(id);
+}
+
+function removerParceiro(id) {
+  const lista = carregarParceiros().filter(p => p.id !== id);
+  salvarParceirosStorage(lista);
+  renderParceirosConfig();
+  toast('Parceiro removido.', 'success');
+}
+
+function salvarParceiro() {
+  const errEl = document.getElementById('parceiro-err');
+  const nome = document.getElementById('p-nome').value.trim();
+  const contato = document.getElementById('p-contato').value.trim();
+  const walletId = document.getElementById('p-wallet').value.trim();
+  const pct = parseFloat(document.getElementById('p-pct').value) || 0;
+  if (!nome || !walletId) {
+    errEl.textContent = 'Nome e WalletId são obrigatórios.'; errEl.style.display = ''; return;
+  }
+  const lista = carregarParceiros();
+  const existId = document.getElementById('p-id').value;
+  if (existId) {
+    const idx = lista.findIndex(p => p.id === existId);
+    if (idx !== -1) lista[idx] = { id: existId, nome, contato, walletId, pct };
+  } else {
+    lista.push({ id: Date.now().toString(), nome, contato, walletId, pct });
+  }
+  salvarParceirosStorage(lista);
+  document.getElementById('modal-parceiro').classList.remove('open');
+  renderParceirosConfig();
+  toast('Parceiro salvo!', 'success');
+}
+
 // ── Modal Criar Assinatura ───────────────────────────────────────────────────
 
 function abrirModalCriarAssinatura() {
@@ -2070,10 +2355,31 @@ function abrirModalCriarAssinatura() {
   document.getElementById('m-venc').value = new Date().toISOString().split('T')[0];
   document.getElementById('m-btn').disabled = false;
   document.getElementById('m-btn').textContent = 'Criar Assinatura →';
+
+  // Populate partner select
+  const sel = document.getElementById('m-parceiro-select');
+  if (sel) {
+    sel.innerHTML = '<option value="">— Selecionar parceiro —</option>';
+    carregarParceiros().forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.textContent = `${p.nome} (${p.pct}%)`;
+      sel.appendChild(opt);
+    });
+  }
+
   document.getElementById('modal-criar-ass').classList.add('open');
-  ['m-valor','m-wallet','m-pct'].forEach(id => {
-    document.getElementById(id)?.addEventListener('input', atualizarResumo);
-  });
+}
+
+function preencherSplitDoParceiro() {
+  const sel = document.getElementById('m-parceiro-select');
+  if (!sel?.value) return;
+  const p = carregarParceiros().find(x => x.id === sel.value);
+  if (p) {
+    document.getElementById('m-wallet').value = p.walletId;
+    document.getElementById('m-pct').value = p.pct;
+    atualizarResumo();
+  }
 }
 
 function fecharModalCriarAss(e) {
