@@ -511,6 +511,7 @@ tbody tr:hover { background: var(--surface2); }
             <div class="stat-label">MRR</div>
             <div class="stat-value" id="stat-mrr" style="font-size:20px">—</div>
             <div class="stat-sub"><span id="stat-ativas">—</span> assinaturas ativas</div>
+            <div class="stat-delta" id="stat-mrr-delta"></div>
           </div>
           <div class="stat-card success">
             <div class="stat-label">Receita recebida</div>
@@ -522,6 +523,7 @@ tbody tr:hover { background: var(--surface2); }
             <div class="stat-label">A receber</div>
             <div class="stat-value" id="stat-pendentes" style="font-size:20px">—</div>
             <div class="stat-sub">Pendentes (assinaturas)</div>
+            <div class="stat-delta" id="stat-pendentes-delta"></div>
           </div>
           <div class="stat-card danger">
             <div class="stat-label">Inadimplência</div>
@@ -608,9 +610,20 @@ tbody tr:hover { background: var(--surface2); }
           </select>
           <select id="ass-ciclo" onchange="filtrarAssinaturas()">
             <option value="">Todos os ciclos</option>
-            <option value="MONTHLY">Mensal</option>
-            <option value="YEARLY">Anual</option>
             <option value="WEEKLY">Semanal</option>
+            <option value="BIWEEKLY">Quinzenal</option>
+            <option value="MONTHLY">Mensal</option>
+            <option value="QUARTERLY">Trimestral</option>
+            <option value="SEMIANNUALLY">Semestral</option>
+            <option value="YEARLY">Anual</option>
+          </select>
+          <select id="ass-periodo" onchange="filtrarAssinaturas()">
+            <option value="">Todos os períodos</option>
+            <option value="semana">Esta semana</option>
+            <option value="mes">Este mês</option>
+            <option value="3m">Últimos 3 meses</option>
+            <option value="6m">Semestre</option>
+            <option value="ano">Este ano</option>
           </select>
         </div>
         <div id="ass-populares" style="margin-bottom:16px"></div>
@@ -637,9 +650,8 @@ tbody tr:hover { background: var(--surface2); }
         <div class="filter-bar">
           <select id="filtro-status" onchange="filtrarCobrancas()">
             <option value="">Todos os status</option>
+            <option value="PAID">Pagas (Recebidas + Confirmadas)</option>
             <option value="PENDING">Futuras / Pendentes</option>
-            <option value="RECEIVED">Recebidas</option>
-            <option value="CONFIRMED">Confirmadas</option>
             <option value="OVERDUE">Vencidas</option>
             <option value="REFUNDED">Estornadas</option>
           </select>
@@ -648,6 +660,14 @@ tbody tr:hover { background: var(--surface2); }
             <option value="recorrente">Assinaturas</option>
             <option value="avulsa">Avulsas</option>
             <option value="split">Comissionadas</option>
+          </select>
+          <select id="filtro-periodo-cob" onchange="aplicarFiltroPeriodoCob()">
+            <option value="">Todos os períodos</option>
+            <option value="semana">Esta semana</option>
+            <option value="mes">Este mês</option>
+            <option value="3m">Últimos 3 meses</option>
+            <option value="6m">Semestre</option>
+            <option value="ano">Este ano</option>
           </select>
           <input type="date" id="filtro-data-ini" onchange="filtrarCobrancas()" title="Data início" style="color:var(--muted)">
           <input type="date" id="filtro-data-fim" onchange="filtrarCobrancas()" title="Data fim" style="color:var(--muted)">
@@ -859,11 +879,18 @@ tbody tr:hover { background: var(--surface2); }
     </div>
 
     <div class="modal-section"><h4>Plano</h4>
-      <div class="form-group"><label>Descrição do plano *</label><input type="text" id="m-desc" placeholder="Plano Mensal Premium"></div>
+      <div class="form-group"><label>Nome do plano <span style="color:var(--muted);font-weight:400">(opcional)</span></label><input type="text" id="m-desc" placeholder="Ex: Plano Mensal Premium"></div>
       <div class="form-row">
         <div class="form-group"><label>Valor (R$) *</label><input type="number" id="m-valor" placeholder="0,00" min="0" step="0.01" oninput="atualizarResumo()"></div>
         <div class="form-group"><label>Frequência *</label>
-          <select id="m-ciclo"><option value="MONTHLY">Mensal</option><option value="YEARLY">Anual</option><option value="WEEKLY">Semanal</option></select>
+          <select id="m-ciclo">
+            <option value="WEEKLY">Semanal</option>
+            <option value="BIWEEKLY">Quinzenal</option>
+            <option value="MONTHLY" selected>Mensal</option>
+            <option value="QUARTERLY">Trimestral</option>
+            <option value="SEMIANNUALLY">Semestral</option>
+            <option value="YEARLY">Anual</option>
+          </select>
         </div>
       </div>
       <div class="form-row">
@@ -890,9 +917,11 @@ tbody tr:hover { background: var(--surface2); }
     <div id="m-resumo" class="resumo-box" style="display:none"></div>
     <div id="m-link-box" class="checkout-link-box" style="display:none"></div>
 
-    <div style="display:flex;gap:10px;margin-top:20px">
-      <button class="btn btn-primary" id="m-btn" onclick="criarAssinatura()" style="flex:1">Criar Assinatura →</button>
+    <div style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
+      <button class="btn btn-primary" id="m-btn" onclick="criarAssinatura()" style="flex:1;min-width:160px">Criar Assinatura →</button>
+      <button class="btn-sm btn-outline" id="m-btn-link" onclick="gerarLinkPagamento()" style="flex:1;min-width:140px;padding:12px">🔗 Gerar Link</button>
     </div>
+    <div style="font-size:11px;color:var(--muted);margin-top:8px">🔗 Gerar Link cria um link de pagamento recorrente — o cliente preenche os próprios dados ao pagar.</div>
   </div>
 </div>
 
@@ -990,17 +1019,20 @@ function nomeCliente(customerId) {
 
 function badgeStatus(status) {
   const mapa = {
-    ACTIVE: ['badge-success', 'Ativa'],
+    ACTIVE:   ['badge-success', 'Ativa'],
     INACTIVE: ['badge-muted', 'Inativa'],
-    RECEIVED: ['badge-success', 'Recebida'],
-    CONFIRMED: ['badge-success', 'Confirmada'],
-    PENDING: ['badge-warning', 'Pendente'],
-    OVERDUE: ['badge-danger', 'Vencida'],
+    RECEIVED: ['badge-success', 'Pago'],
+    CONFIRMED:['badge-success', 'Pago'],
+    PENDING:  ['badge-warning', 'Pendente'],
+    OVERDUE:  ['badge-danger', 'Vencida'],
     REFUNDED: ['badge-muted', 'Estornada'],
     CANCELED: ['badge-muted', 'Cancelada'],
-    MONTHLY: ['badge-accent', 'Mensal'],
-    YEARLY: ['badge-accent', 'Anual'],
-    WEEKLY: ['badge-accent', 'Semanal'],
+    MONTHLY:       ['badge-accent', 'Mensal'],
+    YEARLY:        ['badge-accent', 'Anual'],
+    WEEKLY:        ['badge-accent', 'Semanal'],
+    BIWEEKLY:      ['badge-accent', 'Quinzenal'],
+    QUARTERLY:     ['badge-accent', 'Trimestral'],
+    SEMIANNUALLY:  ['badge-accent', 'Semestral'],
   };
   const [cls, label] = mapa[status] || ['badge-muted', status || '—'];
   return `<span class="badge ${cls}">${label}</span>`;
@@ -1369,8 +1401,15 @@ async function renderDashboard() {
 function atualizarStats() {
   const ativas = dadosCache.assinaturas.filter(a => a.status === 'ACTIVE');
   const mrr = ativas.reduce((s, a) => s + (a.value || 0), 0);
+  const ativasAnt = dadosCache.assinaturas.filter(a => a.status !== 'ACTIVE').length;
   document.getElementById('stat-mrr').textContent = fmt(mrr);
   document.getElementById('stat-ativas').textContent = ativas.length;
+  const mrrAntEl = document.getElementById('stat-mrr-delta');
+  if (mrrAntEl) {
+    const totalSubs = dadosCache.assinaturas.length;
+    const pctAtivas = totalSubs > 0 ? Math.round((ativas.length / totalSubs) * 100) : null;
+    mrrAntEl.innerHTML = pctAtivas !== null ? `<span style="color:var(--muted)">${pctAtivas}% da base ativa</span>` : '';
+  }
 
   const { ini, fim } = getPeriodoFiltro();
   const periodoAnt = getPeriodoAnterior();
@@ -1393,6 +1432,12 @@ function atualizarStats() {
 
   const pendentes = dadosCache.cobrancas.filter(c => c.subscription && c.status === 'PENDING').reduce((s, c) => s + (c.value || 0), 0);
   document.getElementById('stat-pendentes').textContent = fmt(pendentes);
+  const pendAntVal = periodoAnt ? dadosCache.cobrancas
+    .filter(c => c.subscription && c.status === 'PENDING')
+    .filter(c => { const d = new Date(c.dueDate); return d >= periodoAnt.ini && d <= periodoAnt.fim; })
+    .reduce((s, c) => s + (c.value || 0), 0) : null;
+  const pendDeltaEl = document.getElementById('stat-pendentes-delta');
+  if (pendDeltaEl) pendDeltaEl.innerHTML = deltaBadge(calcDelta(pendentes, pendAntVal));
 
   const vencidasClientes = new Set(dadosCache.cobrancas.filter(c => c.status === 'OVERDUE').map(c => typeof c.customer === 'object' ? c.customer?.id : c.customer)).size;
   document.getElementById('stat-vencidas').textContent = vencidasClientes;
@@ -1521,7 +1566,10 @@ function getLtvCliente(cid) {
 
 function getPlanoCliente(cid) {
   const a = dadosCache.assinaturas.find(a => { const id = typeof a.customer==='object'?a.customer?.id:a.customer; return id===cid && a.status==='ACTIVE'; });
-  return a ? (esc(a.description) || 'Assinatura') : '—';
+  if (!a) return '—';
+  const cicloLabel = { MONTHLY:'Mensal', YEARLY:'Anual', WEEKLY:'Semanal', BIWEEKLY:'Quinzenal', QUARTERLY:'Trimestral', SEMIANNUALLY:'Semestral' };
+  const ciclo = cicloLabel[a.cycle] || '';
+  return esc(a.description) || (ciclo ? `Assinatura ${ciclo}` : 'Assinatura');
 }
 
 function filtrarClientes() {
@@ -1753,9 +1801,20 @@ function renderPopularesAssinaturas() {
 function filtrarAssinaturas() {
   const status = document.getElementById('ass-status')?.value || '';
   const ciclo = document.getElementById('ass-ciclo')?.value || '';
+  const periodo = document.getElementById('ass-periodo')?.value || '';
   let lista = dadosCache.assinaturas;
   if (status) lista = lista.filter(a => a.status === status);
-  if (ciclo) lista = lista.filter(a => (a.cycle || a.billingType) === ciclo);
+  if (ciclo) lista = lista.filter(a => a.cycle === ciclo);
+  if (periodo) {
+    const agora = new Date(); const y = agora.getFullYear(), m = agora.getMonth();
+    let ini;
+    if (periodo === 'semana') { ini = new Date(agora); ini.setDate(agora.getDate() - agora.getDay()); }
+    else if (periodo === 'mes') ini = new Date(y, m, 1);
+    else if (periodo === '3m') ini = new Date(y, m-2, 1);
+    else if (periodo === '6m') ini = new Date(y, m-5, 1);
+    else if (periodo === 'ano') ini = new Date(y, 0, 1);
+    if (ini) lista = lista.filter(a => new Date(a.dateCreated || a.nextDueDate) >= ini);
+  }
   renderTbodyAssinaturas(lista);
 }
 
@@ -1771,14 +1830,14 @@ function renderTbodyAssinaturas(lista) {
   tbody.innerHTML = lista.map(a => `
     <tr onclick="abrirDetalheAssinatura('${a.id}')">
       <td><div style="font-weight:600">${nomeCliente(a.customer)}</div><div style="font-size:11px;color:var(--muted)">${esc(a.description)||''}</div></td>
-      <td class="col-hide">${badgeStatus(a.cycle || a.billingType || '')}</td>
+      <td class="col-hide">${badgeStatus(a.cycle || '')}</td>
       <td>${fmt(a.value)}</td>
       <td>${badgeStatus(a.status)}</td>
     </tr>`).join('');
   cards.innerHTML = lista.map(a => `
     <div class="list-card" onclick="abrirDetalheAssinatura('${a.id}')">
       <div class="list-card-top"><span class="list-card-name">${nomeCliente(a.customer)}</span>${badgeStatus(a.status)}</div>
-      <div class="list-card-sub">${fmt(a.value)} · ${esc(a.description) || a.cycle || '—'}</div>
+      <div class="list-card-sub">${fmt(a.value)} · ${esc(a.description) || ({MONTHLY:'Mensal',YEARLY:'Anual',WEEKLY:'Semanal',BIWEEKLY:'Quinzenal',QUARTERLY:'Trimestral',SEMIANNUALLY:'Semestral'}[a.cycle]) || '—'}</div>
     </div>`).join('');
 }
 
@@ -1825,31 +1884,62 @@ async function carregarCobrancas() {
     if (!dadosCache.clientes.length) await carregarClientesCache();
     const filtroStatus = document.getElementById('filtro-status').value;
     await carregarCobrancasCache(filtroStatus);
-    aplicarFiltroTipo(dadosCache.cobrancas);
-    renderGraficoReceita(dadosCache.cobrancas);
+    filtrarCobrancas();
     if (!filtroStatus) atualizarStats();
   } catch(e) { setTbody('cobrancas-tbody', 5, '⚠️ ' + e.message); }
 }
 
-function aplicarFiltroTipo(lista) {
+function calcFiltradaCobrancas(lista) {
   let filtrada = lista;
   const fs = document.getElementById('filtro-status')?.value || '';
   const ft = document.getElementById('filtro-tipo-cob')?.value || filtroTipoCobranca;
   const dataIni = document.getElementById('filtro-data-ini')?.value;
   const dataFim = document.getElementById('filtro-data-fim')?.value;
-  if (fs) filtrada = filtrada.filter(c => c.status === fs);
+  const periodo = document.getElementById('filtro-periodo-cob')?.value || '';
+  if (fs === 'PAID') filtrada = filtrada.filter(c => c.status === 'RECEIVED' || c.status === 'CONFIRMED');
+  else if (fs) filtrada = filtrada.filter(c => c.status === fs);
   if (ft === 'recorrente') filtrada = filtrada.filter(c => c.subscription);
   else if (ft === 'avulsa') filtrada = filtrada.filter(c => !c.subscription);
   else if (ft === 'split') filtrada = filtrada.filter(c => c.split?.length);
   if (dataIni) filtrada = filtrada.filter(c => { const d = (c.paymentDate || c.dueDate || '').split('T')[0]; return d >= dataIni; });
   if (dataFim) filtrada = filtrada.filter(c => { const d = (c.paymentDate || c.dueDate || '').split('T')[0]; return d <= dataFim; });
+  if (periodo) {
+    const agora = new Date(); const y = agora.getFullYear(), m = agora.getMonth();
+    let ini;
+    if (periodo === 'semana') { ini = new Date(agora); ini.setDate(agora.getDate() - agora.getDay()); }
+    else if (periodo === 'mes') ini = new Date(y, m, 1);
+    else if (periodo === '3m') ini = new Date(y, m-2, 1);
+    else if (periodo === '6m') ini = new Date(y, m-5, 1);
+    else if (periodo === 'ano') ini = new Date(y, 0, 1);
+    if (ini) filtrada = filtrada.filter(c => new Date(c.paymentDate || c.dueDate) >= ini);
+  }
+  return filtrada;
+}
+
+function aplicarFiltroPeriodoCob() {
+  // When period preset is selected, clear manual date inputs
+  const p = document.getElementById('filtro-periodo-cob')?.value;
+  if (p) {
+    const ini = document.getElementById('filtro-data-ini');
+    const fim = document.getElementById('filtro-data-fim');
+    if (ini) ini.value = '';
+    if (fim) fim.value = '';
+  }
+  filtrarCobrancas();
+}
+
+function aplicarFiltroTipo(lista) {
+  const filtrada = calcFiltradaCobrancas(lista);
   renderTbodyCobrancas('cobrancas-tbody', filtrada);
   renderCardsCobrancas('cobrancas-cards', filtrada);
+  renderGraficoReceita(filtrada);
 }
 
 function filtrarCobrancas() {
-  aplicarFiltroTipo(dadosCache.cobrancas);
-  renderGraficoReceita(dadosCache.cobrancas);
+  const filtrada = calcFiltradaCobrancas(dadosCache.cobrancas);
+  renderTbodyCobrancas('cobrancas-tbody', filtrada);
+  renderCardsCobrancas('cobrancas-cards', filtrada);
+  renderGraficoReceita(filtrada);
 }
 
 function filtrarTipoCobranca(btn) {
@@ -1857,19 +1947,32 @@ function filtrarTipoCobranca(btn) {
   btn.classList.add('active');
   filtroTipoCobranca = btn.dataset.tipo;
   document.getElementById('filtro-tipo-cob').value = btn.dataset.tipo;
-  aplicarFiltroTipo(dadosCache.cobrancas);
+  filtrarCobrancas();
 }
 
 function renderGraficoReceita(lista) {
   const canvas = document.getElementById('chart-receita');
   if (!canvas) return;
-  const agora = new Date();
-  const meses = [], rec = [], pend = [], venc = [];
   const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+
+  // Determine which months to show based on the filtered lista
+  const mesesSet = new Set();
+  lista.forEach(c => {
+    const d = (c.paymentDate || c.dueDate || '').split('T')[0];
+    if (d) mesesSet.add(d.slice(0, 7));
+  });
+  // Always show at least last 6 months
+  const agora = new Date();
   for (let i = 5; i >= 0; i--) {
     const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
-    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
-    meses.push(nomes[d.getMonth()] + '/' + String(d.getFullYear()).slice(2));
+    mesesSet.add(`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`);
+  }
+  const mesesOrdenados = Array.from(mesesSet).sort().slice(-12);
+
+  const meses = [], rec = [], pend = [], venc = [];
+  for (const ym of mesesOrdenados) {
+    const [y, m] = ym.split('-');
+    meses.push(nomes[parseInt(m)-1] + '/' + y.slice(2));
     const porMes = lista.filter(c => (c.paymentDate||c.dueDate||'').startsWith(ym));
     rec.push(porMes.filter(c=>c.status==='RECEIVED'||c.status==='CONFIRMED').reduce((s,c)=>s+(c.value||0),0));
     pend.push(porMes.filter(c=>c.status==='PENDING').reduce((s,c)=>s+(c.value||0),0));
@@ -1881,7 +1984,7 @@ function renderGraficoReceita(lista) {
     data: {
       labels: meses,
       datasets: [
-        { label: 'Recebido', data: rec, backgroundColor: 'rgba(34,197,94,.7)' },
+        { label: 'Pago', data: rec, backgroundColor: 'rgba(34,197,94,.7)' },
         { label: 'Pendente', data: pend, backgroundColor: 'rgba(245,158,11,.5)' },
         { label: 'Vencido',  data: venc, backgroundColor: 'rgba(239,68,68,.5)' }
       ]
@@ -2116,7 +2219,12 @@ async function renderTarefas() {
       return aid === cid && a.status === 'ACTIVE';
     });
     const valorAnual = assinatura ? fmt(assinatura.value * 12) : null;
-    const { texto, mensagem } = gerarConselheiro(cid, maxDias, billingType);
+    const { texto, mensagem: msgBase } = gerarConselheiro(cid, maxDias, billingType);
+    // Attach invoice URL or fallback CTA to message
+    const invoiceUrl = cobs.find(c => c.invoiceUrl)?.invoiceUrl || cobs.find(c => c.bankSlipUrl)?.bankSlipUrl || '';
+    const mensagem = invoiceUrl
+      ? msgBase + ` Acesse o link para regularizar: ${invoiceUrl}`
+      : msgBase + (maxDias >= 30 ? ' Responda esta mensagem para negociarmos uma solução e evitar negativação no Serasa.' : '');
     const urgLabel = urgencia === 'urgente' ? '🔴 CRÍTICO' : urgencia === 'esta-semana' ? '🟡 ATENÇÃO' : '⚪ LEMBRETE';
     const urgSub = urgencia === 'urgente' ? `${maxDias} dias em atraso` : urgencia === 'esta-semana' ? `${maxDias} dias — risco de suspensão` : `${maxDias} dia${maxDias!==1?'s':''} — lembrete amigável`;
     const btTag = billingType === 'CREDIT_CARD' ? '💳 Cartão' : billingType === 'PIX' ? '⚡ Pix' : '📄 Boleto';
@@ -2132,6 +2240,7 @@ async function renderTarefas() {
       <div class="task-title">${nome}</div>
       <div class="task-sub">${cobs.length} cobrança${cobs.length !== 1 ? 's' : ''} em aberto · ${fmt(cobs.reduce((s,c) => s+(c.value||0),0))} total</div>
       ${valorAnual ? `<div class="task-impact">⚠ Se cancelar, você perde ${valorAnual}/ano</div>` : ''}
+      ${invoiceUrl ? `<div style="margin-top:8px"><a href="${invoiceUrl}" target="_blank" class="btn-sm btn-outline" style="font-size:12px">🔗 Ver fatura/link</a></div>` : ''}
       <div class="advisor-box" style="margin:14px 0 0">
         <h4>🧠 Conselheiro</h4>
         <div class="advisor-text">${esc(texto)}</div>
@@ -2419,7 +2528,6 @@ async function criarAssinatura() {
   errEl.style.display = 'none';
 
   if (!nome) { errEl.textContent = 'Informe o nome do cliente.'; errEl.style.display = ''; return; }
-  if (!desc) { errEl.textContent = 'Informe a descrição do plano.'; errEl.style.display = ''; return; }
   if (!val || val <= 0) { errEl.textContent = 'Informe um valor válido.'; errEl.style.display = ''; return; }
   if (!venc) { errEl.textContent = 'Informe o primeiro vencimento.'; errEl.style.display = ''; return; }
 
@@ -2427,34 +2535,35 @@ async function criarAssinatura() {
   btn.disabled = true; btn.textContent = 'Criando…';
 
   try {
-    // Cria ou encontra cliente
+    // PASSO 1: Criar/encontrar cliente no Asaas → captura o ID do cliente
     let customerId = null;
     const existente = dadosCache.clientes.find(c =>
-      (cpf && c.cpfCnpj === cpf) || (email && c.email === email) || c.name === nome
+      (cpf && c.cpfCnpj === cpf) || (email && c.email === email)
     );
     if (existente) {
       customerId = existente.id;
     } else {
-      const payload = { name: nome };
-      if (cpf) payload.cpfCnpj = cpf;
-      if (email) payload.email = email;
-      if (tel) payload.mobilePhone = tel.replace(/\D/g,'');
-      const cli = await asaasAPI('POST', '/customers', payload);
+      const cliPayload = { name: nome };
+      if (cpf) cliPayload.cpfCnpj = cpf;
+      if (email) cliPayload.email = email;
+      if (tel) cliPayload.mobilePhone = tel.replace(/\D/g,'');
+      const cli = await asaasAPI('POST', '/customers', cliPayload);
       customerId = cli.id;
       dadosCache.clientes.push(cli);
     }
 
-    // Cria assinatura
+    // PASSO 2: Criar assinatura com o ID do cliente no campo customer
+    // O walletId do parceiro vai APENAS dentro do array split — nunca no campo customer
     const subPayload = {
-      customer: customerId,
+      customer: customerId,          // ID do cliente pagador
       billingType: billing,
       value: val,
       nextDueDate: venc,
       cycle: ciclo,
-      description: desc
     };
+    if (desc) subPayload.description = desc;
     if (wallet && pct) {
-      subPayload.split = [{ walletId: wallet, percentualValue: pct }];
+      subPayload.split = [{ walletId: wallet, percentualValue: pct }]; // parceiro comissionado
     }
     const sub = await asaasAPI('POST', '/subscriptions', subPayload);
 
@@ -2484,6 +2593,56 @@ async function criarAssinatura() {
     errEl.textContent = 'Erro: ' + e.message;
     errEl.style.display = '';
     btn.disabled = false; btn.textContent = 'Criar Assinatura →';
+  }
+}
+
+async function gerarLinkPagamento() {
+  const val = parseFloat(document.getElementById('m-valor').value);
+  const billing = document.getElementById('m-billing').value;
+  const ciclo = document.getElementById('m-ciclo').value;
+  const desc = document.getElementById('m-desc').value.trim();
+  const wallet = document.getElementById('m-wallet').value.trim();
+  const pct = parseFloat(document.getElementById('m-pct').value) || 0;
+
+  const errEl = document.getElementById('modal-err');
+  errEl.style.display = 'none';
+  if (!val || val <= 0) { errEl.textContent = 'Informe um valor válido.'; errEl.style.display = ''; return; }
+
+  const btnLink = document.getElementById('m-btn-link');
+  btnLink.disabled = true; btnLink.textContent = 'Gerando…';
+
+  try {
+    const linkPayload = {
+      name: desc || 'Assinatura Recorrente',
+      billingType: billing,
+      chargeType: 'RECURRENT',
+      value: val,
+      subscriptionCycle: ciclo,
+      dueDateLimitDays: 7,
+    };
+    if (wallet && pct) {
+      linkPayload.split = [{ walletId: wallet, percentualValue: pct }];
+    }
+    const result = await asaasAPI('POST', '/paymentLinks', linkPayload);
+    const url = result.url || result.paymentLink || result.shortUrl || '';
+    toast('Link de pagamento criado!', 'success');
+
+    const okEl = document.getElementById('modal-ok');
+    okEl.textContent = 'Link gerado com sucesso!';
+    okEl.style.display = '';
+
+    const linkBox = document.getElementById('m-link-box');
+    if (url) {
+      linkBox.innerHTML = `🔗 Link recorrente: <a href="${url}" target="_blank" style="color:var(--accent2);word-break:break-all">${url}</a><br><button class="btn-sm btn-outline" style="margin-top:8px;font-size:12px" onclick="navigator.clipboard.writeText('${url}').then(()=>toast('Link copiado!','success'))">📋 Copiar link</button>`;
+    } else {
+      linkBox.innerHTML = `✓ Link criado (ID: ${esc(result.id || '—')})`;
+    }
+    linkBox.style.display = '';
+  } catch(e) {
+    errEl.textContent = 'Erro ao gerar link: ' + e.message;
+    errEl.style.display = '';
+  } finally {
+    btnLink.disabled = false; btnLink.textContent = '🔗 Gerar Link';
   }
 }
 
