@@ -61,9 +61,11 @@ exports.handler = async (event) => {
   }
 
   const host = env === 'production' ? 'api.asaas.com' : 'sandbox.asaas.com';
-  const targetPath = '/api/v3' + asaasPath + (extraQs ? '?' + extraQs : '');
+  // Produção: api.asaas.com/v3/...  |  Sandbox: sandbox.asaas.com/api/v3/...
+  const basePath = env === 'production' ? '/v3' : '/api/v3';
+  const targetPath = basePath + asaasPath + (extraQs ? '?' + extraQs : '');
 
-  console.log('[asaas] path:', asaasPath, '| host:', host, '| apiKey.len:', apiKey.length);
+  console.log('[asaas] path:', asaasPath, '| host:', host, '| env:', env, '| apiKey.len:', apiKey.length);
   console.log('[asaas] target:', targetPath);
 
   let bodyStr = '';
@@ -72,6 +74,7 @@ exports.handler = async (event) => {
       ? Buffer.from(event.body, 'base64').toString('utf8')
       : event.body;
   }
+  if (bodyStr) console.log('[asaas] body:', bodyStr.slice(0, 800));
 
   return new Promise((resolve) => {
     const reqHeaders = {

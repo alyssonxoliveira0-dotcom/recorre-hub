@@ -2512,17 +2512,25 @@ function atualizarResumo() {
 }
 
 async function criarAssinatura() {
-  const nome = document.getElementById('m-nome').value.trim();
-  const cpf = document.getElementById('m-cpf').value.trim();
-  const tel = document.getElementById('m-tel').value.trim();
-  const email = document.getElementById('m-email').value.trim();
-  const desc = document.getElementById('m-desc').value.trim();
-  const val = parseFloat(document.getElementById('m-valor').value);
-  const ciclo = document.getElementById('m-ciclo').value;
+  // ── Captura dos campos do formulário ────────────────────────────────────────
+  const nome    = document.getElementById('m-nome').value.trim();
+  const cpfRaw  = document.getElementById('m-cpf').value.trim();
+  const cpf     = cpfRaw.replace(/\D/g, '');           // somente dígitos para comparação/envio
+  const tel     = document.getElementById('m-tel').value.trim();
+  const email   = document.getElementById('m-email').value.trim().toLowerCase();
+  const desc    = document.getElementById('m-desc').value.trim();
+  const val     = parseFloat(document.getElementById('m-valor').value);
+  const ciclo   = document.getElementById('m-ciclo').value;
   const billing = document.getElementById('m-billing').value;
-  const venc = document.getElementById('m-venc').value;
-  const wallet = document.getElementById('m-wallet').value.trim();
-  const pct = parseFloat(document.getElementById('m-pct').value) || 0;
+  const venc    = document.getElementById('m-venc').value;
+  // walletId pertence ao PARCEIRO COMISSIONADO — nunca vai no campo customer
+  const wallet  = document.getElementById('m-wallet').value.trim();
+  const pct     = parseFloat(document.getElementById('m-pct').value) || 0;
+
+  console.log('════════ [criarAssinatura] INÍCIO ════════');
+  console.log('[FORM] CLIENTE: nome=' + nome + ' | cpf=' + cpf + ' | email=' + email + ' | tel=' + tel);
+  console.log('[FORM] ASSINATURA: valor=' + val + ' | ciclo=' + ciclo + ' | billing=' + billing + ' | venc=' + venc);
+  console.log('[FORM] PARCEIRO (split only): walletId=' + (wallet || '(nenhum)') + ' | pct=' + pct);
 
   const errEl = document.getElementById('modal-err');
   errEl.style.display = 'none';
@@ -2531,55 +2539,116 @@ async function criarAssinatura() {
   if (!val || val <= 0) { errEl.textContent = 'Informe um valor válido.'; errEl.style.display = ''; return; }
   if (!venc) { errEl.textContent = 'Informe o primeiro vencimento.'; errEl.style.display = ''; return; }
 
+  // Proteção: walletId nunca deve ser um ID de cliente (cus_...)
+  if (wallet && wallet.startsWith('cus_')) {
+    errEl.textContent = '⚠️ O campo WalletId do parceiro contém um ID de cliente (cus_...). Corrija antes de continuar.';
+    errEl.style.display = ''; return;
+  }
+
   const btn = document.getElementById('m-btn');
   btn.disabled = true; btn.textContent = 'Criando…';
 
   try {
-    // PASSO 1: Criar/encontrar cliente → captura o ID do CLIENTE PAGADOR
-    let customerId = null;
+    // ── PASSO 1: Encontrar ou criar o CLIENTE PAGADOR ────────────────────────
+    // customerId = cus_xxx → representa quem vai PAGAR a assinatura
+    // wallet     = UUID    → representa quem vai receber COMISSÃO (split)
+    let customerId   = null;
+    let customerNome = null;
+
+    // 1a. Busca no cache (normaliza CPF para comparação)
     const existente = dadosCache.clientes.find(c =>
-      (cpf && c.cpfCnpj === cpf) || (email && c.email === email)
+      (cpf   && c.cpfCnpj && c.cpfCnpj.replace(/\D/g,'') === cpf) ||
+      (email && c.email   && c.email.toLowerCase() === email)
     );
+
     if (existente) {
-      customerId = existente.id;
-      console.log('[criarAssinatura] cliente encontrado no cache:', customerId, existente.name);
+      customerId   = existente.id;
+      customerNome = existente.name;
+      console.log('[PASSO 1] Cache hit → customerId=' + customerId + ' | nome=' + customerNome);
     } else {
+      // 1b. Criar novo cliente via POST /customers
       const cliPayload = { name: nome };
-      if (cpf)  cliPayload.cpfCnpj    = cpf;
-      if (email) cliPayload.email     = email;
+      if (cpf)   cliPayload.cpfCnpj    = cpf;
+      if (email) cliPayload.email      = email;
       if (tel)   cliPayload.mobilePhone = tel.replace(/\D/g,'');
-      console.log('[criarAssinatura] criando cliente:', JSON.stringify(cliPayload));
-      const cli = await asaasAPI('POST', '/customers', cliPayload);
-      console.log('[criarAssinatura] resposta POST /customers:', JSON.stringify(cli));
-      customerId = cli?.id || null;
+      console.log('[PASSO 1] POST /customers payload:', JSON.stringify(cliPayload));
+
+      let cli = null;
+      try {
+        cli = await asaasAPI('POST', '/customers', cliPayload);
+        console.log('[PASSO 1] POST /customers resposta:', JSON.stringify(cli));
+        if (cli?.id) {
+          customerId   = cli.id;
+          customerNome = cli.name || nome;
+          dadosCache.clientes.push(cli); // mantém cache atualizado
+        }
+      } catch (cliErr) {
+        // 1c. Fallback: cliente já existe no Asaas mas não está no cache local
+        console.warn('[PASSO 1] POST /customers falhou (' + cliErr.message + ') — tentando GET /customers');
+        try {
+          let found = null;
+          if (cpf) {
+            const r = await asaasAPI('GET', '/customers', null, { cpfCnpj: cpf, limit: 1 });
+            found = r?.data?.[0] || null;
+            if (found) console.log('[PASSO 1] GET /customers (cpf) encontrou:', found.id, found.name);
+          }
+          if (!found && email) {
+            const r = await asaasAPI('GET', '/customers', null, { email, limit: 1 });
+            found = r?.data?.[0] || null;
+            if (found) console.log('[PASSO 1] GET /customers (email) encontrou:', found.id, found.name);
+          }
+          if (found?.id) {
+            customerId   = found.id;
+            customerNome = found.name;
+            dadosCache.clientes.push(found);
+          }
+        } catch (getErr) {
+          console.error('[PASSO 1] GET /customers falhou:', getErr.message);
+        }
+        if (!customerId) throw cliErr; // re-lança erro original se fallback também falhou
+      }
     }
 
-    // Guarda de segurança: customerId deve ser um ID Asaas válido (cus_...)
+    // ── PASSO 1 — Validação do customerId ────────────────────────────────────
     if (!customerId) {
-      errEl.textContent = 'Erro: não foi possível obter o ID do cliente no Asaas. Verifique CPF ou e-mail.';
-      errEl.style.display = '';
-      btn.disabled = false; btn.textContent = 'Criar Assinatura →';
-      return;
+      throw new Error('Não foi possível obter o ID do cliente. Verifique CPF ou e-mail.');
+    }
+    if (!customerId.startsWith('cus_')) {
+      console.error('[SEGURANÇA] customerId com formato inválido:', customerId);
+      throw new Error('ID de cliente inválido recebido do Asaas: "' + customerId + '". Contate o suporte.');
+    }
+    if (wallet && customerId === wallet) {
+      console.error('[SEGURANÇA] customerId === walletId — bloqueando!', customerId);
+      throw new Error('ERRO: ID do cliente é igual ao walletId do parceiro. Operação bloqueada para evitar cobrança errada.');
     }
 
-    // PASSO 2: Criar assinatura — customer = ID do cliente pagador
-    // walletId do parceiro vai EXCLUSIVAMENTE em split[], nunca em customer
+    console.log('[PASSO 1] OK — customerId=' + customerId + ' (' + customerNome + ') está separado do walletId=' + (wallet || 'nenhum'));
+
+    // ── PASSO 2: Montar e enviar payload da assinatura ───────────────────────
     const subPayload = {
-      customer: customerId,       // ID do cliente que vai pagar (cus_...)
+      customer:    customerId,  // ← PAGADOR: cus_xxx — NUNCA o walletId
       billingType: billing,
-      value: val,
+      value:       val,
       nextDueDate: venc,
-      cycle: ciclo,
+      cycle:       ciclo,
     };
     if (desc) subPayload.description = desc;
+    // walletId do parceiro vai SOMENTE em split[], jamais em customer
     if (wallet && pct > 0) {
       subPayload.split = [{ walletId: wallet, percentualValue: Number(pct) }];
     }
 
-    console.log('[criarAssinatura] payload POST /subscriptions:', JSON.stringify(subPayload));
+    console.log('════════ [PAYLOAD FINAL → POST /subscriptions] ════════');
+    console.log('  customer (quem paga)  :', subPayload.customer, '—', customerNome);
+    console.log('  billingType           :', subPayload.billingType);
+    console.log('  value                 :', subPayload.value);
+    console.log('  cycle / nextDueDate   :', subPayload.cycle, '/', subPayload.nextDueDate);
+    console.log('  split (comissão parc.):', JSON.stringify(subPayload.split || null));
+    console.log('  JSON completo         :', JSON.stringify(subPayload));
+    console.log('════════════════════════════════════════════════════════');
 
     const sub = await asaasAPI('POST', '/subscriptions', subPayload);
-    console.log('[criarAssinatura] resposta POST /subscriptions:', JSON.stringify(sub));
+    console.log('[PASSO 2] POST /subscriptions resposta:', JSON.stringify(sub));
 
     // Busca primeiro link de pagamento
     let link = '';
@@ -2591,11 +2660,10 @@ async function criarAssinatura() {
     dadosCache.assinaturas.push(sub);
     toast('Assinatura criada com sucesso!', 'success');
 
-    const splitInfo = (wallet && pct > 0) ? ` · Split ${pct}% → ${wallet.slice(0,8)}…` : ' · Sem split';
     const okEl = document.getElementById('modal-ok');
     okEl.innerHTML = `✅ Assinatura criada!<br>
       <small style="color:var(--muted)">
-        Cliente ID: <strong style="color:var(--text)">${esc(customerId)}</strong><br>
+        Pagador: <strong style="color:var(--text)">${esc(customerNome || nome)}</strong> (${esc(customerId)})<br>
         Assinatura ID: <strong style="color:var(--text)">${esc(sub.id)}</strong><br>
         ${wallet && pct > 0 ? `Split: <strong style="color:#86EFAC">${pct}% → ${esc(wallet.slice(0,8))}…</strong>` : 'Sem split configurado'}
       </small>`;
@@ -2612,7 +2680,7 @@ async function criarAssinatura() {
     btn.textContent = '✓ Criado';
     atualizarBadgeTarefas();
   } catch(e) {
-    console.error('[criarAssinatura] erro:', e.message, e);
+    console.error('[criarAssinatura] ERRO:', e.message, e);
     errEl.textContent = 'Erro: ' + e.message;
     errEl.style.display = '';
     btn.disabled = false; btn.textContent = 'Criar Assinatura →';
