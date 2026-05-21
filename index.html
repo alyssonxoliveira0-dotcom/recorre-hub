@@ -6,6 +6,7 @@
 <title>Recorre Hub — CRM de Assinaturas</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 :root {
   --bg: #0F1117;
@@ -220,6 +221,42 @@ tbody tr:hover { background: var(--surface2); }
   .stats-grid { grid-template-columns: 1fr; }
   .login-card { padding: 28px 20px; }
 }
+
+/* ── Filter bar ── */
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 18px; align-items: center; }
+.filter-bar select, .filter-bar input[type=text] { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 8px; padding: 7px 12px; font-size: 13px; font-family: 'Inter',sans-serif; cursor: pointer; outline: none; transition: border-color .2s; }
+.filter-bar select:focus, .filter-bar input[type=text]:focus { border-color: var(--accent); }
+.filter-bar input[type=text]::placeholder { color: var(--muted); }
+
+/* ── Tag labels ── */
+.tag { display: inline-block; padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+.tag-good { background: rgba(34,197,94,.15); color: #86EFAC; }
+.tag-warn { background: rgba(245,158,11,.15); color: #FCD34D; }
+.tag-bad  { background: rgba(239,68,68,.15); color: #FCA5A5; }
+.tag-new  { background: rgba(108,99,255,.15); color: var(--accent2); }
+.tag-pop  { background: rgba(34,197,94,.15); color: #86EFAC; }
+
+/* ── Chart container ── */
+.chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 20px; margin-bottom: 24px; }
+.chart-card h3 { font-size: 14px; font-weight: 600; color: var(--white); margin-bottom: 16px; }
+.chart-wrap { position: relative; height: 200px; }
+
+/* ── Modal ── */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.65); z-index: 300; display: none; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.open { display: flex; }
+.modal-box { background: var(--surface); border: 1px solid var(--border); border-radius: 18px; padding: 28px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; box-shadow: var(--shadow); }
+.modal-box h2 { font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 20px; }
+.modal-close { float: right; background: none; border: none; color: var(--muted); font-size: 20px; cursor: pointer; margin-top: -4px; }
+.modal-section { border-top: 1px solid var(--border); margin-top: 18px; padding-top: 18px; }
+.modal-section h4 { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 14px; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:480px){ .form-row { grid-template-columns: 1fr; } }
+.form-group select { width: 100%; padding: 11px 14px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'Inter',sans-serif; font-size: 14px; color: var(--text); background: var(--bg); outline: none; cursor: pointer; }
+.form-group select:focus { border-color: var(--accent); }
+.checkout-link-box { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-top: 16px; word-break: break-all; font-size: 12px; color: var(--accent2); }
+.resumo-box { background: var(--surface2); border-radius: 10px; padding: 14px; font-size: 13px; margin-top: 14px; }
+.resumo-row { display: flex; justify-content: space-between; padding: 5px 0; color: var(--muted); }
+.resumo-row strong { color: var(--white); }
 
 /* ── Nav badge ── */
 .nav-badge { background: var(--danger); color: #fff; font-size: 10px; font-weight: 700; border-radius: 10px; padding: 1px 6px; margin-left: auto; }
@@ -447,6 +484,21 @@ tbody tr:hover { background: var(--surface2); }
       <!-- ── Dashboard ── -->
       <div class="page active" id="page-dashboard">
         <div id="dash-erros" style="display:none;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.3);border-radius:12px;padding:14px 18px;margin-bottom:20px;font-size:13px;color:#FCA5A5;word-break:break-all;"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:20px">
+          <div class="filter-bar" style="margin-bottom:0">
+            <select id="dash-periodo" onchange="renderDashboard()">
+              <option value="mes">Este mês</option>
+              <option value="mes-ant">Mês anterior</option>
+              <option value="3m">Últimos 3 meses</option>
+              <option value="6m">Últimos 6 meses</option>
+            </select>
+            <select id="dash-tipo" onchange="renderDashboard()">
+              <option value="assinaturas">Apenas assinaturas</option>
+              <option value="todas">Todas as cobranças</option>
+            </select>
+          </div>
+          <button class="btn-sm btn-accent" onclick="abrirModalCriarAssinatura()">+ Criar Assinatura</button>
+        </div>
         <div class="stats-grid">
           <div class="stat-card accent">
             <div class="stat-label">MRR</div>
@@ -456,41 +508,36 @@ tbody tr:hover { background: var(--surface2); }
           <div class="stat-card success">
             <div class="stat-label">Receita recebida</div>
             <div class="stat-value" id="stat-recebido" style="font-size:20px">—</div>
-            <div class="stat-sub">Cobranças confirmadas (mês)</div>
+            <div class="stat-sub" id="stat-recebido-sub">Período selecionado</div>
           </div>
           <div class="stat-card warning">
             <div class="stat-label">A receber</div>
             <div class="stat-value" id="stat-pendentes" style="font-size:20px">—</div>
-            <div class="stat-sub">Cobranças de assinaturas pendentes</div>
+            <div class="stat-sub">Pendentes (assinaturas)</div>
           </div>
           <div class="stat-card danger">
-            <div class="stat-label">Vencidas</div>
+            <div class="stat-label">Inadimplência</div>
             <div class="stat-value" id="stat-vencidas">—</div>
-            <div class="stat-sub">Cobranças em atraso</div>
+            <div class="stat-sub" id="stat-vencidas-sub">clientes em atraso</div>
           </div>
+        </div>
+
+        <div class="chart-card">
+          <h3>Evolução da receita (6 meses)</h3>
+          <div class="chart-wrap"><canvas id="chart-mrr"></canvas></div>
         </div>
 
         <div class="table-card">
           <div class="table-card-header">
-            <h3>Cobranças recentes</h3>
+            <h3>Últimas assinaturas pagas</h3>
             <button class="btn-sm btn-outline" onclick="navegarPara('cobrancas')">Ver todas →</button>
           </div>
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th class="col-hide">Vencimento</th>
-                  <th>Valor</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="dash-cobrancas-tbody">
-                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
-              </tbody>
+              <thead><tr><th>Cliente</th><th class="col-hide">Pago em</th><th>Valor</th><th>Status</th></tr></thead>
+              <tbody id="dash-cobrancas-tbody"><tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr></tbody>
             </table>
           </div>
-          <!-- Mobile cards -->
           <div class="card-list" id="dash-cobrancas-cards"></div>
         </div>
       </div>
@@ -501,20 +548,25 @@ tbody tr:hover { background: var(--surface2); }
           <h2>Clientes</h2>
           <button class="btn-sm btn-outline" onclick="carregarClientes()">↻ Atualizar</button>
         </div>
+        <div class="filter-bar">
+          <input type="text" id="cli-busca" placeholder="🔍 Nome, CPF ou e-mail…" oninput="filtrarClientes()" style="min-width:200px">
+          <select id="cli-status" onchange="filtrarClientes()">
+            <option value="">Todos os status</option>
+            <option value="ativo">Ativos</option>
+            <option value="inativo">Inativos</option>
+          </select>
+          <select id="cli-perfil" onchange="filtrarClientes()">
+            <option value="">Todos os perfis</option>
+            <option value="bom">Bom Pagador</option>
+            <option value="atencao">Atenção</option>
+            <option value="risco">Risco de Churn</option>
+          </select>
+        </div>
         <div class="table-card">
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Nome</th>
-                  <th class="col-hide">E-mail</th>
-                  <th class="col-hide">CPF/CNPJ</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="clientes-tbody">
-                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
-              </tbody>
+              <thead><tr><th>Nome</th><th class="col-hide">Plano</th><th class="col-hide">LTV</th><th>Perfil</th></tr></thead>
+              <tbody id="clientes-tbody"><tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr></tbody>
             </table>
           </div>
           <div class="card-list" id="clientes-cards"></div>
@@ -525,22 +577,31 @@ tbody tr:hover { background: var(--surface2); }
       <div class="page" id="page-assinaturas">
         <div class="page-header">
           <h2>Assinaturas</h2>
-          <button class="btn-sm btn-outline" onclick="carregarAssinaturas()">↻ Atualizar</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm btn-accent" onclick="abrirModalCriarAssinatura()">+ Nova</button>
+            <button class="btn-sm btn-outline" onclick="carregarAssinaturas()">↻ Atualizar</button>
+          </div>
         </div>
+        <div class="filter-bar">
+          <select id="ass-status" onchange="filtrarAssinaturas()">
+            <option value="">Todos os status</option>
+            <option value="ACTIVE">Ativas</option>
+            <option value="INACTIVE">Inativas</option>
+            <option value="CANCELED">Canceladas</option>
+          </select>
+          <select id="ass-ciclo" onchange="filtrarAssinaturas()">
+            <option value="">Todos os ciclos</option>
+            <option value="MONTHLY">Mensal</option>
+            <option value="YEARLY">Anual</option>
+            <option value="WEEKLY">Semanal</option>
+          </select>
+        </div>
+        <div id="ass-populares" style="margin-bottom:16px"></div>
         <div class="table-card">
           <div class="table-wrap">
             <table>
-              <thead>
-                <tr>
-                  <th>Cliente</th>
-                  <th class="col-hide">Ciclo</th>
-                  <th>Valor</th>
-                  <th>Status</th>
-                </tr>
-              </thead>
-              <tbody id="assinaturas-tbody">
-                <tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr>
-              </tbody>
+              <thead><tr><th>Cliente</th><th class="col-hide">Plano</th><th>Valor</th><th>Status</th></tr></thead>
+              <tbody id="assinaturas-tbody"><tr class="loading-row"><td colspan="4"><div class="spinner"></div></td></tr></tbody>
             </table>
           </div>
           <div class="card-list" id="assinaturas-cards"></div>
@@ -552,26 +613,43 @@ tbody tr:hover { background: var(--surface2); }
         <div class="page-header">
           <h2>Cobranças</h2>
           <div style="display:flex;gap:8px;flex-wrap:wrap">
-            <select id="filtro-status" onchange="filtrarCobrancas()" style="background:var(--bg);border:1px solid var(--border);color:var(--text);border-radius:8px;padding:6px 12px;font-size:13px;font-family:'Inter',sans-serif;cursor:pointer;outline:none;">
-              <option value="">Todos os status</option>
-              <option value="PENDING">Pendentes</option>
-              <option value="RECEIVED">Recebidas</option>
-              <option value="OVERDUE">Vencidas</option>
-              <option value="REFUNDED">Estornadas</option>
-            </select>
+            <button class="btn-sm btn-outline" onclick="exportarCSV('cobrancas')">⬇ Exportar CSV</button>
             <button class="btn-sm btn-outline" onclick="carregarCobrancas()">↻ Atualizar</button>
           </div>
+        </div>
+        <div class="filter-bar">
+          <select id="filtro-status" onchange="filtrarCobrancas()">
+            <option value="">Todos os status</option>
+            <option value="PENDING">Futuras / Pendentes</option>
+            <option value="RECEIVED">Recebidas</option>
+            <option value="CONFIRMED">Confirmadas</option>
+            <option value="OVERDUE">Vencidas</option>
+            <option value="REFUNDED">Estornadas</option>
+          </select>
+          <select id="filtro-tipo-cob" onchange="filtrarCobrancas()">
+            <option value="">Todos os tipos</option>
+            <option value="recorrente">Assinaturas</option>
+            <option value="avulsa">Avulsas</option>
+            <option value="split">Comissionadas</option>
+          </select>
         </div>
         <div class="tipo-tabs">
           <button class="tipo-tab active" data-tipo="" onclick="filtrarTipoCobranca(this)">
             Todas <span class="badge-count" id="count-todas">—</span>
           </button>
           <button class="tipo-tab" data-tipo="recorrente" onclick="filtrarTipoCobranca(this)">
-            Recorrentes <span class="badge-count" id="count-recorrentes">—</span>
+            Assinaturas <span class="badge-count" id="count-recorrentes">—</span>
           </button>
           <button class="tipo-tab" data-tipo="avulsa" onclick="filtrarTipoCobranca(this)">
             Avulsas <span class="badge-count" id="count-avulsas">—</span>
           </button>
+          <button class="tipo-tab" data-tipo="split" onclick="filtrarTipoCobranca(this)">
+            Comissionadas <span class="badge-count" id="count-split">—</span>
+          </button>
+        </div>
+        <div class="chart-card">
+          <h3>Receita por mês</h3>
+          <div class="chart-wrap"><canvas id="chart-receita"></canvas></div>
         </div>
         <div class="table-card">
           <div class="table-wrap">
@@ -654,18 +732,26 @@ tbody tr:hover { background: var(--surface2); }
       <div class="page" id="page-comissoes">
         <div class="page-header">
           <h2>Comissões</h2>
-          <button class="btn-sm btn-outline" onclick="renderComissoes()">↻ Atualizar</button>
+          <div style="display:flex;gap:8px">
+            <button class="btn-sm btn-outline" onclick="exportarCSV('comissoes')">⬇ Exportar CSV</button>
+            <button class="btn-sm btn-outline" onclick="renderComissoes()">↻ Atualizar</button>
+          </div>
         </div>
-        <div class="stats-grid" style="grid-template-columns:repeat(2,1fr);margin-bottom:24px">
+        <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:24px">
           <div class="stat-card success">
-            <div class="stat-label">Total confirmado</div>
+            <div class="stat-label">Total comissões pagas</div>
             <div class="stat-value" id="com-total" style="font-size:20px">—</div>
-            <div class="stat-sub">Cobranças recebidas com split</div>
+            <div class="stat-sub">Cobranças confirmadas com split</div>
           </div>
           <div class="stat-card warning">
             <div class="stat-label">Previsto (pendente)</div>
             <div class="stat-value" id="com-previsto" style="font-size:20px">—</div>
-            <div class="stat-sub">Estimativa — taxas descontadas na confirmação</div>
+            <div class="stat-sub">Estimativa — taxas na confirmação</div>
+          </div>
+          <div class="stat-card accent">
+            <div class="stat-label">Faturamento líquido</div>
+            <div class="stat-value" id="com-liquido" style="font-size:20px">—</div>
+            <div class="stat-sub">Recebido menos comissões</div>
           </div>
         </div>
         <div class="table-card">
@@ -696,6 +782,55 @@ tbody tr:hover { background: var(--surface2); }
     <button class="panel-close" onclick="fecharPainel()">✕</button>
     <div class="panel-title" id="panel-title">Detalhes</div>
     <div id="panel-body"></div>
+  </div>
+</div>
+
+<!-- Modal Criar Assinatura -->
+<div class="modal-overlay" id="modal-criar-ass" onclick="fecharModalCriarAss(event)">
+  <div class="modal-box">
+    <button class="modal-close" onclick="fecharModalCriarAss()">✕</button>
+    <h2>Nova Assinatura</h2>
+    <div class="msg-error" id="modal-err"></div>
+    <div class="msg-success" id="modal-ok"></div>
+
+    <div class="modal-section"><h4>Cliente</h4>
+      <div class="form-group"><label>Nome completo *</label><input type="text" id="m-nome" placeholder="João Silva"></div>
+      <div class="form-row">
+        <div class="form-group"><label>CPF / CNPJ</label><input type="text" id="m-cpf" placeholder="000.000.000-00"></div>
+        <div class="form-group"><label>Telefone (WhatsApp)</label><input type="text" id="m-tel" placeholder="(11) 99999-9999"></div>
+      </div>
+      <div class="form-group"><label>E-mail</label><input type="email" id="m-email" placeholder="joao@email.com"></div>
+    </div>
+
+    <div class="modal-section"><h4>Plano</h4>
+      <div class="form-group"><label>Descrição do plano *</label><input type="text" id="m-desc" placeholder="Plano Mensal Premium"></div>
+      <div class="form-row">
+        <div class="form-group"><label>Valor (R$) *</label><input type="number" id="m-valor" placeholder="0,00" min="0" step="0.01"></div>
+        <div class="form-group"><label>Frequência *</label>
+          <select id="m-ciclo"><option value="MONTHLY">Mensal</option><option value="YEARLY">Anual</option><option value="WEEKLY">Semanal</option></select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Forma de pagamento *</label>
+          <select id="m-billing"><option value="PIX">Pix</option><option value="BOLETO">Boleto</option><option value="CREDIT_CARD">Cartão de crédito</option></select>
+        </div>
+        <div class="form-group"><label>Primeiro vencimento *</label><input type="date" id="m-venc"></div>
+      </div>
+    </div>
+
+    <div class="modal-section"><h4>Comissionamento (opcional)</h4>
+      <div class="form-row">
+        <div class="form-group"><label>WalletId do parceiro</label><input type="text" id="m-wallet" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"></div>
+        <div class="form-group"><label>% de comissão</label><input type="number" id="m-pct" placeholder="20" min="0" max="100"></div>
+      </div>
+    </div>
+
+    <div id="m-resumo" class="resumo-box" style="display:none"></div>
+    <div id="m-link-box" class="checkout-link-box" style="display:none"></div>
+
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn btn-primary" id="m-btn" onclick="criarAssinatura()" style="flex:1">Criar Assinatura →</button>
+    </div>
   </div>
 </div>
 
@@ -1081,19 +1216,30 @@ async function fazerLogout() {
 
 // ── Dashboard ────────────────────────────────────────────────────────────────
 
+let chartMrr = null;
+let chartReceita = null;
+
+function getPeriodoFiltro() {
+  const v = document.getElementById('dash-periodo')?.value || 'mes';
+  const agora = new Date();
+  const y = agora.getFullYear(), m = agora.getMonth();
+  if (v === 'mes') return { ini: new Date(y, m, 1), fim: new Date(y, m+1, 0) };
+  if (v === 'mes-ant') return { ini: new Date(y, m-1, 1), fim: new Date(y, m, 0) };
+  if (v === '3m') return { ini: new Date(y, m-2, 1), fim: new Date(y, m+1, 0) };
+  if (v === '6m') return { ini: new Date(y, m-5, 1), fim: new Date(y, m+1, 0) };
+  return { ini: new Date(y, m, 1), fim: new Date(y, m+1, 0) };
+}
+
 async function renderDashboard() {
   const errEl = document.getElementById('dash-erros');
   if (errEl) errEl.style.display = 'none';
 
   if (!sessao?.asaasApiKey) {
     setTbody('dash-cobrancas-tbody', 4, '<em>Configure a chave Asaas primeiro.</em>');
-    const dc = document.getElementById('dash-cobrancas-cards');
-    if (dc) dc.innerHTML = '';
     return;
   }
   setTbody('dash-cobrancas-tbody', 4, null);
 
-  // Carrega cada endpoint de forma independente para isolar falhas
   const falhas = [];
   await Promise.all([
     carregarClientesCache().catch(e => falhas.push('Clientes → ' + e.message)),
@@ -1101,47 +1247,82 @@ async function renderDashboard() {
     carregarCobrancasCache().catch(e => falhas.push('Cobranças → ' + e.message))
   ]);
 
-  // Mostra erros visíveis e permanentes (sem depender do console)
   if (falhas.length > 0 && errEl) {
     errEl.style.display = '';
     errEl.innerHTML = '⚠️ Falha ao carregar:<br>' + falhas.map(f => `• ${f}`).join('<br>');
   }
-
-  // Se todos falharam, para aqui
   if (falhas.length === 3) {
-    setTbody('dash-cobrancas-tbody', 4, 'Todos os endpoints falharam. Verifique o banner acima.');
+    setTbody('dash-cobrancas-tbody', 4, 'Todos os endpoints falharam.');
     return;
   }
 
   atualizarStats();
-  const assinatura = dadosCache.cobrancas.filter(c => c.subscription);
-  const preview = [...assinatura, ...dadosCache.cobrancas.filter(c => !c.subscription)].slice(0, 8);
-  renderTbodyCobrancas('dash-cobrancas-tbody', preview);
-  renderCardsCobrancas('dash-cobrancas-cards', preview);
+  renderGraficoMrr();
+
+  const apenasAss = (document.getElementById('dash-tipo')?.value || 'assinaturas') === 'assinaturas';
+  const { ini, fim } = getPeriodoFiltro();
+  const pagas = dadosCache.cobrancas
+    .filter(c => (c.status === 'RECEIVED' || c.status === 'CONFIRMED') && (!apenasAss || c.subscription))
+    .filter(c => { const d = new Date(c.paymentDate || c.dueDate); return d >= ini && d <= fim; })
+    .sort((a, b) => new Date(b.paymentDate || b.dueDate) - new Date(a.paymentDate || a.dueDate))
+    .slice(0, 10);
+  renderTbodyCobrancas('dash-cobrancas-tbody', pagas);
+  renderCardsCobrancas('dash-cobrancas-cards', pagas);
 }
 
 function atualizarStats() {
-  // MRR — soma das assinaturas ACTIVE
   const ativas = dadosCache.assinaturas.filter(a => a.status === 'ACTIVE');
   const mrr = ativas.reduce((s, a) => s + (a.value || 0), 0);
   document.getElementById('stat-mrr').textContent = fmt(mrr);
   document.getElementById('stat-ativas').textContent = ativas.length;
 
-  // Cobranças de assinaturas (subscription != null)
-  const deAssinatura = dadosCache.cobrancas.filter(c => c.subscription);
-  const pendentes = deAssinatura.filter(c => c.status === 'PENDING').reduce((s, c) => s + (c.value || 0), 0);
-  document.getElementById('stat-pendentes').textContent = fmt(pendentes);
-
-  // Receita recebida do mês (RECEIVED ou CONFIRMED)
-  const agora = new Date();
-  const mesAtual = `${agora.getFullYear()}-${String(agora.getMonth()+1).padStart(2,'0')}`;
+  const { ini, fim } = getPeriodoFiltro();
+  const apenasAss = (document.getElementById('dash-tipo')?.value || 'assinaturas') === 'assinaturas';
   const recebido = dadosCache.cobrancas
-    .filter(c => (c.status === 'RECEIVED' || c.status === 'CONFIRMED') && (c.paymentDate || '').startsWith(mesAtual))
+    .filter(c => (c.status === 'RECEIVED' || c.status === 'CONFIRMED') && (!apenasAss || c.subscription))
+    .filter(c => { const d = new Date(c.paymentDate || c.dueDate); return d >= ini && d <= fim; })
     .reduce((s, c) => s + (c.value || 0), 0);
   document.getElementById('stat-recebido').textContent = fmt(recebido);
 
-  const vencidas = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE').length;
-  document.getElementById('stat-vencidas').textContent = vencidas;
+  const pendentes = dadosCache.cobrancas.filter(c => c.subscription && c.status === 'PENDING').reduce((s, c) => s + (c.value || 0), 0);
+  document.getElementById('stat-pendentes').textContent = fmt(pendentes);
+
+  const vencidasClientes = new Set(dadosCache.cobrancas.filter(c => c.status === 'OVERDUE').map(c => typeof c.customer === 'object' ? c.customer?.id : c.customer)).size;
+  document.getElementById('stat-vencidas').textContent = vencidasClientes;
+}
+
+function renderGraficoMrr() {
+  const canvas = document.getElementById('chart-mrr');
+  if (!canvas) return;
+  const agora = new Date();
+  const meses = [];
+  const valores = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    meses.push(nomes[d.getMonth()] + '/' + String(d.getFullYear()).slice(2));
+    const total = dadosCache.cobrancas
+      .filter(c => (c.status === 'RECEIVED' || c.status === 'CONFIRMED') && (c.paymentDate || '').startsWith(ym))
+      .reduce((s, c) => s + (c.value || 0), 0);
+    valores.push(total);
+  }
+  if (chartMrr) chartMrr.destroy();
+  chartMrr = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels: meses,
+      datasets: [{ label: 'Receita (R$)', data: valores, borderColor: '#6C63FF', backgroundColor: 'rgba(108,99,255,.15)', fill: true, tension: 0.4, pointBackgroundColor: '#6C63FF', pointRadius: 4 }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false }, tooltip: { callbacks: { label: ctx => ' R$ ' + ctx.parsed.y.toLocaleString('pt-BR', {minimumFractionDigits:2}) } } },
+      scales: {
+        x: { grid: { color: 'rgba(46,50,80,.5)' }, ticks: { color: '#8890B5', font: { size: 11 } } },
+        y: { grid: { color: 'rgba(46,50,80,.5)' }, ticks: { color: '#8890B5', font: { size: 11 }, callback: v => 'R$ ' + (v/1000).toFixed(0) + 'k' } }
+      }
+    }
+  });
 }
 
 // ── Clientes ─────────────────────────────────────────────────────────────────
@@ -1155,37 +1336,81 @@ async function carregarClientes() {
   if (!sessao?.asaasApiKey) { setTbody('clientes-tbody', 4, 'Configure a chave Asaas.'); return; }
   setTbody('clientes-tbody', 4, null);
   try {
-    await carregarClientesCache();
-    renderTbodyClientes();
-  } catch(e) {
-    setTbody('clientes-tbody', 4, '⚠️ ' + e.message);
-  }
+    if (!dadosCache.clientes.length) await carregarClientesCache();
+    if (!dadosCache.cobrancas.length) await carregarCobrancasCache();
+    if (!dadosCache.assinaturas.length) await carregarAssinaturasCache();
+    filtrarClientes();
+  } catch(e) { setTbody('clientes-tbody', 4, '⚠️ ' + e.message); }
 }
 
-function renderTbodyClientes() {
+function getTagCliente(cid) {
+  const { score, total } = calcScore(cid);
+  if (total === 0) return { cls: 'tag-new', label: 'Novo' };
+  if (score >= 80) return { cls: 'tag-good', label: 'Bom Pagador' };
+  if (score >= 50) return { cls: 'tag-warn', label: 'Atenção' };
+  return { cls: 'tag-bad', label: 'Risco de Churn' };
+}
+
+function getLtvCliente(cid) {
+  return dadosCache.cobrancas
+    .filter(c => { const id = typeof c.customer==='object'?c.customer?.id:c.customer; return id===cid && (c.status==='RECEIVED'||c.status==='CONFIRMED'); })
+    .reduce((s, c) => s + (c.value || 0), 0);
+}
+
+function getPlanoCliente(cid) {
+  const a = dadosCache.assinaturas.find(a => { const id = typeof a.customer==='object'?a.customer?.id:a.customer; return id===cid && a.status==='ACTIVE'; });
+  return a ? (esc(a.description) || 'Assinatura') : '—';
+}
+
+function filtrarClientes() {
+  const busca = (document.getElementById('cli-busca')?.value || '').toLowerCase();
+  const status = document.getElementById('cli-status')?.value || '';
+  const perfil = document.getElementById('cli-perfil')?.value || '';
+
+  let lista = dadosCache.clientes.filter(c => {
+    if (busca && !`${c.name}${c.email}${c.cpfCnpj}`.toLowerCase().includes(busca)) return false;
+    if (status === 'ativo' && c.active === false) return false;
+    if (status === 'inativo' && c.active !== false) return false;
+    if (perfil) {
+      const { score, total } = calcScore(c.id);
+      if (perfil === 'bom' && !(total > 0 && score >= 80)) return false;
+      if (perfil === 'atencao' && !(total > 0 && score >= 50 && score < 80)) return false;
+      if (perfil === 'risco' && !(total > 0 && score < 50)) return false;
+    }
+    return true;
+  });
+
+  renderTbodyClientes(lista);
+}
+
+function renderTbodyClientes(lista) {
+  lista = lista || dadosCache.clientes;
   const tbody = document.getElementById('clientes-tbody');
   const cards = document.getElementById('clientes-cards');
-  const lista = dadosCache.clientes;
   if (!lista.length) {
     tbody.innerHTML = '<tr><td colspan="4" class="no-data">Nenhum cliente encontrado.</td></tr>';
     cards.innerHTML = '<div class="no-data">Nenhum cliente encontrado.</div>';
     return;
   }
-  tbody.innerHTML = lista.map(c => `
-    <tr onclick="abrirDetalheCliente('${c.id}')">
-      <td title="${esc(c.name)}">${esc(c.name) || '—'}</td>
-      <td class="col-hide" title="${esc(c.email)}">${esc(c.email) || '—'}</td>
-      <td class="col-hide">${esc(c.cpfCnpj) || '—'}</td>
-      <td>${badgeStatus(c.active === false ? 'INACTIVE' : 'ACTIVE')}</td>
-    </tr>`).join('');
-  cards.innerHTML = lista.map(c => `
-    <div class="list-card" onclick="abrirDetalheCliente('${c.id}')">
-      <div class="list-card-top">
-        <span class="list-card-name">${esc(c.name) || '—'}</span>
-        ${badgeStatus(c.active === false ? 'INACTIVE' : 'ACTIVE')}
-      </div>
-      <div class="list-card-sub">${esc(c.email) || esc(c.cpfCnpj) || '—'}</div>
-    </div>`).join('');
+  tbody.innerHTML = lista.map(c => {
+    const tag = getTagCliente(c.id);
+    const ltv = getLtvCliente(c.id);
+    const plano = getPlanoCliente(c.id);
+    return `<tr onclick="abrirDetalheCliente('${c.id}')">
+      <td><div style="font-weight:600">${esc(c.name)||'—'}</div><div style="font-size:11px;color:var(--muted)">${esc(c.email)||''}</div></td>
+      <td class="col-hide">${plano}</td>
+      <td class="col-hide">${ltv > 0 ? fmt(ltv) : '—'}</td>
+      <td><span class="tag ${tag.cls}">${tag.label}</span></td>
+    </tr>`;
+  }).join('');
+  cards.innerHTML = lista.map(c => {
+    const tag = getTagCliente(c.id);
+    const ltv = getLtvCliente(c.id);
+    return `<div class="list-card" onclick="abrirDetalheCliente('${c.id}')">
+      <div class="list-card-top"><span class="list-card-name">${esc(c.name)||'—'}</span><span class="tag ${tag.cls}">${tag.label}</span></div>
+      <div class="list-card-sub">LTV: ${ltv > 0 ? fmt(ltv) : '—'} · ${esc(c.email)||esc(c.cpfCnpj)||'—'}</div>
+    </div>`;
+  }).join('');
 }
 
 function abrirDetalheCliente(id) {
@@ -1212,30 +1437,41 @@ function calcScore(clienteId) {
   return { score, total: confirmados.length, atrasados, pagamentos };
 }
 
-function gerarConselheiro(clienteId, diasAtraso) {
-  const { score, total, pagamentos } = calcScore(clienteId);
-  let texto, mensagem;
+function gerarConselheiro(clienteId, diasAtraso, billingType) {
+  const { score, total } = calcScore(clienteId);
   const nome = dadosCache.clientes.find(x => x.id === clienteId)?.name?.split(' ')[0] || 'cliente';
+  const isCard = billingType === 'CREDIT_CARD';
+  let texto, mensagem, isInternal = false;
 
-  if (total === 0) {
-    texto = 'Primeiro contato com este cliente sobre atraso. Tom amigável, informativo — pode ser apenas falta de familiaridade com o processo.';
-  } else if (score >= 80 && diasAtraso <= 7) {
-    texto = `${nome} tem ótimo histórico de pagamento. Este atraso provavelmente é pontual — esquecimento ou imprevisto. Contato leve e amigável resolve. Não force, só lembre.`;
-  } else if (score >= 50) {
-    texto = `Padrão de atrasos leves mas sempre paga. Raramente cancela — clientes assim ficam em média mais tempo. Ofereça ajustar a data de vencimento para uma data mais conveniente do mês.`;
+  if (isCard) {
+    // Cartão: Asaas tenta 3x automaticamente (dias 1, 2, 3)
+    if (diasAtraso <= 3) {
+      texto = `O Asaas já está tentando cobrar automaticamente. Aguarde — há ${3 - diasAtraso + 1} tentativa(s) restante(s) antes de intervir. Só acione o cliente se as 3 tentativas falharem.`;
+      mensagem = `Oi ${nome}! Identificamos uma pequena instabilidade no processamento do seu cartão. Estamos resolvendo automaticamente, fique tranquilo!`;
+    } else if (diasAtraso <= 9) {
+      texto = `As 3 tentativas automáticas do Asaas já foram esgotadas. O cartão pode estar vencido, cancelado ou sem limite. Peça ao cliente para atualizar o cartão — é a causa mais comum.`;
+      mensagem = `Olá ${nome}, tudo bem? Tentamos processar seu pagamento algumas vezes mas não conseguimos. Pode verificar se seu cartão está atualizado? Posso te ajudar a atualizar se precisar!`;
+    } else {
+      texto = `URGENTE: Cartão recusado há ${diasAtraso} dias. Risco real de suspensão do serviço. Abordagem direta: informe que o acesso será suspenso se não regularizar. Ofereça troca para Pix/Boleto como alternativa imediata.`;
+      mensagem = `Olá ${nome}, o pagamento do seu plano está em aberto há ${diasAtraso} dias. Para não interromper o serviço, precisamos regularizar hoje. Posso te enviar um Pix/Boleto como alternativa se preferir!`;
+    }
   } else {
-    texto = `Histórico com atrasos frequentes. Abordagem clara sobre a situação é necessária, mas sem pressão. Deixe evidente a necessidade de regularizar para manter o serviço ativo.`;
+    // Boleto/Pix: Asaas já notifica o cliente automaticamente
+    // Mensagem é INTERNA (para a empresa), não para o cliente
+    isInternal = true;
+    if (score >= 80 || total === 0) {
+      texto = `ALERTA INTERNO: ${nome} tem bom histórico${total===0?' (cliente novo)':''}. Atraso provavelmente pontual. Asaas já notificou o cliente automaticamente. Sugestão: aguarde mais 2 dias antes de entrar em contato diretamente.`;
+      mensagem = `💡 Ação sugerida: Aguarde — o Asaas já enviou notificações automáticas. Se não pagar em 2 dias, contato amigável oferecendo ajudar a ajustar a data de vencimento.`;
+    } else if (score >= 50) {
+      texto = `ALERTA INTERNO: ${nome} tem padrão de atrasos leves mas sempre regulariza. Asaas já notificou. Abordagem consultiva recomendada: pergunte se algo mudou na rotina financeira e ofereça trocar a data de vencimento.`;
+      mensagem = `💡 Ação sugerida: Contato consultivo. Pergunte se o cliente precisa ajustar a data de vencimento — resolve na maioria dos casos e aumenta retenção.`;
+    } else {
+      texto = `ALERTA INTERNO: ${nome} tem histórico de inadimplência crônica (score ${score}%). Asaas notificou mas pode não resolver. Contato humano necessário. Seja claro sobre a consequência, mas não agressivo — ofereça solução.`;
+      mensagem = `💡 Ação sugerida: Contato direto necessário. Mencione que o serviço pode ser suspenso e ofereça um acordo ou plano de regularização. Histórico sugere que o cliente precisa de atenção personalizada.`;
+    }
   }
 
-  if (diasAtraso <= 3) {
-    mensagem = `Oi ${nome}! Passando só para avisar que o pagamento ainda não apareceu aqui. Às vezes cai no spam do banco 😅 Qualquer coisa é só falar!`;
-  } else if (diasAtraso <= 7) {
-    mensagem = `Olá ${nome}, tudo bem? O pagamento está em aberto há alguns dias. Consegue dar uma olhada? Se precisar de prazo extra, me avisa!`;
-  } else {
-    mensagem = `Olá ${nome}, o pagamento está em aberto há ${diasAtraso} dias. Para manter o serviço ativo precisamos regularizar. Se quiser conversar sobre algum acordo, estou aqui.`;
-  }
-
-  return { texto, mensagem, score };
+  return { texto, mensagem, score, isInternal };
 }
 
 function renderDetalheCliente(c) {
@@ -1334,16 +1570,45 @@ async function carregarAssinaturas() {
   try {
     if (!dadosCache.clientes.length) await carregarClientesCache();
     await carregarAssinaturasCache();
-    renderTbodyAssinaturas();
-  } catch(e) {
-    setTbody('assinaturas-tbody', 4, '⚠️ ' + e.message);
-  }
+    renderPopularesAssinaturas();
+    filtrarAssinaturas();
+  } catch(e) { setTbody('assinaturas-tbody', 4, '⚠️ ' + e.message); }
 }
 
-function renderTbodyAssinaturas() {
+function renderPopularesAssinaturas() {
+  const cont = document.getElementById('ass-populares');
+  if (!cont) return;
+  const contagem = {};
+  for (const a of dadosCache.assinaturas.filter(x => x.status === 'ACTIVE')) {
+    const key = esc(a.description || a.billingType || 'Sem nome') + '|' + (a.value || 0);
+    contagem[key] = (contagem[key] || 0) + 1;
+  }
+  const top = Object.entries(contagem).sort((a,b) => b[1]-a[1]).slice(0,3);
+  if (!top.length) { cont.innerHTML = ''; return; }
+  cont.innerHTML = `<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+    ${top.map(([key, n], i) => {
+      const [desc, val] = key.split('|');
+      return `<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 14px;display:flex;align-items:center;gap:10px">
+        ${i===0?'<span style="font-size:14px">🏆</span>':i===1?'<span style="font-size:14px">🥈</span>':'<span style="font-size:14px">🥉</span>'}
+        <div><div style="font-size:13px;font-weight:600;color:var(--white)">${desc}</div><div style="font-size:11px;color:var(--muted)">${fmt(Number(val))} · ${n} assinante${n!==1?'s':''}</div></div>
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+function filtrarAssinaturas() {
+  const status = document.getElementById('ass-status')?.value || '';
+  const ciclo = document.getElementById('ass-ciclo')?.value || '';
+  let lista = dadosCache.assinaturas;
+  if (status) lista = lista.filter(a => a.status === status);
+  if (ciclo) lista = lista.filter(a => (a.cycle || a.billingType) === ciclo);
+  renderTbodyAssinaturas(lista);
+}
+
+function renderTbodyAssinaturas(lista) {
+  lista = lista || dadosCache.assinaturas;
   const tbody = document.getElementById('assinaturas-tbody');
   const cards = document.getElementById('assinaturas-cards');
-  const lista = dadosCache.assinaturas;
   if (!lista.length) {
     tbody.innerHTML = '<tr><td colspan="4" class="no-data">Nenhuma assinatura encontrada.</td></tr>';
     cards.innerHTML = '<div class="no-data">Nenhuma assinatura encontrada.</div>';
@@ -1351,18 +1616,15 @@ function renderTbodyAssinaturas() {
   }
   tbody.innerHTML = lista.map(a => `
     <tr onclick="abrirDetalheAssinatura('${a.id}')">
-      <td title="${nomeCliente(a.customer)}">${nomeCliente(a.customer)}</td>
+      <td><div style="font-weight:600">${nomeCliente(a.customer)}</div><div style="font-size:11px;color:var(--muted)">${esc(a.description)||''}</div></td>
       <td class="col-hide">${badgeStatus(a.cycle || a.billingType || '')}</td>
       <td>${fmt(a.value)}</td>
       <td>${badgeStatus(a.status)}</td>
     </tr>`).join('');
   cards.innerHTML = lista.map(a => `
     <div class="list-card" onclick="abrirDetalheAssinatura('${a.id}')">
-      <div class="list-card-top">
-        <span class="list-card-name">${nomeCliente(a.customer)}</span>
-        ${badgeStatus(a.status)}
-      </div>
-      <div class="list-card-sub">${fmt(a.value)} · ${a.cycle || a.billingType || '—'}</div>
+      <div class="list-card-top"><span class="list-card-name">${nomeCliente(a.customer)}</span>${badgeStatus(a.status)}</div>
+      <div class="list-card-sub">${fmt(a.value)} · ${esc(a.description) || a.cycle || '—'}</div>
     </div>`).join('');
 }
 
@@ -1394,15 +1656,12 @@ async function carregarCobrancasCache(filtroStatus) {
 }
 
 function atualizarBadgesTipo() {
-  const todas = dadosCache.cobrancas.length;
-  const recorrentes = dadosCache.cobrancas.filter(c => c.subscription).length;
-  const avulsas = dadosCache.cobrancas.filter(c => !c.subscription).length;
-  const elTodas = document.getElementById('count-todas');
-  const elRec   = document.getElementById('count-recorrentes');
-  const elAvuls = document.getElementById('count-avulsas');
-  if (elTodas)  elTodas.textContent  = todas;
-  if (elRec)    elRec.textContent    = recorrentes;
-  if (elAvuls)  elAvuls.textContent  = avulsas;
+  const c = dadosCache.cobrancas;
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  set('count-todas', c.length);
+  set('count-recorrentes', c.filter(x => x.subscription).length);
+  set('count-avulsas', c.filter(x => !x.subscription).length);
+  set('count-split', c.filter(x => x.split?.length).length);
 }
 
 async function carregarCobrancas() {
@@ -1411,29 +1670,109 @@ async function carregarCobrancas() {
   try {
     if (!dadosCache.clientes.length) await carregarClientesCache();
     const filtroStatus = document.getElementById('filtro-status').value;
-    const todasCobrancas = await carregarCobrancasCache(filtroStatus);
-    aplicarFiltroTipo(todasCobrancas);
+    await carregarCobrancasCache(filtroStatus);
+    aplicarFiltroTipo(dadosCache.cobrancas);
+    renderGraficoReceita(dadosCache.cobrancas);
     if (!filtroStatus) atualizarStats();
-  } catch(e) {
-    setTbody('cobrancas-tbody', 5, '⚠️ ' + e.message);
-  }
+  } catch(e) { setTbody('cobrancas-tbody', 5, '⚠️ ' + e.message); }
 }
 
 function aplicarFiltroTipo(lista) {
   let filtrada = lista;
-  if (filtroTipoCobranca === 'recorrente') filtrada = lista.filter(c => c.subscription);
-  else if (filtroTipoCobranca === 'avulsa') filtrada = lista.filter(c => !c.subscription);
+  const fs = document.getElementById('filtro-status')?.value || '';
+  const ft = document.getElementById('filtro-tipo-cob')?.value || filtroTipoCobranca;
+  if (fs) filtrada = filtrada.filter(c => c.status === fs);
+  if (ft === 'recorrente') filtrada = filtrada.filter(c => c.subscription);
+  else if (ft === 'avulsa') filtrada = filtrada.filter(c => !c.subscription);
+  else if (ft === 'split') filtrada = filtrada.filter(c => c.split?.length);
   renderTbodyCobrancas('cobrancas-tbody', filtrada);
   renderCardsCobrancas('cobrancas-cards', filtrada);
 }
 
-function filtrarCobrancas() { carregarCobrancas(); }
+function filtrarCobrancas() {
+  aplicarFiltroTipo(dadosCache.cobrancas);
+  renderGraficoReceita(dadosCache.cobrancas);
+}
 
 function filtrarTipoCobranca(btn) {
   document.querySelectorAll('.tipo-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
   filtroTipoCobranca = btn.dataset.tipo;
+  document.getElementById('filtro-tipo-cob').value = btn.dataset.tipo;
   aplicarFiltroTipo(dadosCache.cobrancas);
+}
+
+function renderGraficoReceita(lista) {
+  const canvas = document.getElementById('chart-receita');
+  if (!canvas) return;
+  const agora = new Date();
+  const meses = [], rec = [], pend = [], venc = [];
+  const nomes = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(agora.getFullYear(), agora.getMonth() - i, 1);
+    const ym = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}`;
+    meses.push(nomes[d.getMonth()] + '/' + String(d.getFullYear()).slice(2));
+    const porMes = lista.filter(c => (c.paymentDate||c.dueDate||'').startsWith(ym));
+    rec.push(porMes.filter(c=>c.status==='RECEIVED'||c.status==='CONFIRMED').reduce((s,c)=>s+(c.value||0),0));
+    pend.push(porMes.filter(c=>c.status==='PENDING').reduce((s,c)=>s+(c.value||0),0));
+    venc.push(porMes.filter(c=>c.status==='OVERDUE').reduce((s,c)=>s+(c.value||0),0));
+  }
+  if (chartReceita) chartReceita.destroy();
+  chartReceita = new Chart(canvas, {
+    type: 'bar',
+    data: {
+      labels: meses,
+      datasets: [
+        { label: 'Recebido', data: rec, backgroundColor: 'rgba(34,197,94,.7)' },
+        { label: 'Pendente', data: pend, backgroundColor: 'rgba(245,158,11,.5)' },
+        { label: 'Vencido',  data: venc, backgroundColor: 'rgba(239,68,68,.5)' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { color: '#8890B5', font: { size: 11 } } }, tooltip: { callbacks: { label: ctx => ' R$ ' + ctx.parsed.y.toLocaleString('pt-BR',{minimumFractionDigits:2}) } } },
+      scales: {
+        x: { stacked: true, grid: { color: 'rgba(46,50,80,.5)' }, ticks: { color: '#8890B5', font:{size:11} } },
+        y: { stacked: true, grid: { color: 'rgba(46,50,80,.5)' }, ticks: { color: '#8890B5', font:{size:11}, callback: v => 'R$'+(v/1000).toFixed(0)+'k' } }
+      }
+    }
+  });
+}
+
+function exportarCSV(tipo) {
+  let headers, rows, filename;
+  const nomeRaw = cid => { const id = typeof cid==='object'?cid?.id:cid; return dadosCache.clientes.find(x=>x.id===id)?.name || id || '—'; };
+  if (tipo === 'cobrancas') {
+    headers = ['Cliente','CPF/CNPJ','Vencimento','Pagamento','Valor','Status','Tipo','Assinatura','Split'];
+    rows = dadosCache.cobrancas.map(c => [
+      nomeRaw(c.customer),
+      dadosCache.clientes.find(x=>x.id===(typeof c.customer==='object'?c.customer?.id:c.customer))?.cpfCnpj||'',
+      c.dueDate||'', c.paymentDate||'',
+      (c.value||0).toFixed(2), c.status||'', c.billingType||'',
+      c.subscription?'Sim':'Não',
+      c.split?.length?c.split.map(s=>s.walletId).join(';'):''
+    ]);
+    filename = 'cobrancas.csv';
+  } else if (tipo === 'comissoes') {
+    const com = dadosCache.cobrancas.filter(c => c.split?.length);
+    headers = ['Data','Cliente','Valor Cobrança','WalletId Parceiro','Valor Split','% Split','Status','ID Asaas'];
+    rows = com.map(c => [
+      c.dueDate||'', nomeRaw(c.customer),
+      (c.value||0).toFixed(2),
+      c.split?.[0]?.walletId||'',
+      (c.split?.[0]?.fixedValue||0).toFixed(2),
+      c.split?.[0]?.percentualValue||'',
+      c.status||'', c.id||''
+    ]);
+    filename = 'comissoes.csv';
+  }
+  const csv = [headers, ...rows].map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+  const blob = new Blob(['﻿' + csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = filename; document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast('CSV exportado!', 'success');
 }
 
 function renderTbodyCobrancas(tbodyId, lista) {
@@ -1581,7 +1920,8 @@ async function renderTarefas() {
     if (!dadosCache.cobrancas.length) await carregarCobrancasCache();
   } catch(e) { /* usa cache parcial */ }
 
-  const overdue = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE');
+  // Somente cobranças de assinaturas OVERDUE
+  const overdue = dadosCache.cobrancas.filter(c => c.status === 'OVERDUE' && c.subscription);
   const porCliente = new Map();
   for (const cob of overdue) {
     const cid = typeof cob.customer === 'object' ? cob.customer?.id : cob.customer;
@@ -1595,7 +1935,8 @@ async function renderTarefas() {
     if (tarefasResolvidas.has(cid)) continue;
     const maxDias = Math.max(...cobs.map(c => Math.floor((Date.now() - new Date(c.dueDate)) / 86400000)));
     const urgencia = maxDias >= 8 ? 'urgente' : maxDias >= 4 ? 'esta-semana' : 'monitore';
-    tarefas.push({ cid, cobs, maxDias, urgencia });
+    const billingType = cobs[0]?.billingType || 'BOLETO';
+    tarefas.push({ cid, cobs, maxDias, urgencia, billingType });
   }
   tarefas.sort((a, b) => b.maxDias - a.maxDias);
   atualizarBadgeTarefas();
@@ -1607,7 +1948,7 @@ async function renderTarefas() {
     return;
   }
 
-  container.innerHTML = filtradas.map(({ cid, cobs, maxDias, urgencia }) => {
+  container.innerHTML = filtradas.map(({ cid, cobs, maxDias, urgencia, billingType }) => {
     const cliente = dadosCache.clientes.find(x => x.id === cid);
     const nome = esc(cliente?.name || 'Cliente desconhecido');
     const telefone = (cliente?.mobilePhone || cliente?.phone || '').replace(/\D/g, '');
@@ -1616,20 +1957,26 @@ async function renderTarefas() {
       return aid === cid && a.status === 'ACTIVE';
     });
     const valorAnual = assinatura ? fmt(assinatura.value * 12) : null;
-    const { texto, mensagem } = gerarConselheiro(cid, maxDias);
+    const { texto, mensagem, isInternal } = gerarConselheiro(cid, maxDias, billingType);
     const urgLabel = urgencia === 'urgente' ? '🔴 URGENTE' : urgencia === 'esta-semana' ? '🟡 ESTA SEMANA' : '⚪ MONITORE';
-    const waUrl = telefone ? `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}` : '';
+    const btTag = billingType === 'CREDIT_CARD' ? '💳 Cartão' : billingType === 'PIX' ? '⚡ Pix' : '📄 Boleto';
+    const waUrl = !isInternal && telefone ? `https://wa.me/55${telefone}?text=${encodeURIComponent(mensagem)}` : '';
+    const msgLabel = isInternal ? '💡 Ação interna sugerida' : '💬 Mensagem sugerida para o cliente';
 
     return `<div class="task-card ${urgencia}" id="task-${cid}">
-      <div><span class="urgency-tag ${urgencia}">${urgLabel}</span></div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px">
+        <span class="urgency-tag ${urgencia}">${urgLabel}</span>
+        <span class="tag tag-new" style="font-size:10px">${btTag}</span>
+      </div>
       <div class="task-title">${nome} — atrasado ${maxDias} dia${maxDias !== 1 ? 's' : ''}</div>
       <div class="task-sub">${cobs.length} cobrança${cobs.length !== 1 ? 's' : ''} em aberto · ${fmt(cobs.reduce((s,c) => s+(c.value||0),0))} total</div>
       ${valorAnual ? `<div class="task-impact">⚠ Se cancelar, você perde ${valorAnual}/ano</div>` : ''}
       <div class="advisor-box" style="margin:14px 0 0">
-        <h4>🧠 Como abordar</h4>
+        <h4>🧠 Conselheiro</h4>
         <div class="advisor-text">${esc(texto)}</div>
-        <div class="advisor-msg">"${esc(mensagem)}"</div>
-        <button class="btn-sm btn-outline" style="font-size:12px" onclick="navigator.clipboard.writeText(${JSON.stringify(mensagem)}).then(()=>toast('Copiado!','success'))">📋 Copiar mensagem</button>
+        <div style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px">${msgLabel}</div>
+        <div class="advisor-msg">${esc(mensagem)}</div>
+        <button class="btn-sm btn-outline" style="font-size:12px" onclick="navigator.clipboard.writeText(${JSON.stringify(mensagem)}).then(()=>toast('Copiado!','success'))">📋 Copiar</button>
       </div>
       <div class="task-actions">
         ${waUrl ? `<a href="${waUrl}" target="_blank" class="btn-sm btn-accent">💬 Abrir WhatsApp</a>` : ''}
@@ -1659,57 +2006,178 @@ async function renderComissoes() {
   const tbody = document.getElementById('comissoes-tbody');
   const cards = document.getElementById('comissoes-cards');
   if (!tbody) return;
-  if (!sessao?.asaasApiKey) {
-    setTbody('comissoes-tbody', 5, 'Configure a chave Asaas em Configurações.');
-    return;
-  }
+  if (!sessao?.asaasApiKey) { setTbody('comissoes-tbody', 5, 'Configure a chave Asaas em Configurações.'); return; }
   setTbody('comissoes-tbody', 5, null);
   try {
     if (!dadosCache.clientes.length) await carregarClientesCache();
     if (!dadosCache.cobrancas.length) await carregarCobrancasCache();
   } catch(e) { setTbody('comissoes-tbody', 5, '⚠️ ' + e.message); return; }
 
-  const comSplit = dadosCache.cobrancas.filter(c => c.split && c.split.length > 0);
+  const comSplit = dadosCache.cobrancas.filter(c => c.split?.length > 0);
   const confirmadas = comSplit.filter(c => c.status === 'RECEIVED' || c.status === 'CONFIRMED');
   const pendentes = comSplit.filter(c => c.status === 'PENDING');
 
-  const totalSplit = confirmadas.reduce((s, c) => {
-    const splitVal = c.split.reduce((ss, sp) => ss + (sp.fixedValue || 0), 0);
-    return s + splitVal;
-  }, 0);
-  const totalPrev = pendentes.reduce((s, c) => {
-    const splitVal = c.split.reduce((ss, sp) => ss + (sp.fixedValue || 0), 0);
-    return s + splitVal;
-  }, 0);
+  const splitTotal = arr => arr.reduce((s, c) => s + c.split.reduce((ss, sp) => ss + (sp.fixedValue || (c.value * (sp.percentualValue||0) / 100) || 0), 0), 0);
+  const recebidoTotal = confirmadas.reduce((s, c) => s + (c.value || 0), 0);
+  const totalSplit = splitTotal(confirmadas);
+  const totalPrev  = splitTotal(pendentes);
+  const liquido    = recebidoTotal - totalSplit;
 
-  const el1 = document.getElementById('com-total');
-  const el2 = document.getElementById('com-previsto');
-  if (el1) el1.textContent = fmt(totalSplit);
-  if (el2) el2.textContent = fmt(totalPrev);
+  const set = (id, v) => { const el = document.getElementById(id); if(el) el.textContent = v; };
+  set('com-total', fmt(totalSplit));
+  set('com-previsto', fmt(totalPrev));
+  set('com-liquido', fmt(liquido));
 
   if (!comSplit.length) {
-    tbody.innerHTML = `<tr><td colspan="5" class="no-data">Nenhuma cobrança com split encontrada.<br><small style="color:var(--muted)">Configure parceiros em Configurações e aplique split ao criar assinaturas.</small></td></tr>`;
-    if (cards) cards.innerHTML = '';
-    return;
+    tbody.innerHTML = `<tr><td colspan="5" class="no-data">Nenhuma cobrança com split encontrada.<br><small style="color:var(--muted)">Aplique split ao criar assinaturas para rastrear comissões aqui.</small></td></tr>`;
+    if (cards) cards.innerHTML = ''; return;
   }
 
-  tbody.innerHTML = comSplit.slice(0, 50).map(c => {
-    const splitInfo = c.split.map(s => `${s.walletId?.slice(0,8)}… ${s.fixedValue ? fmt(s.fixedValue) : (s.percentualValue ? s.percentualValue + '%' : '')}`).join(', ');
+  tbody.innerHTML = confirmadas.concat(pendentes).slice(0, 50).map(c => {
+    const splitVal = c.split.reduce((ss, sp) => ss + (sp.fixedValue || (c.value * (sp.percentualValue||0) / 100) || 0), 0);
+    const walletShort = c.split.map(s => s.walletId ? s.walletId.slice(0,8)+'…' : '—').join(', ');
+    const pct = c.split.map(s => s.percentualValue ? s.percentualValue+'%' : (s.fixedValue ? 'fixo' : '')).join(', ');
     return `<tr onclick="abrirDetalheCobranca('${c.id}')">
-      <td>${nomeCliente(c.customer)}</td>
-      <td class="col-hide">${fmtData(c.dueDate)}</td>
-      <td>${fmt(c.value)}</td>
-      <td class="col-hide" style="font-size:11px;color:var(--muted)">${esc(splitInfo)}</td>
+      <td><div style="font-weight:600">${nomeCliente(c.customer)}</div><div style="font-size:11px;color:var(--muted)">${fmtData(c.dueDate)}</div></td>
+      <td class="col-hide">${fmt(c.value)}</td>
+      <td class="col-hide" style="font-size:12px;color:var(--muted)">${esc(walletShort)} <span style="color:var(--warning)">${esc(pct)}</span></td>
+      <td><span style="color:#86EFAC;font-weight:600">${fmt(splitVal)}</span></td>
       <td>${badgeStatus(c.status)}</td>
     </tr>`;
   }).join('');
 
-  if (cards) {
-    cards.innerHTML = comSplit.slice(0, 20).map(c => `
-      <div class="list-card" onclick="abrirDetalheCobranca('${c.id}')">
-        <div class="list-card-top"><span class="list-card-name">${nomeCliente(c.customer)}</span>${badgeStatus(c.status)}</div>
-        <div class="list-card-sub">${fmt(c.value)} · venc. ${fmtData(c.dueDate)}</div>
-      </div>`).join('');
+  if (cards) cards.innerHTML = confirmadas.concat(pendentes).slice(0, 20).map(c => {
+    const splitVal = c.split.reduce((ss, sp) => ss + (sp.fixedValue || 0), 0);
+    return `<div class="list-card" onclick="abrirDetalheCobranca('${c.id}')">
+      <div class="list-card-top"><span class="list-card-name">${nomeCliente(c.customer)}</span>${badgeStatus(c.status)}</div>
+      <div class="list-card-sub">${fmt(c.value)} → split: ${fmt(splitVal)} · ${fmtData(c.dueDate)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ── Modal Criar Assinatura ───────────────────────────────────────────────────
+
+function abrirModalCriarAssinatura() {
+  document.getElementById('modal-err').style.display = 'none';
+  document.getElementById('modal-ok').style.display = 'none';
+  document.getElementById('m-link-box').style.display = 'none';
+  document.getElementById('m-resumo').style.display = 'none';
+  ['m-nome','m-cpf','m-tel','m-email','m-desc','m-valor','m-wallet','m-pct'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('m-ciclo').value = 'MONTHLY';
+  document.getElementById('m-billing').value = 'PIX';
+  document.getElementById('m-venc').value = new Date().toISOString().split('T')[0];
+  document.getElementById('m-btn').disabled = false;
+  document.getElementById('m-btn').textContent = 'Criar Assinatura →';
+  document.getElementById('modal-criar-ass').classList.add('open');
+  ['m-valor','m-wallet','m-pct'].forEach(id => {
+    document.getElementById(id)?.addEventListener('input', atualizarResumo);
+  });
+}
+
+function fecharModalCriarAss(e) {
+  if (!e || e.target === document.getElementById('modal-criar-ass'))
+    document.getElementById('modal-criar-ass').classList.remove('open');
+}
+
+function atualizarResumo() {
+  const val = parseFloat(document.getElementById('m-valor').value) || 0;
+  const pct = parseFloat(document.getElementById('m-pct').value) || 0;
+  const wallet = document.getElementById('m-wallet').value.trim();
+  const resumo = document.getElementById('m-resumo');
+  if (!val) { resumo.style.display = 'none'; return; }
+  const splitVal = wallet && pct ? (val * pct / 100) : 0;
+  resumo.style.display = '';
+  resumo.innerHTML = `
+    <div class="resumo-row"><span>Valor da assinatura</span><strong>${fmt(val)}</strong></div>
+    ${splitVal ? `<div class="resumo-row"><span>Comissão parceiro (${pct}%)</span><strong style="color:#FCA5A5">−${fmt(splitVal)}</strong></div>` : ''}
+    <div class="resumo-row" style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px"><span>Você recebe aprox.</span><strong style="color:#86EFAC">${fmt(val - splitVal)}</strong></div>
+    ${splitVal ? `<div style="font-size:11px;color:var(--muted);margin-top:4px">* Estimativa — taxas Asaas descontadas na confirmação</div>` : ''}`;
+}
+
+async function criarAssinatura() {
+  const nome = document.getElementById('m-nome').value.trim();
+  const cpf = document.getElementById('m-cpf').value.trim();
+  const tel = document.getElementById('m-tel').value.trim();
+  const email = document.getElementById('m-email').value.trim();
+  const desc = document.getElementById('m-desc').value.trim();
+  const val = parseFloat(document.getElementById('m-valor').value);
+  const ciclo = document.getElementById('m-ciclo').value;
+  const billing = document.getElementById('m-billing').value;
+  const venc = document.getElementById('m-venc').value;
+  const wallet = document.getElementById('m-wallet').value.trim();
+  const pct = parseFloat(document.getElementById('m-pct').value) || 0;
+
+  const errEl = document.getElementById('modal-err');
+  errEl.style.display = 'none';
+
+  if (!nome) { errEl.textContent = 'Informe o nome do cliente.'; errEl.style.display = ''; return; }
+  if (!desc) { errEl.textContent = 'Informe a descrição do plano.'; errEl.style.display = ''; return; }
+  if (!val || val <= 0) { errEl.textContent = 'Informe um valor válido.'; errEl.style.display = ''; return; }
+  if (!venc) { errEl.textContent = 'Informe o primeiro vencimento.'; errEl.style.display = ''; return; }
+
+  const btn = document.getElementById('m-btn');
+  btn.disabled = true; btn.textContent = 'Criando…';
+
+  try {
+    // Cria ou encontra cliente
+    let customerId = null;
+    const existente = dadosCache.clientes.find(c =>
+      (cpf && c.cpfCnpj === cpf) || (email && c.email === email) || c.name === nome
+    );
+    if (existente) {
+      customerId = existente.id;
+    } else {
+      const payload = { name: nome };
+      if (cpf) payload.cpfCnpj = cpf;
+      if (email) payload.email = email;
+      if (tel) payload.mobilePhone = tel.replace(/\D/g,'');
+      const cli = await asaasAPI('POST', '/customers', payload);
+      customerId = cli.id;
+      dadosCache.clientes.push(cli);
+    }
+
+    // Cria assinatura
+    const subPayload = {
+      customer: customerId,
+      billingType: billing,
+      value: val,
+      nextDueDate: venc,
+      cycle: ciclo,
+      description: desc
+    };
+    if (wallet && pct) {
+      subPayload.split = [{ walletId: wallet, percentualValue: pct }];
+    }
+    const sub = await asaasAPI('POST', '/subscriptions', subPayload);
+
+    // Busca primeiro link de pagamento
+    let link = '';
+    try {
+      const pags = await asaasAPI('GET', `/subscriptions/${sub.id}/payments`, null, { limit: 1 });
+      link = pags?.data?.[0]?.invoiceUrl || pags?.data?.[0]?.bankSlipUrl || '';
+    } catch(e) {}
+
+    dadosCache.assinaturas.push(sub);
+    toast('Assinatura criada com sucesso!', 'success');
+
+    const okEl = document.getElementById('modal-ok');
+    okEl.textContent = `Assinatura criada! ID: ${sub.id}`;
+    okEl.style.display = '';
+
+    if (link) {
+      const linkBox = document.getElementById('m-link-box');
+      linkBox.innerHTML = `🔗 Link de pagamento: <a href="${link}" target="_blank" style="color:var(--accent2)">${link}</a><br><button class="btn-sm btn-outline" style="margin-top:8px;font-size:12px" onclick="navigator.clipboard.writeText('${link}').then(()=>toast('Link copiado!','success'))">📋 Copiar link</button>`;
+      linkBox.style.display = '';
+    }
+
+    btn.textContent = '✓ Criado';
+    atualizarBadgeTarefas();
+  } catch(e) {
+    errEl.textContent = 'Erro: ' + e.message;
+    errEl.style.display = '';
+    btn.disabled = false; btn.textContent = 'Criar Assinatura →';
   }
 }
 
