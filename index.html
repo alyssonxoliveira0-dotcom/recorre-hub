@@ -2535,37 +2535,51 @@ async function criarAssinatura() {
   btn.disabled = true; btn.textContent = 'Criando…';
 
   try {
-    // PASSO 1: Criar/encontrar cliente no Asaas → captura o ID do cliente
+    // PASSO 1: Criar/encontrar cliente → captura o ID do CLIENTE PAGADOR
     let customerId = null;
     const existente = dadosCache.clientes.find(c =>
       (cpf && c.cpfCnpj === cpf) || (email && c.email === email)
     );
     if (existente) {
       customerId = existente.id;
+      console.log('[criarAssinatura] cliente encontrado no cache:', customerId, existente.name);
     } else {
       const cliPayload = { name: nome };
-      if (cpf) cliPayload.cpfCnpj = cpf;
-      if (email) cliPayload.email = email;
-      if (tel) cliPayload.mobilePhone = tel.replace(/\D/g,'');
+      if (cpf)  cliPayload.cpfCnpj    = cpf;
+      if (email) cliPayload.email     = email;
+      if (tel)   cliPayload.mobilePhone = tel.replace(/\D/g,'');
+      console.log('[criarAssinatura] criando cliente:', JSON.stringify(cliPayload));
       const cli = await asaasAPI('POST', '/customers', cliPayload);
-      customerId = cli.id;
-      dadosCache.clientes.push(cli);
+      console.log('[criarAssinatura] resposta POST /customers:', JSON.stringify(cli));
+      customerId = cli?.id || null;
     }
 
-    // PASSO 2: Criar assinatura com o ID do cliente no campo customer
-    // O walletId do parceiro vai APENAS dentro do array split — nunca no campo customer
+    // Guarda de segurança: customerId deve ser um ID Asaas válido (cus_...)
+    if (!customerId) {
+      errEl.textContent = 'Erro: não foi possível obter o ID do cliente no Asaas. Verifique CPF ou e-mail.';
+      errEl.style.display = '';
+      btn.disabled = false; btn.textContent = 'Criar Assinatura →';
+      return;
+    }
+
+    // PASSO 2: Criar assinatura — customer = ID do cliente pagador
+    // walletId do parceiro vai EXCLUSIVAMENTE em split[], nunca em customer
     const subPayload = {
-      customer: customerId,          // ID do cliente pagador
+      customer: customerId,       // ID do cliente que vai pagar (cus_...)
       billingType: billing,
       value: val,
       nextDueDate: venc,
       cycle: ciclo,
     };
     if (desc) subPayload.description = desc;
-    if (wallet && pct) {
-      subPayload.split = [{ walletId: wallet, percentualValue: pct }]; // parceiro comissionado
+    if (wallet && pct > 0) {
+      subPayload.split = [{ walletId: wallet, percentualValue: Number(pct) }];
     }
+
+    console.log('[criarAssinatura] payload POST /subscriptions:', JSON.stringify(subPayload));
+
     const sub = await asaasAPI('POST', '/subscriptions', subPayload);
+    console.log('[criarAssinatura] resposta POST /subscriptions:', JSON.stringify(sub));
 
     // Busca primeiro link de pagamento
     let link = '';
@@ -2577,19 +2591,28 @@ async function criarAssinatura() {
     dadosCache.assinaturas.push(sub);
     toast('Assinatura criada com sucesso!', 'success');
 
+    const splitInfo = (wallet && pct > 0) ? ` · Split ${pct}% → ${wallet.slice(0,8)}…` : ' · Sem split';
     const okEl = document.getElementById('modal-ok');
-    okEl.textContent = `Assinatura criada! ID: ${sub.id}`;
+    okEl.innerHTML = `✅ Assinatura criada!<br>
+      <small style="color:var(--muted)">
+        Cliente ID: <strong style="color:var(--text)">${esc(customerId)}</strong><br>
+        Assinatura ID: <strong style="color:var(--text)">${esc(sub.id)}</strong><br>
+        ${wallet && pct > 0 ? `Split: <strong style="color:#86EFAC">${pct}% → ${esc(wallet.slice(0,8))}…</strong>` : 'Sem split configurado'}
+      </small>`;
     okEl.style.display = '';
 
+    const linkBox = document.getElementById('m-link-box');
     if (link) {
-      const linkBox = document.getElementById('m-link-box');
-      linkBox.innerHTML = `🔗 Link de pagamento: <a href="${link}" target="_blank" style="color:var(--accent2)">${link}</a><br><button class="btn-sm btn-outline" style="margin-top:8px;font-size:12px" onclick="navigator.clipboard.writeText('${link}').then(()=>toast('Link copiado!','success'))">📋 Copiar link</button>`;
+      linkBox.innerHTML = `🔗 Link de pagamento: <a href="${link}" target="_blank" style="color:var(--accent2)">${link}</a><br>
+        <button class="btn-sm btn-outline" style="margin-top:8px;font-size:12px"
+          onclick="navigator.clipboard.writeText('${link}').then(()=>toast('Link copiado!','success'))">📋 Copiar link</button>`;
       linkBox.style.display = '';
     }
 
     btn.textContent = '✓ Criado';
     atualizarBadgeTarefas();
   } catch(e) {
+    console.error('[criarAssinatura] erro:', e.message, e);
     errEl.textContent = 'Erro: ' + e.message;
     errEl.style.display = '';
     btn.disabled = false; btn.textContent = 'Criar Assinatura →';
