@@ -2625,8 +2625,8 @@ async function criarAssinatura() {
     const nomeMismatch = clienteExistente.name?.toLowerCase() !== nome.toLowerCase();
     clienteBox = `<div class="confirm-row">
       <span class="cr-label">👤 Cliente pagador — JÁ EXISTE no Asaas (será reutilizado)</span>
-      <span class="cr-value">${esc(clienteExistente.name)} <span style="color:var(--muted);font-weight:400;font-size:11px">${esc(clienteExistente.id)}</span></span>
-      ${nomeMismatch ? `<span style="color:#FCD34D;font-size:11px">⚠️ Nome digitado "${esc(nome)}" difere do cadastrado "${esc(clienteExistente.name)}" — verifique.</span>` : ''}
+      <span class="cr-value">${esc(nomeMismatch ? nome : clienteExistente.name)} <span style="color:var(--muted);font-weight:400;font-size:11px">${esc(clienteExistente.id)}</span></span>
+      ${nomeMismatch ? `<span style="color:#86EFAC;font-size:11px">✏️ Nome será atualizado de "${esc(clienteExistente.name)}" para "${esc(nome)}" ao confirmar.</span>` : ''}
     </div>`;
   } else {
     clienteBox = `<div class="confirm-row">
@@ -2704,10 +2704,22 @@ async function executarCriacaoAssinatura() {
     let customerNome = null;
 
     if (clienteExistente?.id) {
-      // Cliente já existe no Asaas — reutiliza
+      // Cliente já existe no Asaas — reutiliza, atualizando nome se necessário
       customerId   = clienteExistente.id;
       customerNome = clienteExistente.name;
       console.log('[PASSO 1] Usando cliente existente:', customerId, '|', customerNome);
+      // Se o nome digitado difere do cadastrado, atualiza via PUT /customers/{id}
+      if (clienteExistente.name?.toLowerCase() !== nome.toLowerCase()) {
+        console.log('[PASSO 1] Nome difere — atualizando:', customerNome, '→', nome);
+        try {
+          const updated = await asaasAPI('PUT', '/customers/' + customerId, { name: nome });
+          customerNome = updated?.name || nome;
+          console.log('[PASSO 1] Nome atualizado com sucesso:', customerNome);
+        } catch(e) {
+          console.warn('[PASSO 1] Falha ao atualizar nome (continuando com nome original):', e.message);
+          // Não bloqueia — assinatura pode ser criada mesmo sem atualizar nome
+        }
+      }
     } else {
       // Cliente não encontrado → cria novo via POST /customers
       const cliPayload = { name: nome };
