@@ -2534,6 +2534,10 @@ let _pendingAssinatura = null;
 
 // ETAPA 1 — valida formulário, identifica conta + cliente via API, exibe confirmação
 async function criarAssinatura() {
+  const errEl = document.getElementById('modal-err');
+  errEl.style.display = 'none';
+  const btn = document.getElementById('m-btn');
+
   const nome    = document.getElementById('m-nome').value.trim();
   const cpfRaw  = document.getElementById('m-cpf').value.trim();
   const cpf     = cpfRaw.replace(/\D/g, '');
@@ -2547,9 +2551,6 @@ async function criarAssinatura() {
   const wallet  = document.getElementById('m-wallet').value.trim();
   const pct     = parseFloat(document.getElementById('m-pct').value) || 0;
 
-  const errEl = document.getElementById('modal-err');
-  errEl.style.display = 'none';
-
   if (!nome) { errEl.textContent = 'Informe o nome do cliente.'; errEl.style.display = ''; return; }
   if (!val || val <= 0) { errEl.textContent = 'Informe um valor válido.'; errEl.style.display = ''; return; }
   if (!venc) { errEl.textContent = 'Informe o primeiro vencimento.'; errEl.style.display = ''; return; }
@@ -2558,13 +2559,13 @@ async function criarAssinatura() {
     errEl.style.display = ''; return;
   }
   if (wallet && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(wallet)) {
-    errEl.textContent = '⚠️ WalletId inválido — formato UUID esperado (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).';
+    errEl.textContent = '⚠️ WalletId inválido — formato UUID esperado.';
     errEl.style.display = ''; return;
   }
 
-  const btn = document.getElementById('m-btn');
   btn.disabled = true; btn.textContent = 'Verificando…';
 
+  try {
   // ── 1. Identificar qual conta Asaas está autenticada ─────────────────────
   let contaNome = '—', contaCpf = '—', contaWalletId = '', minhaConta_ok = false;
   const contaEnv = (sessao.env || 'sandbox').toUpperCase();
@@ -2635,18 +2636,13 @@ async function criarAssinatura() {
     </div>`;
   }
 
-  let conflictWarn = '';
-  if (walletIgualContaPrincipal) {
-    conflictWarn = `<div class="confirm-account-warn" style="margin-top:8px">
-      ⚠️ <strong>ATENÇÃO:</strong> O WalletId informado é o da <strong>própria conta Asaas</strong> autenticada!
-      O split enviará dinheiro de volta para a mesma conta — isso não faz sentido.
-      Verifique se o WalletId do parceiro está correto.
-    </div>`;
-  }
+  let conflictWarn = walletIgualConta
+    ? `<div class="confirm-account-warn" style="margin-top:8px">⚠️ WalletId informado é o da própria conta autenticada — verifique o parceiro.</div>`
+    : '';
 
   document.getElementById('m-confirm-body').innerHTML = `
     ${accountBox}
-    ${walletIgualConta ? `<div class="confirm-account-warn" style="margin-top:8px">⚠️ WalletId informado é o da própria conta autenticada — verifique o parceiro.</div>` : ''}
+    ${conflictWarn}
     ${clienteBox}
     <div class="confirm-row">
       <span class="cr-label">💵 Valor / Frequência / Pagamento</span>
@@ -2671,7 +2667,17 @@ async function criarAssinatura() {
 
   document.getElementById('m-confirm').style.display = '';
   document.getElementById('m-form-btns').style.display = 'none';
-  btn.disabled = false; btn.textContent = 'Criar Assinatura →';
+
+  } catch(e) {
+    // Qualquer erro inesperado (ex: variável undefined, ReferenceError) é capturado aqui
+    console.error('[criarAssinatura] ERRO inesperado:', e.message, e);
+    errEl.textContent = 'Erro ao preparar confirmação: ' + e.message;
+    errEl.style.display = '';
+  } finally {
+    // O botão é SEMPRE liberado — nunca fica travado
+    btn.disabled = false;
+    if (btn.textContent !== 'Criar Assinatura →') btn.textContent = 'Criar Assinatura →';
+  }
 }
 
 function cancelarConfirmacao() {
