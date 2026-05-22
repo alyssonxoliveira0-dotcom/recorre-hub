@@ -936,9 +936,7 @@ tbody tr:hover { background: var(--surface2); }
 
     <div id="m-form-btns" style="display:flex;gap:10px;margin-top:20px;flex-wrap:wrap">
       <button class="btn btn-primary" id="m-btn" onclick="criarAssinatura()" style="flex:1;min-width:160px">Criar Assinatura →</button>
-      <button class="btn-sm btn-outline" id="m-btn-link" onclick="gerarLinkPagamento()" style="flex:1;min-width:140px;padding:12px">🔗 Gerar Link</button>
     </div>
-    <div style="font-size:11px;color:var(--muted);margin-top:8px">🔗 Gerar Link cria um link de pagamento recorrente — o cliente preenche os próprios dados ao pagar.</div>
   </div>
 </div>
 
@@ -2534,7 +2532,7 @@ function atualizarResumo() {
 // Armazena dados do formulário enquanto o usuário confirma
 let _pendingAssinatura = null;
 
-// ETAPA 1 — valida formulário, busca conta Asaas, exibe painel de confirmação
+// ETAPA 1 — valida formulário, identifica conta + cliente via API, exibe confirmação
 async function criarAssinatura() {
   const nome    = document.getElementById('m-nome').value.trim();
   const cpfRaw  = document.getElementById('m-cpf').value.trim();
@@ -2556,57 +2554,85 @@ async function criarAssinatura() {
   if (!val || val <= 0) { errEl.textContent = 'Informe um valor válido.'; errEl.style.display = ''; return; }
   if (!venc) { errEl.textContent = 'Informe o primeiro vencimento.'; errEl.style.display = ''; return; }
   if (wallet && wallet.startsWith('cus_')) {
-    errEl.textContent = '⚠️ WalletId do parceiro contém um ID de cliente (cus_...). Corrija antes de continuar.';
+    errEl.textContent = '⚠️ WalletId do parceiro contém um ID de cliente (cus_...). Corrija.';
     errEl.style.display = ''; return;
   }
-  // walletId deve ser UUID (formato: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx)
   if (wallet && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(wallet)) {
-    errEl.textContent = '⚠️ WalletId do parceiro inválido — deve ter formato UUID (ex: xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).';
+    errEl.textContent = '⚠️ WalletId inválido — formato UUID esperado (xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx).';
     errEl.style.display = ''; return;
   }
 
   const btn = document.getElementById('m-btn');
-  btn.disabled = true; btn.textContent = 'Verificando conta…';
+  btn.disabled = true; btn.textContent = 'Verificando…';
 
-  // ── Consulta GET /myAccount para identificar QUAL conta Asaas receberá o dinheiro ──
-  let contaNome = '—';
-  let contaCpf  = '—';
-  let contaWalletId = '';
-  let contaEnv  = (sessao.env || 'sandbox').toUpperCase();
-  let minhaConta_ok = false;
-
+  // ── 1. Identificar qual conta Asaas está autenticada ─────────────────────
+  let contaNome = '—', contaCpf = '—', contaWalletId = '', minhaConta_ok = false;
+  const contaEnv = (sessao.env || 'sandbox').toUpperCase();
   try {
     const acc = await asaasAPI('GET', '/myAccount');
     contaNome     = acc?.personName || acc?.name || acc?.tradingName || '—';
     contaCpf      = acc?.cpfCnpj   || '—';
     contaWalletId = acc?.walletId  || '';
     minhaConta_ok = true;
-    console.log('════ [GET /myAccount] conta que receberá os pagamentos ════');
-    console.log('Nome:', contaNome, '| CPF/CNPJ:', contaCpf, '| walletId:', contaWalletId);
-    console.log('Env:', contaEnv);
+    console.log('[CONFIRM] Conta autenticada:', contaNome, '|', contaCpf, '| walletId:', contaWalletId);
   } catch(e) {
-    console.warn('[GET /myAccount] falhou:', e.message);
-    contaNome = '(não foi possível verificar — ' + e.message + ')';
+    console.warn('[CONFIRM] GET /myAccount falhou:', e.message);
+    contaNome = '(erro ao verificar: ' + e.message + ')';
   }
 
-  // ── Detecta conflito: walletId informado é o da PRÓPRIA conta? ──
-  const walletIgualContaPrincipal = wallet && contaWalletId && wallet === contaWalletId;
+  // ── 2. Buscar cliente DIRETAMENTE na API Asaas (nunca usa cache local) ───
+  // Apenas CPF ou e-mail são identificadores únicos confiáveis.
+  // Se nenhum for fornecido, um novo cliente será criado.
+  let clienteExistente = null;
+  let clienteStatus    = 'novo'; // 'novo' | 'existente'
 
-  // ── Armazena dados para a etapa 2 ──
-  _pendingAssinatura = { nome, cpf, tel, email, desc, val, ciclo, billing, venc, wallet, pct };
+  if (cpf || email) {
+    btn.textContent = 'Buscando cliente…';
+    try {
+      if (cpf) {
+        const r = await asaasAPI('GET', '/customers', null, { cpfCnpj: cpf, limit: 1 });
+        clienteExistente = r?.data?.[0] || null;
+        if (clienteExistente) console.log('[CONFIRM] Cliente por CPF:', clienteExistente.id, clienteExistente.name);
+      }
+      if (!clienteExistente && email) {
+        const r = await asaasAPI('GET', '/customers', null, { email, limit: 1 });
+        clienteExistente = r?.data?.[0] || null;
+        if (clienteExistente) console.log('[CONFIRM] Cliente por email:', clienteExistente.id, clienteExistente.name);
+      }
+      if (clienteExistente) clienteStatus = 'existente';
+    } catch(e) {
+      console.warn('[CONFIRM] GET /customers falhou:', e.message);
+    }
+  }
 
-  // ── Monta o painel de confirmação ──
+  // ── 3. Armazenar tudo para a etapa de execução ───────────────────────────
+  _pendingAssinatura = { nome, cpf, tel, email, desc, val, ciclo, billing, venc, wallet, pct, clienteExistente };
+
+  // ── 4. Montar painel de confirmação ──────────────────────────────────────
   const billingLabel = { PIX: 'Pix', BOLETO: 'Boleto', CREDIT_CARD: 'Cartão de crédito' };
-  const cicloLabel = { WEEKLY:'Semanal', BIWEEKLY:'Quinzenal', MONTHLY:'Mensal', QUARTERLY:'Trimestral', SEMIANNUALLY:'Semestral', YEARLY:'Anual' };
+  const cicloLabel   = { WEEKLY:'Semanal', BIWEEKLY:'Quinzenal', MONTHLY:'Mensal', QUARTERLY:'Trimestral', SEMIANNUALLY:'Semestral', YEARLY:'Anual' };
+  const walletIgualConta = wallet && contaWalletId && wallet === contaWalletId;
 
-  let accountBox = '';
-  if (minhaConta_ok) {
-    accountBox = `<div class="confirm-account-ok">
-      ✅ Conta Asaas autenticada (${esc(contaEnv)}): <strong>${esc(contaNome)}</strong> — CPF/CNPJ: <strong>${esc(contaCpf)}</strong><br>
-      <span style="font-size:11px;color:inherit;opacity:.8">É nesta conta que a assinatura será criada e o dinheiro será recebido.</span>
+  let accountBox = minhaConta_ok
+    ? `<div class="confirm-account-ok">✅ Conta Asaas (${esc(contaEnv)}): <strong>${esc(contaNome)}</strong> — CPF/CNPJ: <strong>${esc(contaCpf)}</strong><br>
+       <span style="font-size:11px;opacity:.8">É nesta conta que a assinatura e o dinheiro serão recebidos.</span></div>`
+    : `<div class="confirm-account-warn">⚠️ Não foi possível verificar a conta Asaas: ${esc(contaNome)}</div>`;
+
+  let clienteBox = '';
+  if (clienteStatus === 'existente') {
+    // Mostra o cliente que SERÁ USADO — nenhuma surpresa na hora da criação
+    const nomeMismatch = clienteExistente.name?.toLowerCase() !== nome.toLowerCase();
+    clienteBox = `<div class="confirm-row">
+      <span class="cr-label">👤 Cliente pagador — JÁ EXISTE no Asaas (será reutilizado)</span>
+      <span class="cr-value">${esc(clienteExistente.name)} <span style="color:var(--muted);font-weight:400;font-size:11px">${esc(clienteExistente.id)}</span></span>
+      ${nomeMismatch ? `<span style="color:#FCD34D;font-size:11px">⚠️ Nome digitado "${esc(nome)}" difere do cadastrado "${esc(clienteExistente.name)}" — verifique.</span>` : ''}
     </div>`;
   } else {
-    accountBox = `<div class="confirm-account-warn">⚠️ Não foi possível verificar a conta Asaas: ${esc(contaNome)}</div>`;
+    clienteBox = `<div class="confirm-row">
+      <span class="cr-label">👤 Cliente pagador — NOVO (será criado no Asaas)</span>
+      <span class="cr-value">${esc(nome)}${cpf ? ' — CPF: ' + esc(cpf) : ''}${email ? ' | ' + esc(email) : ''}</span>
+      ${!cpf && !email ? '<span style="color:#FCD34D;font-size:11px">⚠️ Sem CPF nem e-mail — cliente sem identificador único. Recomendado informar ao menos um.</span>' : ''}
+    </div>`;
   }
 
   let conflictWarn = '';
@@ -2620,13 +2646,10 @@ async function criarAssinatura() {
 
   document.getElementById('m-confirm-body').innerHTML = `
     ${accountBox}
-    ${conflictWarn}
+    ${walletIgualConta ? `<div class="confirm-account-warn" style="margin-top:8px">⚠️ WalletId informado é o da própria conta autenticada — verifique o parceiro.</div>` : ''}
+    ${clienteBox}
     <div class="confirm-row">
-      <span class="cr-label">👤 Cliente pagador (quem será cobrado)</span>
-      <span class="cr-value">${esc(nome)}${cpf ? ' — CPF: ' + esc(cpf) : ''}${email ? ' — ' + esc(email) : ''}</span>
-    </div>
-    <div class="confirm-row">
-      <span class="cr-label">💵 Valor / Frequência / Forma de pagamento</span>
+      <span class="cr-label">💵 Valor / Frequência / Pagamento</span>
       <span class="cr-value">R$ ${val.toFixed(2)} / ${esc(cicloLabel[ciclo] || ciclo)} / ${esc(billingLabel[billing] || billing)}</span>
     </div>
     <div class="confirm-row">
@@ -2635,20 +2658,15 @@ async function criarAssinatura() {
     </div>
     ${wallet && pct > 0 ? `
     <div class="confirm-row">
-      <span class="cr-label">🤝 Comissão do parceiro (split) — vai para outra conta</span>
-      <span class="cr-value" style="color:#FCA5A5">${pct}% → WalletId: ${esc(wallet)}</span>
+      <span class="cr-label">🤝 Split — comissão do parceiro (sai da sua conta)</span>
+      <span class="cr-value" style="color:#FCA5A5">${pct}% → ${esc(wallet)}</span>
     </div>
     <div class="confirm-row">
       <span class="cr-label">💰 Você recebe aprox.</span>
-      <span class="cr-value" style="color:#86EFAC">R$ ${(val * (1 - pct/100)).toFixed(2)} (${100-pct}%)</span>
-    </div>` : `
-    <div class="confirm-row">
-      <span class="cr-label">🤝 Split</span>
-      <span class="cr-value">Sem split — 100% fica na sua conta</span>
-    </div>`}
+      <span class="cr-value" style="color:#86EFAC">R$ ${(val * (1 - pct / 100)).toFixed(2)} (${100 - pct}%)</span>
+    </div>` : `<div class="confirm-row"><span class="cr-label">🤝 Split</span><span class="cr-value">Sem split</span></div>`}
     <div style="font-size:11px;color:var(--muted);margin-top:10px">
-      Verifique se a conta acima é <strong style="color:var(--text)">sua conta</strong> (não a do parceiro).<br>
-      Se estiver errado, vá em Configurações e corrija a Chave de API.
+      Se a conta ou o cliente acima estiverem errados, clique em ← Voltar e corrija antes de criar.
     </div>`;
 
   document.getElementById('m-confirm').style.display = '';
@@ -2665,7 +2683,7 @@ function cancelarConfirmacao() {
 // ETAPA 2 — executa a criação após o usuário confirmar
 async function executarCriacaoAssinatura() {
   if (!_pendingAssinatura) return;
-  const { nome, cpf, tel, email, desc, val, ciclo, billing, venc, wallet, pct } = _pendingAssinatura;
+  const { nome, cpf, tel, email, desc, val, ciclo, billing, venc, wallet, pct, clienteExistente } = _pendingAssinatura;
 
   const errEl = document.getElementById('modal-err');
   errEl.style.display = 'none';
@@ -2673,62 +2691,41 @@ async function executarCriacaoAssinatura() {
   btnConfirm.disabled = true; btnConfirm.textContent = 'Criando…';
 
   try {
-    // ── PASSO 1: Encontrar ou criar o CLIENTE PAGADOR ────────────────────────
+    // ── PASSO 1: Resolver o CLIENTE PAGADOR ──────────────────────────────────
+    // Usa o cliente já identificado na etapa de confirmação (busca feita ao vivo
+    // via GET /customers — nunca via cache local, que pode estar desatualizado).
     let customerId   = null;
     let customerNome = null;
 
-    const existente = dadosCache.clientes.find(c =>
-      (cpf   && c.cpfCnpj && c.cpfCnpj.replace(/\D/g,'') === cpf) ||
-      (email && c.email   && c.email.toLowerCase() === email)
-    );
-
-    if (existente) {
-      customerId   = existente.id;
-      customerNome = existente.name;
-      console.log('[PASSO 1] Cache hit → customerId=' + customerId + ' | nome=' + customerNome);
+    if (clienteExistente?.id) {
+      // Cliente já existe no Asaas — reutiliza
+      customerId   = clienteExistente.id;
+      customerNome = clienteExistente.name;
+      console.log('[PASSO 1] Usando cliente existente:', customerId, '|', customerNome);
     } else {
+      // Cliente não encontrado → cria novo via POST /customers
       const cliPayload = { name: nome };
       if (cpf)   cliPayload.cpfCnpj     = cpf;
       if (email) cliPayload.email       = email;
       if (tel)   cliPayload.mobilePhone = tel.replace(/\D/g,'');
       console.log('[PASSO 1] POST /customers payload:', JSON.stringify(cliPayload));
 
-      let cli = null;
-      try {
-        cli = await asaasAPI('POST', '/customers', cliPayload);
-        console.log('[PASSO 1] POST /customers resposta:', JSON.stringify(cli));
-        if (cli?.id) {
-          customerId   = cli.id;
-          customerNome = cli.name || nome;
-          dadosCache.clientes.push(cli);
-        }
-      } catch (cliErr) {
-        console.warn('[PASSO 1] POST /customers falhou — tentando GET /customers');
-        try {
-          let found = null;
-          if (cpf) {
-            const r = await asaasAPI('GET', '/customers', null, { cpfCnpj: cpf, limit: 1 });
-            found = r?.data?.[0] || null;
-          }
-          if (!found && email) {
-            const r = await asaasAPI('GET', '/customers', null, { email, limit: 1 });
-            found = r?.data?.[0] || null;
-          }
-          if (found?.id) {
-            customerId   = found.id;
-            customerNome = found.name;
-            dadosCache.clientes.push(found);
-          }
-        } catch (getErr) {
-          console.error('[PASSO 1] GET /customers falhou:', getErr.message);
-        }
-        if (!customerId) throw cliErr;
-      }
+      const cli = await asaasAPI('POST', '/customers', cliPayload);
+      // Se POST falhar, asaasAPI lança exceção — NÃO há fallback silencioso
+      // que possa retornar o cliente errado (ex: parceiro cadastrado como cliente)
+      console.log('[PASSO 1] POST /customers resposta:', JSON.stringify(cli));
+
+      if (!cli?.id) throw new Error('Asaas não retornou ID do cliente criado.');
+      customerId   = cli.id;
+      customerNome = cli.name || nome;
+      // Atualiza cache somente após criação confirmada
+      if (!dadosCache.clientes.find(c => c.id === cli.id)) dadosCache.clientes.push(cli);
     }
 
-    if (!customerId) throw new Error('Não foi possível obter o ID do cliente. Verifique CPF ou e-mail.');
-    if (!customerId.startsWith('cus_')) throw new Error('ID de cliente inválido recebido: "' + customerId + '".');
-    if (wallet && customerId === wallet) throw new Error('ERRO CRÍTICO: ID do cliente é igual ao walletId do parceiro — operação bloqueada.');
+    // ── Validações de segurança ───────────────────────────────────────────────
+    if (!customerId) throw new Error('Não foi possível obter o ID do cliente. Informe CPF ou e-mail.');
+    if (!customerId.startsWith('cus_')) throw new Error('ID de cliente inválido recebido do Asaas: "' + customerId + '".');
+    if (wallet && customerId === wallet) throw new Error('ERRO CRÍTICO: customerId === walletId do parceiro. Operação bloqueada.');
 
     // ── PASSO 2: Criar assinatura ────────────────────────────────────────────
     const subPayload = {
@@ -2798,55 +2795,6 @@ async function executarCriacaoAssinatura() {
   }
 }
 
-async function gerarLinkPagamento() {
-  const val = parseFloat(document.getElementById('m-valor').value);
-  const billing = document.getElementById('m-billing').value;
-  const ciclo = document.getElementById('m-ciclo').value;
-  const desc = document.getElementById('m-desc').value.trim();
-  const wallet = document.getElementById('m-wallet').value.trim();
-  const pct = parseFloat(document.getElementById('m-pct').value) || 0;
-
-  const errEl = document.getElementById('modal-err');
-  errEl.style.display = 'none';
-  if (!val || val <= 0) { errEl.textContent = 'Informe um valor válido.'; errEl.style.display = ''; return; }
-
-  const btnLink = document.getElementById('m-btn-link');
-  btnLink.disabled = true; btnLink.textContent = 'Gerando…';
-
-  try {
-    const linkPayload = {
-      name: desc || 'Assinatura Recorrente',
-      billingType: billing,
-      chargeType: 'RECURRENT',
-      value: val,
-      subscriptionCycle: ciclo,
-      dueDateLimitDays: 7,
-    };
-    if (wallet && pct) {
-      linkPayload.split = [{ walletId: wallet, percentualValue: pct }];
-    }
-    const result = await asaasAPI('POST', '/paymentLinks', linkPayload);
-    const url = result.url || result.paymentLink || result.shortUrl || '';
-    toast('Link de pagamento criado!', 'success');
-
-    const okEl = document.getElementById('modal-ok');
-    okEl.textContent = 'Link gerado com sucesso!';
-    okEl.style.display = '';
-
-    const linkBox = document.getElementById('m-link-box');
-    if (url) {
-      linkBox.innerHTML = `🔗 Link recorrente: <a href="${url}" target="_blank" style="color:var(--accent2);word-break:break-all">${url}</a><br><button class="btn-sm btn-outline" style="margin-top:8px;font-size:12px" onclick="navigator.clipboard.writeText('${url}').then(()=>toast('Link copiado!','success'))">📋 Copiar link</button>`;
-    } else {
-      linkBox.innerHTML = `✓ Link criado (ID: ${esc(result.id || '—')})`;
-    }
-    linkBox.style.display = '';
-  } catch(e) {
-    errEl.textContent = 'Erro ao gerar link: ' + e.message;
-    errEl.style.display = '';
-  } finally {
-    btnLink.disabled = false; btnLink.textContent = '🔗 Gerar Link';
-  }
-}
 
 // ── Onboarding ───────────────────────────────────────────────────────────────
 
